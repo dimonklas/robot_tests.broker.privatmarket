@@ -1048,8 +1048,8 @@ Check If Question Is Uploaded
   Wait For Element With Reload  css=button[tid='btn.award.cancellation']  4
   Click Button  css=button[tid='btn.award.cancellation']
   Wait For Ajax
-  Wait Until Element Is Visible  xpath=(//div[@tid='dialogModal']//button[contains(@class, 'btn btn-success')])[2]  ${COMMONWAIT}
-  Click Button  xpath=(//div[@tid='dialogModal']//button[contains(@class, 'btn btn-success')])[2]
+  Wait Until Element Is Visible  css=button[tid='modal.button.1']  ${COMMONWAIT}
+  Click Button  css=button[tid='modal.button.1']
   Wait For Ajax
   Wait Until Element Is Visible  css=button[tid='defaultOk']  ${COMMONWAIT}
   Click Element  css=button[tid='defaultOk']
