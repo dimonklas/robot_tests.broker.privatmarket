@@ -191,7 +191,6 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 Пошук тендера по ідентифікатору
     [Arguments]  ${username}  ${tenderId}
     Go To  ${USERS.users['${username}'].homepage}
-#    Close notification
     Wait Until Element Is Visible  ${locator_tenderSearch.searchInput}  timeout=${COMMONWAIT}
 
     ${class}=  Get Element Attribute  xpath=//span[@data-id='pinhead']@class
@@ -210,7 +209,6 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 Пошук плану по ідентифікатору
   [Arguments]  ${username}  ${tenderId}
     Go To  ${USERS.users['${username}'].homepage}
-#    Close notification
     Wait Until Element Is Visible  ${locator_tenderSearch.searchInput}  timeout=${COMMONWAIT}
 
     ${class}=  Get Element Attribute  xpath=//span[@data-id='pinhead']@class
@@ -262,8 +260,6 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     @{items}=  Run Keyword If  ${presence}  Get From Dictionary  ${tender_data.data}  items
     ${presence}=  Run Keyword And Return Status  List Should Contain Value  ${tender_data.data}  features
     @{features}=  Run Keyword If  ${presence}  Get From Dictionary  ${tender_data.data}  features
-
-    log to console    ${tender_data.data}
 
     Wait Visibility And Click Element  ${locator_tenderSearch.addTender}
     Wait Visibility And Click Element  xpath=(//a[@data-toggle='tab'])[2]
@@ -349,8 +345,11 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Wait For Ajax
     Wait Visibility And Click Element  xpath=//button[@data-id='actSave']
     Sleep  2s
-    Run Keyword If  '${parameter}' == 'items[${index}].deliveryDate.endDate'  Wait Until Element Is Visible  xpath=(//input[@data-id='deliveryDateEnd'])[${index_xpath}]
-    Run Keyword If  '${parameter}' == 'items[${index}].deliveryDate.endDate'  Set Date In Item  ${index}  deliveryDate  endDate  ${value}
+    Run Keyword If  '${parameter}' == 'items[${index}].deliveryDate.endDate'
+    ...  Run Keywords
+    ...  Wait Until Element Is Visible  xpath=(//input[@data-id='deliveryDateEnd'])[${index_xpath}]
+    ...  AND  Set Date In Item  ${index}  deliveryDate  endDate  ${value}
+
     Run Keyword If  '${parameter}' == 'items[${index}].quantity'  Wait Element Visibility And Input Text  xpath=(//input[@data-id='quantity'])[${index_xpath}]  ${value}
 
     Wait Visibility And Click Element  xpath=//button[@data-id='actSave']
@@ -418,7 +417,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     @{items}=  Run Keyword If  ${presence}  Get From Dictionary  ${tender_data.data}  items
     ${presence}=  Run Keyword And Return Status  List Should Contain Value  ${tender_data.data}  features
     @{features}=  Run Keyword If  ${presence}  Get From Dictionary  ${tender_data.data}  features
-#    Close notification
+
     Wait Until Element Is Visible  ${locator_tenderSearch.searchInput}  ${COMMONWAIT}
     Check Current Mode New Realisation
 
@@ -460,8 +459,10 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Wait For Ajax
     Wait Element Visibility And Input Text  css=input[data-id='procurementName']  ${tender_data.data.title}
     Wait Element Visibility And Input Text  css=textarea[data-id='procurementDescription']  ${tender_data.data.description}
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  css=input[data-id='procurementNameEn']  ${tender_data.data.title_en}
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  css=textarea[data-id='procurementDescriptionEn']  ${tender_data.data.description_en}
+    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'
+    ...  Run Keywords
+    ...  Wait Element Visibility And Input Text  css=input[data-id='procurementNameEn']  ${tender_data.data.title_en}
+    ...  AND  Wait Element Visibility And Input Text  css=textarea[data-id='procurementDescriptionEn']  ${tender_data.data.description_en}
 
     #CPV
     Wait Visibility And Click Element  xpath=(//a[@data-id='actChoose'])[1]
@@ -481,8 +482,10 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Run Keyword If  'quick(mode:fast-forward)' in ${mode}  Wait Visibility And Click Element  css=label[data-id='skip_auction']
 
     #cause
-    Run Keyword If  ${type} == 'negotiation'  Обрати підставу вибору переговорної процедури  ${tender_data}
-    Run Keyword If  ${type} == 'negotiation'  Wait Element Visibility And Input Text  css=textarea[data-id='causeDescription']  ${tender_data.data.causeDescription}
+    Run Keyword If  ${type} == 'negotiation'
+    ...  Run Keywords
+    ...  Обрати підставу вибору переговорної процедури  ${tender_data}
+    ...  AND  Wait Element Visibility And Input Text  css=textarea[data-id='causeDescription']  ${tender_data.data.causeDescription}
 
     #procuringEntityAddress
     Wait Element Visibility And Input Text  ${locator_lotAdd.postalCode}  ${tender_data.data.procuringEntity.address.postalCode}
@@ -499,11 +502,13 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Wait Element Visibility And Input Text  css=input[data-id='phone']  ${modified_phone}
     Wait Element Visibility And Input Text  css=input[data-id='email']  ${USERS.users['${username}'].email}
     Wait Element Visibility And Input Text  css=input[data-id='url']  ${tender_data.data.procuringEntity.contactPoint.url}
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='fullNameUa']  ${tender_data.data.procuringEntity.contactPoint.name}
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='fullNameEn']  ${tender_data.data.procuringEntity.contactPoint.name_en}
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='phone']  ${modified_phone}
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='email']  ${USERS.users['${username}'].email}
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  css=input[data-id='legalNameEn']  ${tender_data.data.procuringEntity.name_en}
+    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'
+    ...  Run Keywords
+    ...  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='fullNameUa']  ${tender_data.data.procuringEntity.contactPoint.name}
+    ...  AND  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='fullNameEn']  ${tender_data.data.procuringEntity.contactPoint.name_en}
+    ...  AND  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='phone']  ${modified_phone}
+    ...  AND  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='email']  ${USERS.users['${username}'].email}
+    ...  AND  Wait Element Visibility And Input Text  css=input[data-id='legalNameEn']  ${tender_data.data.procuringEntity.name_en}
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
 #step 1
@@ -558,8 +563,10 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     \  Run Keyword Unless  ${type} == 'negotiation'  Ввести мінімальний крок  ${lots}  ${index}  ${lot_index}
     \  Run Keyword Unless  ${type} == 'negotiation'  Wait Visibility And Click Element  xpath=(//label[contains(@for,'guarantee')])[${lot_index}]
     \  Run Keyword Unless  ${type} == 'negotiation'  Wait Element Visibility And Input Text  xpath=(//input[@data-id='guaranteeAmount'])[${lot_index}]  1
-    \  Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  xpath=(//input[@data-id='procurementNameEn'])[${lot_index}]  ${lots[${index}].title_en}
-    \  Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  xpath=(//textarea[@data-id='lotDescriptionEn'])[${lot_index}]  ${lots[${index}].description}
+    \  Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'
+    \  ...  Run Keywords
+    \  ...  Wait Element Visibility And Input Text  xpath=(//input[@data-id='procurementNameEn'])[${lot_index}]  ${lots[${index}].title_en}
+    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//textarea[@data-id='lotDescriptionEn'])[${lot_index}]  ${lots[${index}].description}
     \  ${count}=  Get Length  ${items}
     \  Run Keyword If  ${count} > 0  Додати items  ${items}  ${lot_index}  ${lots[${index}].id}  ${type}
 
@@ -1000,7 +1007,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Select Window  name=signWin
     Wait Until Element Is Visible  id=CAsServersSelect
     Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[8]
-    ${path}=   get_ECP_key2  src/robot_tests.broker.privatmarket/boss.jks
+    ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/boss.jks
     Choose File  id=PKeyFileInput  ${path}
     Wait Element Visibility And Input Text  id=PKeyPassword  1111111111
     Wait Visibility And Click Element  id=PKeyReadButton
@@ -1248,7 +1255,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Run Keyword And Return If  '${field_name}' == 'tender.procurementMethodType'  Отримати тип запланованого тендера  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'budget.amount'  Convert Amount To Number  ${tender_data_value.amount}
     Run Keyword And Return If  '${field_name}' == 'budget.currency'  Отримати інформацію з value.currency  value.currency
-    Run Keyword And Return If  '${field_name}' == 'tender.tenderPeriod.startDate'  Отримати и привести дату до заданого формату  xpath=//div[@data-id='plan-purchase-beg']
+    Run Keyword And Return If  '${field_name}' == 'tender.tenderPeriod.startDate'  Отримати та привести дату до заданого формату  xpath=//div[@data-id='plan-purchase-beg']
 
     ${index}=  privatmarket_service.get_match_from_string  ${field_name}  items\\[(.+?)\\]  1
     ${status}=  Set Variable If  '${index}' == 'null'  'false'  'true'
@@ -1269,7 +1276,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Run Keyword And Return If  'classification.description' in ${field_name}  Отримати текст з item  xpath=(//*[@data-id='item-classif-description'])[${index}]
     Run Keyword And Return If  'classification.scheme' in ${field_name}  Отримати текст з item  xpath=(//*[@data-id='item-classif-scheme'])[${index}]
     Run Keyword And Return If  'classification.id' in ${field_name}  Отримати текст з item  xpath=(//*[@data-id='item-classif-id'])[${index}]
-    Run Keyword And Return If  'deliveryDate.endDate' in ${field_name}  Отримати и привести дату до заданого формату  xpath=(//div[@class='info-item-val normal-font ng-binding'])[${index}]
+    Run Keyword And Return If  'deliveryDate.endDate' in ${field_name}  Отримати та привести дату до заданого формату  xpath=(//div[@class='info-item-val normal-font ng-binding'])[${index}]
     ${text_element}=  Get text  ${field_name}
     [Return]  ${result}
 
@@ -1289,7 +1296,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     [Return]  ${result}
 
 
-Отримати и привести дату до заданого формату
+Отримати та привести дату до заданого формату
     [Arguments]  ${locator}
     ${date}=  Отримати текст з item  ${locator}
     ${result}=  get_time_with_offset_formatted  ${date}  %d.%m.%Y  %Y-%m-%d %H:%M:%S.%f%z
@@ -1972,11 +1979,6 @@ Try To Search Complaint
     Sleep  1
 
 
-Close notification
-    ${notification_visibility}=  Run Keyword And Return Status  Wait Until Element Is Visible  css=section[data-id='popupHelloModal'] span[data-id='actClose']
-    Run Keyword If  ${notification_visibility}  Click Element  css=section[data-id='popupHelloModal'] span[data-id='actClose']
-
-
 Switch To Frame
     [Arguments]  ${frameId}
     Wait Until Element Is enabled  ${frameId}  ${COMMONWAIT}
@@ -2033,8 +2035,6 @@ Try Search Tender
 Check Current Mode New Realisation
     [Arguments]  ${education_type}=${True}
     privatmarket.Оновити сторінку з тендером
-#    Close notification
-    #проверим правильный ли режим
     Wait Until Element Is Visible  ${locator_tender.switchToDemo}  ${COMMONWAIT}
     Wait Visibility And Click Element  ${locator_tender.switchToDemo}
     Wait For Ajax
