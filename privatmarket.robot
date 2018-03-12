@@ -723,7 +723,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     [Arguments]  ${lots}  ${index}  ${elem_index}
     ${minimalStep_amount}=  Convert to String  ${lots[${index}].minimalStep.amount}
     Click Element  xpath=(//input[@data-id='minimalStepAmount'])[${elem_index}]
-    Wait Until Element Is Enabled  (//input[@data-id='minimalStepAmount'])[${elem_index}]
+    Wait Until Element Is Enabled  xpath=(//input[@data-id='minimalStepAmount'])[${elem_index}]
     Wait Element Visibility And Input Text  xpath=(//input[@data-id='minimalStepAmount'])[${elem_index}]  ${minimalStep_amount}
 
 
