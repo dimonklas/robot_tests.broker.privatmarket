@@ -722,6 +722,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 Ввести мінімальний крок
     [Arguments]  ${lots}  ${index}  ${elem_index}
     ${minimalStep_amount}=  Convert to String  ${lots[${index}].minimalStep.amount}
+    Click Element  xpath=(//input[@data-id='minimalStepAmount'])[${elem_index}]
     Wait Element Visibility And Input Text  xpath=(//input[@data-id='minimalStepAmount'])[${elem_index}]  ${minimalStep_amount}
 
 
@@ -2616,6 +2617,7 @@ Get Item Number
 Завантажити документ в ставку
     [Arguments]  ${username}  ${filePath}  ${tenderId}  ${doc_type}=documents
     privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tenderId}
+    Wait For Element With Reload  xpath=//button[@data-id="editBidBtn"]  1  1
     Wait Visibility And Click Element  xpath=//button[@data-id="editBidBtn"]
     Sleep  2s
     Click Button  css=button[data-id='save-bid-btn']
