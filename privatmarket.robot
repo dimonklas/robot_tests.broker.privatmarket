@@ -1580,7 +1580,7 @@ Try To Search Complaint
     Sleep  2s
     Wait Visibility And Click Element  id=btnSendAnswer
     Wait For Notification  Ваша відповідь успішно відправлена!
-    Wait Visibility And Click Element  css=span[ng-click='act.hideModal()']
+    Wait Visibility And Click Element  css=button[data-id='btn-close']
     Sleep  90s
 
 
