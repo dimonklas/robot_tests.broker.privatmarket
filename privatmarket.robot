@@ -2552,7 +2552,7 @@ Get Item Number
     Click Element  xpath=//button[@data-id='createBidBtn']
     ${value_amount}=  privatmarket_service.convert_float_to_string  ${bid.data.lotValues[0].value.amount}
     Sleep  2s
-    Click Element  =sdsdfsdf
+
     ${elements}=  Get Webelements  xpath=//button[contains(@id, 'dropdownMenu')]
     ${count}=  Get_Length  ${elements}
     :FOR  ${item}  In Range  0  ${count}
