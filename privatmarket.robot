@@ -65,6 +65,7 @@ ${tender_data.dgfDecisionID}  css=span[tid='data.dgfDecisionID']
 
 ${tender_data.awards[0].status}  xpath=(//span[@tid='award.status'])[1]
 ${tender_data.awards[1].status}  xpath=(//span[@tid='award.status'])[2]
+${tender_data.contracts[-1].status}  xpath=(//label[@tid='contract.status'])[last()]
 
 ${tenderBtn.create_edit}  css=button[tid='btn.createlot']
 
@@ -166,7 +167,7 @@ ${tenderBtn.create_edit}  css=button[tid='btn.createlot']
   Wait Until Element Is Visible  css=button[tid='btn.publicateLot']
   Click Button  css=button[tid='btn.publicateLot']
   Wait For Ajax
-  Wait For Element With Reload  css=div[tid='data.auctionID']
+  Wait For Element With Reload  xpath=//div[contains(@tid, 'data.auctionID') and contains(., 'UA-')]
   ${tender_id}=  Get Text  css=div[tid='data.auctionID']
   Go To  ${USERS.users['${username}'].homepage}
   Wait For Ajax
@@ -309,7 +310,7 @@ ${tenderBtn.create_edit}  css=button[tid='btn.createlot']
 Пошук тендера по ідентифікатору
   [Arguments]  ${user_name}  ${tender_id}
   Wait For Auction  ${tender_id}
-  Wait Enable And Click Element  css=a[tid='${tender_id}']
+  Wait Enable And Click Element  css=div[tid='${tender_id}']
   Wait Until element Is Visible  css=div[tid='data.title']  ${COMMONWAIT}
 
 
@@ -327,6 +328,7 @@ ${tenderBtn.create_edit}  css=button[tid='btn.createlot']
 
   Run Keyword And Return If  '${element}' == 'awards[0].status'  Отримати awards status  ${element}
   Run Keyword And Return If  '${element}' == 'awards[1].status'  Отримати awards status  ${element}
+  Run Keyword And Return If  '${element}' == 'contracts[-1].status'  Отримати статус угоди  ${element}
 
   Run Keyword And Return If  'Period.' in '${element}'  Отримати дату та час  ${element}
 
@@ -457,9 +459,11 @@ Wait for question
   [Return]  ${result}
 
 
-Отримати число
+Отримати число
   [Arguments]  ${element_name}
   ${value}=  Отримати текст елемента  ${element_name}
+  ${value}=  Replace String  ${value}  ${SPACE}  ${EMPTY}
+  ${value}=  Replace String  ${value}  ,  .
   ${result}=  Convert To Number  ${value}
   [Return]  ${result}
 
@@ -526,10 +530,27 @@ Wait for question
   ${result}=  Set Variable If
   ...  '${text}' == 'очікується протокол'  pending.verification
   ...  '${text}' == 'у черзі на кваліфікацію'  pending.waiting
+  ...  '${text}' == 'кваліфікується'  pending
   ...  '${text}' == 'Очікується підписання договору'  pending.payment
-  ...  '${text}' == 'Оплачено, очікується підписання договору/переможець'  active
+  ...  '${text}' == 'Очікується підписання договору'  active
+  ...  '${text}' == 'Оплачено. Очікується підписання договору'  active
   ...  '${text}' == 'учасник самодискваліфікувався'  cancelled
   ...  '${text}' == 'дискваліфіковано'  unsuccessful
+  ...  ${element}
+  [Return]  ${result}
+
+
+Отримати статус угоди
+  [Arguments]  ${element}
+  Reload Page
+  Sleep  10s
+  ${element_text}=  Get Text  ${tender_data.${element}}
+  ${text}=  Strip String  ${element_text}
+  ${result}=  Set Variable If
+  ...  '${text}' == 'очікується підписання'  pending
+  ...  '${text}' == 'підписаний контракт'  active
+  ...  '${text}' == 'скасовано до підписання'  cancelled
+  ...  '${text}' == 'контракт завершився'  terminated'
   ...  ${element}
   [Return]  ${result}
 
@@ -1059,6 +1080,7 @@ Login with P24
   Input Text  css=input[id='first-section']  12
   Input Text  css=input[id='second-section']  34
   Input Text  css=input[id='third-section']  56
+  Sleep  1s
   Click Element  css=.btn.btn-success.custom-btn-confirm.sms
   Sleep  3s
   Wait For Ajax
@@ -1154,8 +1176,8 @@ Try Search Auction
   Press Key  css=input[tid='global.search']  \\13
   Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
   Wait Until Element Is Not Visible  css=div[role='dialog']  ${COMMONWAIT}
-  Wait Until Element Not Stale  css=a[tid='${tender_id}']  ${COMMONWAIT}
-  Wait Until Element Is Visible  css=a[tid='${tender_id}']  ${COMMONWAIT}
+  Wait Until Element Not Stale  css=div[tid='${tender_id}']  ${COMMONWAIT}
+  Wait Until Element Is Visible  css=div[tid='${tender_id}']  ${COMMONWAIT}
   [Return]  True
 
 
