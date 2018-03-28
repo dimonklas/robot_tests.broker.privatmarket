@@ -125,7 +125,7 @@ ${tenderBtn.create_edit}  css=button[tid='btn.createlot']
 
   #main info
   Execute Javascript  angular.prozorroaccelerator=1440;
-  Execute Javascript  angular.prozorroauctionstartdelay = 30*60*1000;
+  Execute Javascript  angular.prozorroauctionstartdelay = (30+180)*60*1000;
   Wait Until Element Is Enabled  css=input[tid='data.title']
   Input text  css=input[tid='data.title']  ${tender_data.data.title}
   Input text  css=input[tid='data.dgfID']  ${tender_data.data.dgfID}
