@@ -2012,7 +2012,7 @@ Wait Element Visibility And Input Text
 
 Wait For Tender
     [Arguments]  ${tender_id}  ${education_type}  ${type}=tender
-    Wait Until Keyword Succeeds  7min  5s  Try Search Tender  ${tender_id}  ${education_type}  ${type}
+    Wait Until Keyword Succeeds  10min  5s  Try Search Tender  ${tender_id}  ${education_type}  ${type}
 
 
 Try Search Tender
@@ -2030,7 +2030,7 @@ Try Search Tender
     #выполним поиск
     Click Element  css=button#search-query-button
     Wait Until Element Is Not Visible  xpath=//div[@class='ajax_overflow']  ${COMMONWAIT}
-    Wait Until Element Is Enabled  id=${tender_id}  timeout=10
+    Wait Until Element Is Enabled  id=${tender_id}  timeout=20
     [Return]  True
 
 
@@ -2570,6 +2570,8 @@ Get Item Number
     Wait Until Element Is Visible  css=select[data-id='filetype']
     Click Button  css=button[data-id='save-bid-btn']
     Wait For Ajax
+    Wait Visibility And Click Element  css=button[data-id='modalOkBtn']
+    Wait For Ajax
 
     ${scenarios_name}=  privatmarket_service.get_scenarios_name
     Run Keyword Unless  'single_item' in '${scenarios_name}' or 'below' in '${scenarios_name}'  Wait Visibility And Click Element  css=label[data-id='toggle-qualified']
@@ -2706,6 +2708,8 @@ Get Item Number
     Wait For Ajax
     Wait Until Element Is Visible  css=select[data-id='filetype']
     Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
+    Wait For Ajax
+    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modalOkBtn']
     Wait For Ajax
     Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
     Wait For Ajax
