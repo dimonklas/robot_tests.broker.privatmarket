@@ -525,7 +525,7 @@ Wait for question
   [Arguments]  ${element}
   Reload Page
   Sleep  10s
-  ${text}=  Get Element Attribute  ${element}@tidvalue
+  ${text}=  Get Element Attribute  ${tender_data.${element}}@tidvalue
 #  ${element_text}=  Get Text  ${tender_data.${element}}
 #  ${text}=  Strip String  ${element_text}
 #  ${result}=  Set Variable If
