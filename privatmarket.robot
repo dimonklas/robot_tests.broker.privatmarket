@@ -563,6 +563,7 @@ Wait for question
   Wait For Element With Reload  ${locator}
   ${result}=  Get Text  ${locator}
   ${result}=  Replace String  ${result}  ${SPACE}  ${EMPTY}
+  ${result}=  Replace String  ${result}  ,  .
   ${result}=  Convert To Number  ${result}
   [Return]  ${result}
 
