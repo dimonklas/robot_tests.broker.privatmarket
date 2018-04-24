@@ -525,19 +525,20 @@ Wait for question
   [Arguments]  ${element}
   Reload Page
   Sleep  10s
-  ${element_text}=  Get Text  ${tender_data.${element}}
-  ${text}=  Strip String  ${element_text}
-  ${result}=  Set Variable If
-  ...  '${text}' == 'очікується протокол'  pending.verification
-  ...  '${text}' == 'у черзі на кваліфікацію'  pending.waiting
-  ...  '${text}' == 'кваліфікується'  pending
-  ...  '${text}' == 'Очікується підписання договору'  pending.payment
-  ...  '${text}' == 'Очікується підписання договору'  active
-  ...  '${text}' == 'Оплачено. Очікується підписання договору'  active
-  ...  '${text}' == 'учасник самодискваліфікувався'  cancelled
-  ...  '${text}' == 'дискваліфіковано'  unsuccessful
-  ...  ${element}
-  [Return]  ${result}
+  ${text}=  Get Element Attribute  ${element}@tidvalue
+#  ${element_text}=  Get Text  ${tender_data.${element}}
+#  ${text}=  Strip String  ${element_text}
+#  ${result}=  Set Variable If
+#  ...  '${text}' == 'очікується протокол'  pending.verification
+#  ...  '${text}' == 'у черзі на кваліфікацію'  pending.waiting
+#  ...  '${text}' == 'кваліфікується'  pending
+#  ...  '${text}' == 'Очікується підписання договору'  pending.payment
+#  ...  '${text}' == 'Очікується підписання договору'  active
+#  ...  '${text}' == 'Оплачено. Очікується підписання договору'  active
+#  ...  '${text}' == 'учасник самодискваліфікувався'  cancelled
+#  ...  '${text}' == 'дискваліфіковано'  unsuccessful
+#  ...  ${element}
+  [Return]  ${text}
 
 
 Отримати статус угоди
@@ -561,6 +562,7 @@ Wait for question
   Wait For Ajax
   Wait For Element With Reload  ${locator}
   ${result}=  Get Text  ${locator}
+  ${result}=  Replace String  ${result}  ${SPACE}  ${EMPTY}
   ${result}=  Convert To Number  ${result}
   [Return]  ${result}
 
@@ -696,7 +698,7 @@ Check If Question Is Uploaded
   Sleep  2s
   Choose File  css=div[tid='auction.docs'] input#input-doc-lot  ${filepath}
   Wait Until Element Is Visible  css=div.modal-backdrop.fade
-  Wait Until Element Is Not Visible  css=div.modal-backdrop.fade
+  Wait Until Element Is Not Visible  css=div.modal-backdrop.fade  ${COMMONWAIT}
   Wait For Ajax
   Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
   Select From List  xpath=(//div[@tid='auction.docs']//select[@tid='doc.type'])[last()]  ${file_type}
