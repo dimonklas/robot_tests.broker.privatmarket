@@ -65,7 +65,7 @@ ${tender_data.dgfDecisionID}  css=span[tid='data.dgfDecisionID']
 
 ${tender_data.awards[0].status}  xpath=(//span[@tid='award.status'])[1]
 ${tender_data.awards[1].status}  xpath=(//span[@tid='award.status'])[2]
-${tender_data.contracts[-1].status}  xpath=(//label[@tid='contract.status'])[last()]
+${tender_data.contracts[0].status}  xpath=(//label[@tid='contract.status'])[last()]
 
 ${tenderBtn.create_edit}  css=button[tid='btn.createlot']
 
@@ -328,7 +328,7 @@ ${tenderBtn.create_edit}  css=button[tid='btn.createlot']
 
   Run Keyword And Return If  '${element}' == 'awards[0].status'  Отримати awards status  ${element}
   Run Keyword And Return If  '${element}' == 'awards[1].status'  Отримати awards status  ${element}
-  Run Keyword And Return If  '${element}' == 'contracts[-1].status'  Отримати статус угоди  ${element}
+  Run Keyword And Return If  '${element}' == 'contracts[0].status'  Отримати статус угоди  ${element}
 
   Run Keyword And Return If  'Period.' in '${element}'  Отримати дату та час  ${element}
 
