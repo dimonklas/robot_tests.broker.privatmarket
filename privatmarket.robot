@@ -525,7 +525,9 @@ Wait for question
   [Arguments]  ${element}
   Reload Page
   Sleep  10s
+  Wait Until Keyword Succeeds  1min  5s  Перевірити атрибут елемента  ${tender_data.${element}}  tidvalue  active
   ${text}=  Get Element Attribute  ${tender_data.${element}}@tidvalue
+
 #  ${element_text}=  Get Text  ${tender_data.${element}}
 #  ${text}=  Strip String  ${element_text}
 #  ${result}=  Set Variable If
@@ -539,6 +541,12 @@ Wait for question
 #  ...  '${text}' == 'дискваліфіковано'  unsuccessful
 #  ...  ${element}
   [Return]  ${text}
+
+
+Перевірити атрибут елемента
+  [Arguments]  ${element}  ${attributeName}  ${expectedResult}
+  ${text}=  Get Element Attribute  ${element}}@${attributeName}
+  Should Be Equal As Strings  ${text}  ${expectedResult}
 
 
 Отримати статус угоди
