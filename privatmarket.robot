@@ -545,7 +545,7 @@ Wait for question
 
 Перевірити атрибут елемента
   [Arguments]  ${element}  ${attributeName}  ${expectedResult}
-  ${text}=  Get Element Attribute  ${element}}@${attributeName}
+  ${text}=  Get Element Attribute  ${element}@${attributeName}
   Should Be Equal As Strings  ${text}  ${expectedResult}
 
 
