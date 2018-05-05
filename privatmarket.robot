@@ -523,9 +523,10 @@ Wait for question
 
 Отримати awards status
   [Arguments]  ${element}
+  Sleep  25s
   Reload Page
-  Sleep  10s
-  Wait Until Keyword Succeeds  1min  5s  Перевірити атрибут елемента  ${tender_data.${element}}  tidvalue  active
+  Wait For Ajax
+#  Wait Until Keyword Succeeds  1min  5s  Перевірити атрибут елемента  ${tender_data.${element}}  tidvalue  active
   ${text}=  Get Element Attribute  ${tender_data.${element}}@tidvalue
 
 #  ${element_text}=  Get Text  ${tender_data.${element}}
