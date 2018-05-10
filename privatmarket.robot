@@ -65,7 +65,10 @@ ${tender_data.dgfDecisionID}  css=span[tid='data.dgfDecisionID']
 
 ${tender_data.awards[0].status}  xpath=(//span[@tid='award.status'])[1]
 ${tender_data.awards[1].status}  xpath=(//span[@tid='award.status'])[2]
-${tender_data.contracts[0].status}  xpath=(//label[@tid='contract.status'])[last()]
+${tender_data.contracts[0].status}  xpath=(//label[@tid='contract.status'])[1]
+${tender_data.contracts[1].status}  xpath=(//label[@tid='contract.status'])[last()]
+${tender_data.contracts[-1].datePaid}  xpath=(//span[@tid='contractDatePaid'])[last()-1]
+
 
 ${tenderBtn.create_edit}  css=button[tid='btn.createlot']
 
@@ -329,6 +332,9 @@ ${tenderBtn.create_edit}  css=button[tid='btn.createlot']
   Run Keyword And Return If  '${element}' == 'awards[0].status'  Отримати awards status  ${element}
   Run Keyword And Return If  '${element}' == 'awards[1].status'  Отримати awards status  ${element}
   Run Keyword And Return If  '${element}' == 'contracts[0].status'  Отримати статус угоди  ${element}
+  Run Keyword And Return If  '${element}' == 'contracts[1].status'  Отримати статус угоди  ${element}
+  Run Keyword And Return If  '.datePaid' in '${element}'  Отримати дату та час оплати  ${element}
+
 
   Run Keyword And Return If  'Period.' in '${element}'  Отримати дату та час  ${element}
 
@@ -487,6 +493,14 @@ Wait for question
   ${year}=  get_current_year
   ${result_full}=  Set Variable  ${day}-${month}-${year} ${result_full[2]}
   ${result}=  get_time_with_offset  ${result_full}
+  [Return]  ${result}
+
+
+Отримати дату та час оплати
+  [Arguments]  ${element_name}
+  Switch Browser  ${ALIAS_NAME}
+  ${text}=  Отримати текст елемента  ${element_name}
+  ${result}=  get_time_with_offset  ${text}
   [Return]  ${result}
 
 
