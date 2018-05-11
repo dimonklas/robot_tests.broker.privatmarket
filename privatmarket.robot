@@ -67,7 +67,7 @@ ${tender_data.awards[0].status}  xpath=(//span[@tid='award.status'])[1]
 ${tender_data.awards[1].status}  xpath=(//span[@tid='award.status'])[2]
 ${tender_data.contracts[0].status}  xpath=(//label[@tid='contract.status'])[1]
 ${tender_data.contracts[1].status}  xpath=(//label[@tid='contract.status'])[last()]
-${tender_data.contracts[-1].datePaid}  xpath=(//span[@tid='contractDatePaid'])[last()-1]
+${tender_data.contracts[-1].datePaid}  xpath=(//span[@tid='contractDatePaid'])[last()]
 
 
 ${tenderBtn.create_edit}  css=button[tid='btn.createlot']
