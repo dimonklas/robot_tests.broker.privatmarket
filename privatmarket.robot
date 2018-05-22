@@ -179,7 +179,10 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Call Method  ${chrome_options}  add_argument  --nativeEvents\=false
     Call Method  ${chrome_options}  add_experimental_option  prefs  ${prefs}
     #Для Viewer'а нужен хром, т.к. на хром настроена автоматическая закачка файлов
-    Create WebDriver  Chrome  chrome_options=${chrome_options}  alias=${username}
+
+    ${alias}=   Catenate   SEPARATOR=   browser  ${username}
+    Set Global Variable  ${ALIAS_NAME}  ${alias}
+    Create WebDriver  Chrome  chrome_options=${chrome_options}  alias=${ALIAS_NAME}
     Go To  ${USERS.users['${username}'].homepage}
 
     #Open Browser  ${USERS.users['${username}'].homepage}  ${browser}  alias=${username}
@@ -230,6 +233,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 
 Оновити сторінку з планом
     [Arguments]  ${username}  ${tenderId}
+    Switch Browser  ${ALIAS_NAME}
     Reload Page
     Sleep  2s
 
@@ -734,6 +738,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     [Documentation]
     ...  ${ARGUMENTS[0]} == username
     ...  ${ARGUMENTS[1]} == tenderId
+    Switch Browser  ${ALIAS_NAME}
     Reload Page
     Sleep  2s
 
@@ -1898,6 +1903,7 @@ Try To Search Complaint
 
 Отримати дату та час
     [Arguments]  ${element_name}
+    Switch Browser  ${ALIAS_NAME}
     ${element_present}=  Run Keyword And Return Status  Element Should Be Visible  ${element_name}
     Run Keyword unless  ${element_present}  Wait For Element With Reload  ${tender_data_${element_name}}  1
 
