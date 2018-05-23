@@ -2573,7 +2573,8 @@ Get Item Number
     \  Click Element  xpath=(//ul[@class='dropdown-menu btn-feature-dropdown-menu'])[${item}]/li[1]
     \  Sleep  1s
 
-    Run Keyword Unless  'Неможливість' in '${TEST_NAME}'  Wait Element Visibility And Input Text  css=input[data-id='lot-user-price']  ${value_amount}
+    Run Keyword Unless  'Неможливість' in '${TEST_NAME}'  Wait Element Visibility And Input Text  css=input[id^='userprice-lot']  ${value_amount}
+
     Click Button  css=button[data-id='save-bid-btn']
     Wait For Ajax
     Wait Until Element Is Visible  css=select[data-id='filetype']
