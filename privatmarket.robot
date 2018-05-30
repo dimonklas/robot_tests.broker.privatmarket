@@ -468,13 +468,16 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     ...  Wait Element Visibility And Input Text  css=input[data-id='procurementNameEn']  ${tender_data.data.title_en}
     ...  AND  Wait Element Visibility And Input Text  css=textarea[data-id='procurementDescriptionEn']  ${tender_data.data.description_en}
 
+    #Who is donor?
+    Run Keyword If  'below_funders' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='funder']/option[@value='44000']
+
     #CPV
     Wait Visibility And Click Element  xpath=(//a[@data-id='actChoose'])[1]
     Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
     Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
     Search By Query  css=input[data-id='query']  ${items[0].classification.id}
     Wait Visibility And Click Element  css=button[data-id='actConfirm']
-    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
+#    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
 
     #date
     Wait For Ajax
