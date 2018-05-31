@@ -216,7 +216,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 
     ${class}=  Get Element Attribute  xpath=//span[@data-id='pinhead']@class
     Run Keyword If  'color-green' in '${class}'  Click Element  css=[data-id='pinhead']
-
+    Wait Until Element Is Not Visible  xpath=//div[contains(@class,'ajax_overflow')]
     Wait Visibility And Click Element  css=[data-id='ttype-plans-label']
 
     ${suite_name}=  Convert To Lowercase  ${SUITE_NAME}
@@ -268,10 +268,10 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Wait Visibility And Click Element  ${locator_tenderSearch.addTender}
     Wait Visibility And Click Element  xpath=(//a[@data-toggle='tab'])[2]
     Wait Visibility And Click Element  xpath=//a[@data-id='choosedPrzPlanBelowThreshold']
-    Wait Element Visibility And Input Text  //input[@data-id='budgetId']   ${tender_data.data.budget.id}
+#    Wait Element Visibility And Input Text  //input[@data-id='budgetId']   ${tender_data.data.budget.id}
     Input Text  xpath=//input[@data-id='procurementName']  ${tender_data.data.budget.description}
-    Input Text  xpath=//input[@data-id='projectId']  ${tender_data.data.budget.project.id}
-    Input Text  xpath=//input[@data-id='projectName']  ${tender_data.data.budget.project.name}
+#    Input Text  xpath=//input[@data-id='projectId']  ${tender_data.data.budget.project.id}
+#    Input Text  xpath=//input[@data-id='projectName']  ${tender_data.data.budget.project.name}
     Input Text  xpath=//textarea[@data-id='procurementDescription']  ${tender_data.data.budget.description}
     Click Element  xpath=(//a[@data-id='actChoose'])[1]
 
@@ -285,6 +285,8 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 
     Click Element  xpath=//button[@data-id='actSave']
 
+    Wait Visibility And Click Element  xpath=//label[@for='plan_items_yes']
+
     #Заповнити лоти та предмети закупівлі
     Додати предмети закупівлі в план  ${items}
     Click Element  xpath=//button[@data-id='actSave']
@@ -294,13 +296,13 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     ${date}=  get_date_formatting  ${tender_data.data.tender.tenderPeriod.startDate}  %y-%m-%d
 
     Дочекатися зміни статусу  ${date}
-    ${plan_id}  Get Text  xpath=//div[@id='tenderId'][contains(text(),'${date}')]
+    ${plan_id}  Get Text  xpath=//span[@id='tenderId'][contains(text(),'${date}')]
     [Return]  ${plan_id}
 
 
 Дочекатися зміни статусу
      [Arguments]  ${date}
-     Wait Until Keyword Succeeds  10min  1s  Перевірити зміну статусу  xpath=//div[@id='tenderId'][contains(text(),'${date}')]
+     Wait Until Keyword Succeeds  10min  1s  Перевірити зміну статусу  xpath=//span[@id='tenderId'][contains(text(),'${date}')]
 
 
 Перевірити зміну статусу
@@ -321,6 +323,14 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     \  Input Text  xpath=(//input[@data-id='quantity'])[${index_xpath}]  ${items[${index}].quantity}
     \  Select From List By Label  xpath=(//select[@data-id='unit'])[${index_xpath}]  ${items[${index}].unit.name}
     \  Set Date In Item  ${index}  deliveryDate  endDate  ${items[${index}].deliveryDate.endDate}
+    \  ${classif_xpath}=  Set Variable  xpath=(//div[@data-id='mozAtcClassification'])[${index_xpath}]//a[@data-id='actChoose']
+    \  ${classif_id}=  Set Variable If  '336' in '${items[${index}].classification.id}'  ${items[${index}].additionalClassifications[1].id}
+    \  Run Keyword If  '336' in '${items[${index}].classification.id}'
+    \  ...  Run Keywords
+    \  ...  Wait Visibility And Click Element  ${classif_xpath}
+    \  ...  AND  Wait Element Visibility And Input Text  xpath=//input[@data-id='query']  ${classif_id}
+    \  ...  AND  Wait Visibility And Click Element  xpath=//div[@data-id='foundItem']//label[contains(text(),'${classif_id}')]
+    \  ...  AND  Wait Visibility And Click Element  xpath=//button[@data-id='actConfirm']
 
 
 Внести зміни в план
@@ -349,6 +359,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Wait For Ajax
     Wait Visibility And Click Element  xpath=//button[@data-id='actSave']
     Sleep  2s
+
     Run Keyword If  '${parameter}' == 'items[${index}].deliveryDate.endDate'
     ...  Run Keywords
     ...  Wait Until Element Is Visible  xpath=(//input[@data-id='deliveryDateEnd'])[${index_xpath}]
@@ -357,6 +368,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Run Keyword If  '${parameter}' == 'items[${index}].quantity'  Wait Element Visibility And Input Text  xpath=(//input[@data-id='quantity'])[${index_xpath}]  ${value}
 
     Wait Visibility And Click Element  xpath=//button[@data-id='actSave']
+
     Wait Visibility And Click Element  xpath=//button[@data-id='actSend']
     Wait Visibility And Click Element  xpath=//button[@data-id='modal-close']
 
@@ -451,11 +463,13 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     ...  ELSE  Wait Visibility And Click Element  css=a[data-id='choosedPrzBelowThreshold']
 
     Wait For Ajax
+
     Run Keyword If
     ...  ${type} == 'negotiation'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '1080')]
     ...  ELSE IF  ${type} == '' and 'before_resolved_award_complaint' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '720')]
     ...  ELSE IF  ${type} == '' and 'after_resolved_award_complaint' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '144')]
     ...  ELSE IF  ${type} == ''  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '1440')]
+    ...  ELSE IF  ${type} == 'reporting'  no operation  #если тип = reporting ничего не делать
     ...  ELSE  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '1440')]
 
 #step 0
@@ -474,13 +488,19 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
     Search By Query  css=input[data-id='query']  ${items[0].classification.id}
     Wait Visibility And Click Element  css=button[data-id='actConfirm']
-    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
+#    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
+
+    # Добавил ввод значения в поле "Очікувана вартість"
+
+    ${amount}=  convert_float_to_string  ${tender_data.data.value.amount}
+    Run Keyword If  ${type} == 'reporting'  Input Text  xpath=//input[@data-id='valueAmount']  ${amount}
 
     #date
     Wait For Ajax
-    Run Keyword Unless  ${type} == 'aboveThresholdEU' or ${type} == 'aboveThresholdUA' or ${type} == 'negotiation' or ${type} == 'competitiveDialogueEU' or ${type} == 'competitiveDialogueUA'  Set Enquiry Period  ${tender_data.data.enquiryPeriod.startDate}  ${tender_data.data.enquiryPeriod.endDate}
+    #Дописаны условия для ${type} == 'reporting'
+    Run Keyword Unless  ${type} == 'aboveThresholdEU' or ${type} == 'aboveThresholdUA' or ${type} == 'negotiation' or ${type} == 'competitiveDialogueEU' or ${type} == 'competitiveDialogueUA' or ${type} == 'reporting'  Set Enquiry Period  ${tender_data.data.enquiryPeriod.startDate}  ${tender_data.data.enquiryPeriod.endDate}
     Run Keyword If  ${type} == ''  Set Start Tender Period  ${tender_data.data.tenderPeriod.startDate}
-    Run Keyword Unless  ${type} == 'negotiation'  Set End Tender Period  ${tender_data.data.tenderPeriod.endDate}
+    Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'reporting'  Set End Tender Period  ${tender_data.data.tenderPeriod.endDate}
 
     #skipAuction
     Run Keyword If  'quick(mode:fast-forward)' in ${mode}  Wait Visibility And Click Element  css=label[data-id='skip_auction']
@@ -516,10 +536,15 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     ...  AND  Wait Element Visibility And Input Text  css=input[data-id='legalNameEn']  ${tender_data.data.procuringEntity.name_en}
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
+#Заповнити лоти та предмети закупівлі для процедури 'reporting'
+    Run Keyword IF  ${type} == 'reporting'  Додати предмети закупівлі в план  ${items}
+
 #step 1
-    Додати lots  ${lots}  ${items}  ${type}
+    Run Keyword Unless  ${type} == 'reporting'  Додати lots  ${lots}  ${items}  ${type}
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
+
     Run Keyword If  ${type} == 'negotiation'  Wait Until Element Is Visible  css=label[for='documentation_tender_yes']  ${COMMONWAIT}
+    ...  ELSE IF  ${type} == 'reporting'  Wait Until Element Is Visible  css=section[data-id='step4']  ${COMMONWAIT}
     ...  ELSE  Wait Until Element Is Visible  css=section[data-id='step3']  ${COMMONWAIT}
 
 #step 3
@@ -530,8 +555,8 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
 #step 4
-    Run Keyword Unless  ${type} == 'negotiation'  Wait Until Element Is Visible  css=section[data-id='step4']  ${COMMONWAIT}
-    Run Keyword Unless  ${type} == 'negotiation'  Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
+    Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'reporting'  Wait Until Element Is Visible  css=section[data-id='step4']  ${COMMONWAIT}
+    Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'reporting'  Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
 #step 5
     Wait Until Element Is Visible  css=section[data-id='step5']  ${COMMONWAIT}
@@ -546,7 +571,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Run Keyword IF
     ...  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait For Element With Reload  css=[data-tender-status='active.tendering']  1
     ...  ELSE IF  ${type} == 'aboveThresholdUA' or ${type} == 'competitiveDialogueUA'  Wait For Element With Reload  css=[data-tender-status='active.tendering']  1
-    ...  ELSE IF  ${type} == 'negotiation'  Wait For Element With Reload  css=[data-tender-status='active']  1
+    ...  ELSE IF  ${type} == 'negotiation' or ${type} == 'reporting'  Wait For Element With Reload  css=[data-tender-status='active']  1
     ...  ELSE  Wait For Element With Reload  css=[data-tender-status='active.enquiries']  1
     ${tender_id}=  Get Text  ${tender_data_tenderID}
     [Return]  ${tender_id}
