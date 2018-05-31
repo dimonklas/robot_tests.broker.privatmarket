@@ -1867,16 +1867,17 @@ Try To Search Complaint
     Reload Page
     Reload And Switch To Tab  3
     ${result_full}=  Отримати текст елемента  ${element_name}
-    ${work_string}=  Replace String  ${result_full}  ${SPACE},${SPACE}  ${SPACE}
-    ${work_string}=  Replace String  ${result_full}  ,${SPACE}  ${SPACE}
-    ${values_list}=  Split String  ${work_string}
-    ${day}=  Convert To String  ${values_list[0 + ${shift}]}
-    ${month}=  privatmarket_service.get_month_number  ${values_list[1 + ${shift}]}
-    ${month}=  Set Variable If  ${month} < 10  0${month}  ${month}
-    ${year}=  Convert To String  ${values_list[2 + ${shift}]}
-    ${time}=  Convert To String  ${values_list[3 + ${shift}]}
-    ${date}=  Convert To String  ${year}-${month}-${day} ${time}
-    ${result}=  privatmarket_service.get_time_with_offset  ${date}
+    ${result}=  privatmarket_service.get_time_with_offset_formatted  ${result_full}  %d.%m.%Y %H:%M  %Y-%m-%d %H:%M:%S.%f%z
+    #    ${work_string}=  Replace String  ${result_full}  ${SPACE},${SPACE}  ${SPACE}
+#    ${work_string}=  Replace String  ${result_full}  ,${SPACE}  ${SPACE}
+#    ${values_list}=  Split String  ${work_string}
+#    ${day}=  Convert To String  ${values_list[0 + ${shift}]}
+#    ${month}=  privatmarket_service.get_month_number  ${values_list[1 + ${shift}]}
+#    ${month}=  Set Variable If  ${month} < 10  0${month}  ${month}
+#    ${year}=  Convert To String  ${values_list[2 + ${shift}]}
+#    ${time}=  Convert To String  ${values_list[3 + ${shift}]}
+#    ${date}=  Convert To String  ${year}-${month}-${day} ${time}
+#    ${result}=  privatmarket_service.get_time_with_offset  ${date}
     [Return]  ${result}
 
 

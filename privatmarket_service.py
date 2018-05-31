@@ -316,7 +316,7 @@ def get_ECP_key(path):
     return os.path.join(os.getcwd(), path)
 
 
-def get_date_formatting(date,format_day):
+def get_date_formatting(date, format_day):
     return dateutil.parser.parse(date).date().strftime(format_day)
 
 
