@@ -359,7 +359,6 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Wait For Ajax
     Wait Visibility And Click Element  xpath=//button[@data-id='actSave']
     Sleep  2s
-
     Run Keyword If  '${parameter}' == 'items[${index}].deliveryDate.endDate'
     ...  Run Keywords
     ...  Wait Until Element Is Visible  xpath=(//input[@data-id='deliveryDateEnd'])[${index_xpath}]
@@ -368,7 +367,6 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Run Keyword If  '${parameter}' == 'items[${index}].quantity'  Wait Element Visibility And Input Text  xpath=(//input[@data-id='quantity'])[${index_xpath}]  ${value}
 
     Wait Visibility And Click Element  xpath=//button[@data-id='actSave']
-
     Wait Visibility And Click Element  xpath=//button[@data-id='actSend']
     Wait Visibility And Click Element  xpath=//button[@data-id='modal-close']
 
@@ -463,7 +461,6 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     ...  ELSE  Wait Visibility And Click Element  css=a[data-id='choosedPrzBelowThreshold']
 
     Wait For Ajax
-
     Run Keyword If
     ...  ${type} == 'negotiation'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '1080')]
     ...  ELSE IF  ${type} == '' and 'before_resolved_award_complaint' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '720')]
@@ -482,6 +479,9 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     ...  Wait Element Visibility And Input Text  css=input[data-id='procurementNameEn']  ${tender_data.data.title_en}
     ...  AND  Wait Element Visibility And Input Text  css=textarea[data-id='procurementDescriptionEn']  ${tender_data.data.description_en}
 
+    #Who is donor?
+    Run Keyword If  'below_funders' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='funder']/option[@value='44000']
+
     #CPV
     Wait Visibility And Click Element  xpath=(//a[@data-id='actChoose'])[1]
     Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
@@ -494,6 +494,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 
     ${amount}=  convert_float_to_string  ${tender_data.data.value.amount}
     Run Keyword If  ${type} == 'reporting'  Input Text  xpath=//input[@data-id='valueAmount']  ${amount}
+#    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
 
     #date
     Wait For Ajax
@@ -542,7 +543,6 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 #step 1
     Run Keyword Unless  ${type} == 'reporting'  Додати lots  ${lots}  ${items}  ${type}
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
-
     Run Keyword If  ${type} == 'negotiation'  Wait Until Element Is Visible  css=label[for='documentation_tender_yes']  ${COMMONWAIT}
     ...  ELSE IF  ${type} == 'reporting'  Wait Until Element Is Visible  css=section[data-id='step4']  ${COMMONWAIT}
     ...  ELSE  Wait Until Element Is Visible  css=section[data-id='step3']  ${COMMONWAIT}
@@ -2582,7 +2582,7 @@ Get Item Number
 
 Подати цінову пропозицію
     [Arguments]  ${username}  ${tender_uaid}  ${bid}  ${lots_ids}=${None}  ${features_ids}=${None}
-    Wait For Element With Reload  xpath=//button[@data-id='createBidBtn']  1
+    Run Keyword Unless  'Неможливість' in '${TEST_NAME}'  Wait For Element With Reload  xpath=//button[@data-id='createBidBtn']  1
     Click Element  xpath=//button[@data-id='createBidBtn']
     ${value_amount}=  privatmarket_service.convert_float_to_string  ${bid.data.lotValues[0].value.amount}
     Sleep  2s
@@ -2598,7 +2598,8 @@ Get Item Number
     \  Click Element  xpath=(//ul[@class='dropdown-menu btn-feature-dropdown-menu'])[${item}]/li[1]
     \  Sleep  1s
 
-    Run Keyword Unless  'Неможливість' in '${TEST_NAME}'  Wait Element Visibility And Input Text  css=input[data-id='lot-user-price']  ${value_amount}
+    Run Keyword Unless  'Неможливість' in '${TEST_NAME}'  Wait Element Visibility And Input Text  css=input[id^='userprice-lot']  ${value_amount}
+
     Click Button  css=button[data-id='save-bid-btn']
     Wait For Ajax
     Wait Until Element Is Visible  css=select[data-id='filetype']
@@ -2667,8 +2668,6 @@ Get Item Number
     privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tenderId}
     Wait For Element With Reload  xpath=//button[@data-id="editBidBtn"]  1  1
     Wait Visibility And Click Element  xpath=//button[@data-id="editBidBtn"]
-    Sleep  2s
-    Click Button  css=button[data-id='save-bid-btn']
     Wait For Ajax
     Run Keyword And Ignore Error  Wait Visibility And Click Element  xpath=//file-uploader[@data-id='common-documents']//select[@data-id='filetype']//option[2]
     Sleep  1s
@@ -2678,6 +2677,8 @@ Get Item Number
     Sleep  1s
     Run Keyword And Ignore Error  Choose File  css=file-uploader[data-id='common-documents'] input[data-id='input-file']  ${filePath}
     Sleep  5s
+    Click Button  css=button[data-id='save-bid-btn']
+    Sleep  2s
     Click Button  css=button[data-id='save-bid-btn']
     Wait For Ajax
     Click Button  css=button[data-id='save-bid-btn']
@@ -2736,15 +2737,15 @@ Get Item Number
     Run Keyword If  '${field}' == 'status'  Wait Visibility And Click Element  xpath=//button[@data-id="createBidBtn"]
     ...  ELSE  Wait Visibility And Click Element  xpath=//button[@data-id="editBidBtn"]
     Sleep  2s
-    ${value}=  privatmarket_service.convert_float_to_string  ${value}
-    Run Keyword If  'value.amount' in '${field}'  Wait Element Visibility And Input Text  css=input[data-id='lot-user-price']  ${value}
-    Click Button  css=button[data-id='save-bid-btn']
     Wait For Ajax
     Wait Until Element Is Visible  css=select[data-id='filetype']
     Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
     Wait For Ajax
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modalOkBtn']
     Wait For Ajax
+    ${value}=  privatmarket_service.convert_float_to_string  ${value}
+    Run Keyword If  'value.amount' in '${field}'  Wait Element Visibility And Input Text  css=input[id^='userprice-lot']  ${value}
+    Click Button  css=button[data-id='save-bid-btn']
     Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
     Wait For Ajax
     Wait Visibility And Click Element  css=button[data-id='save-bid-btn']

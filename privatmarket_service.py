@@ -246,7 +246,7 @@ def get_claim_status (status):
 
 def get_procurementMethod_Type (type):
     type_dictionary = {
-        u'Конкурентний діалог з публікацією англ. мовою': 'competitiveDialogueEU',
+        u'Конкурентний діалог з публікацією англійською мовою 1-ий етап': 'competitiveDialogueEU',
         u'Конкурентний діалог': 'competitiveDialogueUA',
         u'Переговорна процедура для потреб оборони': 'aboveThresholdUA.defense'
     }
