@@ -2778,7 +2778,9 @@ Get Item Number
 
 Задати запитання на предмет
     [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${question}
-    privatmarket.Задати запитання на лот  ${username}  ${tender_uaid}  ${lot_id}=${item_id}  ${question}
+    Відкрити детальну інформацію по позиціям
+    Wait Visibility And Click Element  xpath=//div[@class='lot-info']//section[contains(., '${item_id}')]//a[@ng-click='act.sendItemEnquiry(adb.id)']
+    Заповнити форму запитання  ${question}
 
 
 Перевести тендер на статус очікування обробки мостом
