@@ -522,7 +522,7 @@ Wait for question
   ...  '${text}' == 'Період прийому пропозицій'  active.tendering
   ...  '${text}' == 'Аукціон'  active.auction
   ...  '${text}' == 'Кваліфікація'  active.qualification
-  ...  '${text}' == 'Оплачено, очікується підписання договору'  active.awarded
+  ...  '${text}' == 'Очікується підписання договору'  active.awarded  # было 'Оплачено, очікується підписання договору'
   ...  '${text}' == 'Активний лот'  active
   ...  '${text}' == 'Торги не відбулися'  unsuccessful
   ...  '${text}' == 'Завершено'  complete
@@ -679,6 +679,7 @@ Check If Question Is Uploaded
   Wait For Element With Reload  css=button[tid='btn.deleteBid']  5
   Wait Visibulity And Click Element  css=button[tid='btn.deleteBid']
   Wait For Ajax
+  Wait Visibulity And Click Element  css=button[tid='modal.button.1']  # Добавлена строка для подтверждения удаления ставки
   Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
   Wait Until Element Is Not Visible  css=button[tid='btn.deleteBid']  ${COMMONWAIT}
 
@@ -782,20 +783,27 @@ Check If Question Is Uploaded
   Wait Until Element Is Visible  css=a[tid='btn.addFinLicenseDocs']  ${COMMONWAIT}
   Execute Javascript  document.querySelector("input[tid='finLicense']").className = ''
   Sleep  2s
+  debug
   Choose File  css=input[tid='finLicense']  ${financial_license_path}
+  debug
   Wait For Ajax
   Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
+  debug
   Click Button  css=div#bid button[tid='createBid']
   Wait For Ajax
+  debug
   Wait Until Element Is Visible  css=button[tid='saveAndConfirm']  ${COMMONWAIT}
+  debug
   Click Button  css=button[tid='saveAndConfirm']
   Wait For Ajax
   Wait Until Element Is Not Visible  css=button[tid='saveAndConfirm']
+  debug
   Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
 
 
 Подати цінову пропозицію для Insider
   Wait Until Element Is Enabled  css=button[tid='createBid']  ${COMMONWAIT}
+  debug
   Click Button  css=button[tid='createBid']
 
 
@@ -863,14 +871,15 @@ Check If Question Is Uploaded
   privatmarket.Завантажити документ в ставку  ${user_name}  ${filepath}
 
 
+
 Отримати посилання на аукціон для учасника
   [Arguments]  ${user_name}  ${tender_id}  ${lot_id}=${Empty}
   Switch Browser  ${ALIAS_NAME}
   Go To  ${USERS.users['${username}'].homepage}
   Run Keyword And Ignore Error  Login  ${user_name}
   privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tender_id}
-  Wait For Element With Reload  xpath=//a[@tid='bid.participationUrl']  5
-  ${url}=  Get Element Attribute  xpath=//a[@tid='bid.participationUrl']@href
+  Wait For Element With Reload  css=a[tid='public.data.auctionUrl']  7  # было xpath=//a[@tid='bid.participationUrl']  5
+  ${url}=  Get Element Attribute  css=a[tid='public.data.auctionUrl']@href  # было xpath=//a[@tid='bid.participationUrl']@href
   [Return]  ${url}
 
 
@@ -963,6 +972,7 @@ Check If Question Is Uploaded
 
 Дискваліфікувати постачальника
   [Arguments]  ${username}  ${tender_id}  ${award_num}  ${description}
+  debug
   ${status}=  Run Keyword And Return Status  Wait Until Element Is Visible  css=button[tid='btn.award.disqualify']  5
   Run Keyword If  ${status}  Дискваліфікувати з документом  ${award_num}
   ...  ELSE  Дискваліфікувати без документа  ${award_num}
@@ -985,7 +995,9 @@ Check If Question Is Uploaded
 
 Дискваліфікувати без документа
   [Arguments]  ${award_num}
+  debug
   Wait Until Element Is Visible  css=button[tid='btn.award.unsuccessful']  ${COMMONWAIT}
+  debug
   Click Button  css=button[tid='btn.award.unsuccessful']
   Wait For Ajax
   Reload Page
