@@ -783,27 +783,20 @@ Check If Question Is Uploaded
   Wait Until Element Is Visible  css=a[tid='btn.addFinLicenseDocs']  ${COMMONWAIT}
   Execute Javascript  document.querySelector("input[tid='finLicense']").className = ''
   Sleep  2s
-  debug
   Choose File  css=input[tid='finLicense']  ${financial_license_path}
-  debug
   Wait For Ajax
   Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
-  debug
   Click Button  css=div#bid button[tid='createBid']
   Wait For Ajax
-  debug
   Wait Until Element Is Visible  css=button[tid='saveAndConfirm']  ${COMMONWAIT}
-  debug
   Click Button  css=button[tid='saveAndConfirm']
   Wait For Ajax
   Wait Until Element Is Not Visible  css=button[tid='saveAndConfirm']
-  debug
   Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
 
 
 Подати цінову пропозицію для Insider
   Wait Until Element Is Enabled  css=button[tid='createBid']  ${COMMONWAIT}
-  debug
   Click Button  css=button[tid='createBid']
 
 
@@ -972,7 +965,6 @@ Check If Question Is Uploaded
 
 Дискваліфікувати постачальника
   [Arguments]  ${username}  ${tender_id}  ${award_num}  ${description}
-  debug
   ${status}=  Run Keyword And Return Status  Wait Until Element Is Visible  css=button[tid='btn.award.disqualify']  5
   Run Keyword If  ${status}  Дискваліфікувати з документом  ${award_num}
   ...  ELSE  Дискваліфікувати без документа  ${award_num}
@@ -995,9 +987,7 @@ Check If Question Is Uploaded
 
 Дискваліфікувати без документа
   [Arguments]  ${award_num}
-  debug
   Wait Until Element Is Visible  css=button[tid='btn.award.unsuccessful']  ${COMMONWAIT}
-  debug
   Click Button  css=button[tid='btn.award.unsuccessful']
   Wait For Ajax
   Reload Page
