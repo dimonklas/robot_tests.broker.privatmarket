@@ -1889,16 +1889,17 @@ Try To Search Complaint
     Reload Page
     Reload And Switch To Tab  3
     ${result_full}=  Отримати текст елемента  ${element_name}
-    ${work_string}=  Replace String  ${result_full}  ${SPACE},${SPACE}  ${SPACE}
-    ${work_string}=  Replace String  ${result_full}  ,${SPACE}  ${SPACE}
-    ${values_list}=  Split String  ${work_string}
-    ${day}=  Convert To String  ${values_list[0 + ${shift}]}
-    ${month}=  privatmarket_service.get_month_number  ${values_list[1 + ${shift}]}
-    ${month}=  Set Variable If  ${month} < 10  0${month}  ${month}
-    ${year}=  Convert To String  ${values_list[2 + ${shift}]}
-    ${time}=  Convert To String  ${values_list[3 + ${shift}]}
-    ${date}=  Convert To String  ${year}-${month}-${day} ${time}
-    ${result}=  privatmarket_service.get_time_with_offset  ${date}
+    ${result}=  privatmarket_service.get_time_with_offset_formatted  ${result_full}  %d.%m.%Y %H:%M  %Y-%m-%d %H:%M:%S.%f%z
+    #    ${work_string}=  Replace String  ${result_full}  ${SPACE},${SPACE}  ${SPACE}
+#    ${work_string}=  Replace String  ${result_full}  ,${SPACE}  ${SPACE}
+#    ${values_list}=  Split String  ${work_string}
+#    ${day}=  Convert To String  ${values_list[0 + ${shift}]}
+#    ${month}=  privatmarket_service.get_month_number  ${values_list[1 + ${shift}]}
+#    ${month}=  Set Variable If  ${month} < 10  0${month}  ${month}
+#    ${year}=  Convert To String  ${values_list[2 + ${shift}]}
+#    ${time}=  Convert To String  ${values_list[3 + ${shift}]}
+#    ${date}=  Convert To String  ${year}-${month}-${day} ${time}
+#    ${result}=  privatmarket_service.get_time_with_offset  ${date}
     [Return]  ${result}
 
 
@@ -2598,7 +2599,14 @@ Get Item Number
     \  Click Element  xpath=(//ul[@class='dropdown-menu btn-feature-dropdown-menu'])[${item}]/li[1]
     \  Sleep  1s
 
-    Run Keyword Unless  'Неможливість' in '${TEST_NAME}'  Wait Element Visibility And Input Text  css=input[id^='userprice-lot']  ${value_amount}
+#    Run Keyword Unless  'Неможливість' in '${TEST_NAME}'  Wait Element Visibility And Input Text  css=input[id^='userprice-lot']  ${value_amount}
+
+    ${scenarios_name}=  privatmarket_service.get_scenarios_name
+    Run Keyword If  'Неможливість' in '${TEST_NAME}'  Wait Visibility And Click Element  css=.checkbox-container label
+    ...  ELSE IF  'dialogue' in '${scenarios_name}'  Wait Visibility And Click Element  css=.checkbox-container label
+    ...  ELSE  Wait Element Visibility And Input Text  css=input[id^='userprice-lot']  ${value_amount}
+
+
 
     Click Button  css=button[data-id='save-bid-btn']
     Wait For Ajax
@@ -2777,7 +2785,9 @@ Get Item Number
 
 Задати запитання на предмет
     [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${question}
-    privatmarket.Задати запитання на лот  ${username}  ${tender_uaid}  ${lot_id}=${item_id}  ${question}
+    Відкрити детальну інформацію по позиціям
+    Wait Visibility And Click Element  xpath=//div[@class='lot-info']//section[contains(., '${item_id}')]//a[@ng-click='act.sendItemEnquiry(adb.id)']
+    Заповнити форму запитання  ${question}
 
 
 Перевести тендер на статус очікування обробки мостом
