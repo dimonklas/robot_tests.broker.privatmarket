@@ -233,12 +233,12 @@ def get_claim_status (status):
     type_dictionary = {
         u'Вiдправлено': 'claim',
         u'Отримано вiдповiдь': 'answered',
-        u'Вирiшена': 'resolved',
+        u'Задоволено': 'resolved', # было u'Вирiшена'
         u'Скасована': 'cancelled',
         u'Не вирiшена, обробляється': 'pending',
         u'Залишена без відповіді': 'ignored',
-        u'Вiдхилена': 'declined',
-        u'Недiйсна': 'invalid'
+        u'Не задоволено': 'declined', # было u'Вiдхилена'
+        u'Вимога відхилена': 'invalid' # u'Недiйсна'
     }
     type_name = type_dictionary.get(status)
     return type_name
