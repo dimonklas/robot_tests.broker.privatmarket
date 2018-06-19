@@ -1448,9 +1448,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     ...  ELSE IF  '${test_case_name}' == 'Відображення статусу resolved вимоги про виправлення умов лоту'  Search by status  ${element}[contains(@data-status,'resolved')]  3
     ...  ELSE IF  '${test_case_name}' == 'Відображення кінцевих статусів двох останніх вимог' and '${award_index}' == '0'  Search by status  ${element}[contains(@data-status,'invalid')]  3
     ...  ELSE IF  '${test_case_name}' == 'Відображення кінцевих статусів двох останніх вимог' and '${award_index}' == 'none'  Search by status  ${element}[contains(@data-status,'declined')]  3
-
     ...  ELSE  run keyword  Search by status  ${element}  3
-
     ${result_full}=  Get Text  ${element}
     ${result}=  Strip String  ${result_full}
     Run Keyword And Return If  '${field_name}' == 'status'  privatmarket_service.get_claim_status  ${result}
