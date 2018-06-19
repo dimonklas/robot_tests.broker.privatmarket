@@ -923,6 +923,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
     #откроем нужную вкладку
     Run Keyword If  'переговорної процедури' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_2 a
+    ...  ELSE IF  'додати документацію до звіту' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_2 a
     ...  ELSE  Wait Visibility And Click Element  css=#tab_3 a
 
     #загрузим файл
@@ -1444,6 +1445,8 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     ...  ELSE IF  '${test_case_name}' == 'Відображення статусу resolved вимоги про виправлення умов закупівлі'  Search by status  ${element}[contains(@data-status,'resolved')]  3
     ...  ELSE IF  '${test_case_name}' == 'Відображення статусу answered вимоги про виправлення умов лоту'  Search by status  ${element}[contains(@data-status,'answered')]  3
     ...  ELSE IF  '${test_case_name}' == 'Відображення статусу resolved вимоги про виправлення умов лоту'  Search by status  ${element}[contains(@data-status,'resolved')]  3
+    ...  ELSE IF  '${test_case_name}' == 'Відображення кінцевих статусів двох останніх вимог' and '${award_index}' == '0'  Search by status  ${element}[contains(@data-status,'invalid')]  3
+    ...  ELSE IF  '${test_case_name}' == 'Відображення кінцевих статусів двох останніх вимог' and '${award_index}' == 'none'  Search by status  ${element}[contains(@data-status,'declined')]  3
     ...  ELSE  run keyword  Search by status  ${element}  3
     ${result_full}=  Get Text  ${element}
     ${result}=  Strip String  ${result_full}
@@ -1475,7 +1478,7 @@ Try To Search Complaint
 
 Отримати resolutionType
     [Arguments]  ${text}
-    ${text}=  Set Variable If  'Рішення замовника: вирiшена' in '${text}'  resolved
+    ${text}=  Set Variable If  'Рішення замовника: задоволено' in '${text}'  resolved
     [Return]  ${text}
 
 
