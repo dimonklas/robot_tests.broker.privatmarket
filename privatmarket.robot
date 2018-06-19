@@ -1478,7 +1478,7 @@ Try To Search Complaint
 
 Отримати resolutionType
     [Arguments]  ${text}
-    ${text}=  Set Variable If  'Рішення замовника: задоволено' in '${text}'  resolved  # было 'Рішення замовника: вирiшена'
+    ${text}=  Set Variable If  'Рішення замовника: задоволено' in '${text}'  resolved
     [Return]  ${text}
 
 
