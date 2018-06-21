@@ -99,10 +99,10 @@ ${tender_data_complaint.complaintID}  //span[@data-id='complaint-id']
 ${tender_data_complaint.status}  //span[contains(@id, 'cmplStatus')]
 ${tender_data_complaint.resolutionType}  //div[contains(@ng-if,"resolutionType")]
 ${tender_data_complaint.resolution}  //div[@class="question-answer title ng-scope"]//div[@class="question-div"]/div[1]
-${tender_data_complaint.satisfied}  //span[contains(@data-id, 'satisfied')]
+${tender_data_complaint.satisfied}  //span[contains(@data-id, 'satisfied') and contains(text(),'так')]  # Дописано дополнительное условие на содержание текста "так"
 ${tender_data_complaint.cancellationReason}  //*[@description='q.cancellationReason']/div/div[1]
 ${tender_data_complaint.title}  //span[contains(@class, 'claimHead')]
-${tender_data_complaint.description}  //div[@class='question-div']
+${tender_data_complaint.description}  //*[@description='q.description']//div[@class='question-div']/div[1]  # было //span[contains(@class, 'claimHead')]
 ${tender_data_complaintPeriod.endDate}  css=#cmplPeriodEnd
 
 ${tender_data_procuringEntity.address.countryName}  css=.delivery-info-container [data-id='address.countryName']
@@ -1448,6 +1448,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     ...  ELSE IF  '${test_case_name}' == 'Відображення статусу resolved вимоги про виправлення умов лоту'  Search by status  ${element}[contains(@data-status,'resolved')]  3
     ...  ELSE IF  '${test_case_name}' == 'Відображення кінцевих статусів двох останніх вимог' and '${award_index}' == '0'  Search by status  ${element}[contains(@data-status,'invalid')]  3
     ...  ELSE IF  '${test_case_name}' == 'Відображення кінцевих статусів двох останніх вимог' and '${award_index}' == 'none'  Search by status  ${element}[contains(@data-status,'declined')]  3
+    ...  ELSE IF  '${test_case_name}' == 'Відображення статусу stopping скарги про виправлення визначення переможця'  Search by status  ${element}[contains(@data-status,'stopping')]  3
     ...  ELSE  run keyword  Search by status  ${element}  3
     ${result_full}=  Get Text  ${element}
     ${result}=  Strip String  ${result_full}
@@ -2356,6 +2357,7 @@ Get Item Number
     Switch To Tab  1
     Відкрити детальну інформацію по лотам
     Wait Visibility And Click Element  css=a[tooltip='Подати вимогу на даний лот']
+    Wait Visibility And Click Element  xpath=//button[@data-id='btn-send-claim']  #Добавлен выбор кнопки ""
     Wait Element Visibility And Input Text  css=#titleComplaint  ${claim.data.title}
     Wait Element Visibility And Input Text  css=#descriptionComplaint  ${claim.data.description}
     Run Keyword And Ignore Error  Choose File  css=input[id='fileToUpload']  ${document}
