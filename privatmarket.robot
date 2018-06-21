@@ -552,6 +552,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Run Keyword IF
     ...  ${type} == 'aboveThresholdEU'  Додати нецінові показники  ${features}  ${type}
     ...  ELSE IF  ${type} == 'aboveThresholdUA'  Додати нецінові показники  ${features}  ${type}
+    ...  ELSE IF  'competitiveDialogue' in ${type}  Додати нецінові показники  ${features}  ${type}
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
 #step 4
@@ -1535,7 +1536,7 @@ Try To Search Complaint
 
 Отримати інформацію із документа до скарги
     [Arguments]  ${username}  ${tender_uaid}  ${complaintID}  ${doc_id}  ${field}
-    ${element} =  Set Variable  xpath=//a[contains(.,"Показати вкладені файли")]
+    ${element} =  Set Variable  xpath=//a[contains(.,'Показати вкладені файли') and not(contains(., '(0)'))]
     Показати вкладені файли  ${element}
     ${element_new}=  Set Variable  xpath=(//div[contains(@title,'${doc_id}')])
     Wait Until Element Is Visible  xpath=(//div[contains(@title,'${doc_id}')])
@@ -1545,7 +1546,7 @@ Try To Search Complaint
 
 Показати вкладені файли
      [Arguments]  ${element}
-     ${status}=  Run Keyword And Return Status  Wait Until Element Is Visible  ${element}  20s
+     ${status}=  Run Keyword And Return Status  Wait For Element With Reload  ${element}  3  2
      Run Keyword If  '${status}' == 'True'  Click Element  ${element}
 
 
