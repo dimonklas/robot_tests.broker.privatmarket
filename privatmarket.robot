@@ -2606,11 +2606,9 @@ Get Item Number
 #    Run Keyword Unless  'Неможливість' in '${TEST_NAME}'  Wait Element Visibility And Input Text  css=input[id^='userprice-lot']  ${value_amount}
 
     ${scenarios_name}=  privatmarket_service.get_scenarios_name
-    Run Keyword If  'Неможливість' in '${TEST_NAME}'  Wait Visibility And Click Element  css=.checkbox-container label
-    ...  ELSE IF  'dialogue' in '${scenarios_name}'  Wait Visibility And Click Element  css=.checkbox-container label
+    Run Keyword If  'Неможливість' in '${TEST_NAME}'  Відмітити лот
+    ...  ELSE IF  'dialogue' in '${scenarios_name}'  Відмітити лот
     ...  ELSE  Wait Element Visibility And Input Text  css=input[id^='userprice-lot']  ${value_amount}
-
-
 
     Click Button  css=button[data-id='save-bid-btn']
     Wait For Ajax
@@ -2639,6 +2637,11 @@ Get Item Number
     Sleep  1s
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']
     Sleep  60s
+
+
+Відмітити лот
+    Execute Javascript  document.querySelector(".checkbox-container input").style = 'display:block'
+    Wait Visibility And Click Element  css=.checkbox-container input
 
 
 Отримати інформацію із пропозиції
