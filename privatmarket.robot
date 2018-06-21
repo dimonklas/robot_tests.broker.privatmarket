@@ -99,10 +99,10 @@ ${tender_data_complaint.complaintID}  //span[@data-id='complaint-id']
 ${tender_data_complaint.status}  //span[contains(@id, 'cmplStatus')]
 ${tender_data_complaint.resolutionType}  //div[contains(@ng-if,"resolutionType")]
 ${tender_data_complaint.resolution}  //div[@class="question-answer title ng-scope"]//div[@class="question-div"]/div[1]
-${tender_data_complaint.satisfied}  //span[contains(@data-id, 'satisfied') and contains(text(),'так')]  # Дописано дополнительное условие на содержание текста "так"
+${tender_data_complaint.satisfied}  //span[contains(@data-id, 'satisfied') and contains(text(),'так')]
 ${tender_data_complaint.cancellationReason}  //*[@description='q.cancellationReason']/div/div[1]
 ${tender_data_complaint.title}  //span[contains(@class, 'claimHead')]
-${tender_data_complaint.description}  //*[@description='q.description']//div[@class='question-div']/div[1]  # было //span[contains(@class, 'claimHead')]
+${tender_data_complaint.description}  //*[@description='q.description']//div[@class='question-div']/div[1]
 ${tender_data_complaintPeriod.endDate}  css=#cmplPeriodEnd
 
 ${tender_data_procuringEntity.address.countryName}  css=.delivery-info-container [data-id='address.countryName']
