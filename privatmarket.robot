@@ -614,8 +614,8 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 Додати item до лоту
     [Arguments]  ${items}  ${items_count}  ${lot_index}  ${index}  ${type}
     ${item_index}=  privatmarket_service.sum_of_numbers  ${index}  1
-    ${is_click}=  is_click_button  ${item_index}  ${lot_index}
-
+    # ${is_click}=  is_click_button  ${item_index}  ${lot_index}
+    ${is_click}=  is_click_button  ${item_index}  ${items_count}
     Run Keyword If  '${is_click}' == 'true'  Wait Visibility And Click Element  xpath=(//button[@data-id='actAddItem'])[${lot_index}]
     Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//input[@data-id='description'])[${item_index}]  ${items[${index}].description}
     Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//input[@data-id='quantity'])[${item_index}]  ${items[${index}].quantity}
@@ -1820,7 +1820,7 @@ Try To Search Complaint
 
 Отримати інформацію з procurementMethodType
     [Arguments]  ${element}
-    ${type}=  Отримати текст елемента  xpath=//div[@class='info-item']//div[2]//span[1]
+    ${type}=  Отримати текст елемента  xpath=//span[@data-id='tender-type']  # было xpath=//div[@class='info-item']//div[2]//span[1]
     ${type}=  get_procurementMethod_Type  ${type}
     [Return]  ${type}
 
