@@ -85,7 +85,6 @@ ${tender_data_lot.minimalStep.valueAddedTaxIncluded}  //div[@id='lotMinStepTax']
 ${tender_data_question.title}  //span[contains(@class, 'question-title')])
 ${tender_data_question.description}  //div[@class='question-div']/div[1])
 ${tender_data_question.answer}  //div[@data-id='tender-question-answer']//div[@class='question-div']/div[1])
-
 ${tender_data_lot_question.title}  //span[contains(@class, 'question-title')]
 ${tender_data_lot_question.description}  //div[@class='question-div']/div[1]
 ${tender_data_lot_question.answer}  //div[@data-id='lot-question-answer']//div[@class='question-div']/div[1]
@@ -614,8 +613,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 Додати item до лоту
     [Arguments]  ${items}  ${items_count}  ${lot_index}  ${index}  ${type}
     ${item_index}=  privatmarket_service.sum_of_numbers  ${index}  1
-    ${is_click}=  is_click_button  ${item_index}  ${lot_index}
-
+    ${is_click}=  is_click_button  ${item_index}  ${items_count}
     Run Keyword If  '${is_click}' == 'true'  Wait Visibility And Click Element  xpath=(//button[@data-id='actAddItem'])[${lot_index}]
     Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//input[@data-id='description'])[${item_index}]  ${items[${index}].description}
     Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//input[@data-id='quantity'])[${item_index}]  ${items[${index}].quantity}
@@ -1066,10 +1064,10 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Run Keyword If  '${status}' == 'False'  privatmarket.Пошук тендера по ідентифікатору  ${user_name}  ${tender_uaid}
     Reload And Switch To Tab  1
     Wait Until Element Is Visible  ${tender_data_title}  ${COMMONWAIT}
-    Run Keyword Unless  'award_view' in @{TEST_TAGS} or 'add_contract' in @{TEST_TAGS}  Відкрити детальну інформацію по позиціям
+    Run Keyword Unless  'award_view' in @{TEST_TAGS} or 'add_contract' in @{TEST_TAGS} or 'contract_view' in @{TEST_TAGS}  Відкрити детальну інформацію по позиціям
     #get information
     ${result}=  Run Keyword If
-    ...  'award_view' in @{TEST_TAGS} or 'add_contract' in @{TEST_TAGS}  Отримати інформацію про постачальника  ${tender_uaid}  ${field_name}
+    ...  'award_view' in @{TEST_TAGS} or 'add_contract' in @{TEST_TAGS} or 'contract_view' in @{TEST_TAGS}  Отримати інформацію про постачальника  ${tender_uaid}  ${field_name}
     ...  ELSE  Отримати інформацію зі сторінки  ${user_name}  ${tender_uaid}  ${field_name}
     [Return]  ${result}
 
@@ -1820,7 +1818,7 @@ Try To Search Complaint
 
 Отримати інформацію з procurementMethodType
     [Arguments]  ${element}
-    ${type}=  Отримати текст елемента  xpath=//div[@class='info-item']//div[2]//span[1]
+    ${type}=  Отримати текст елемента  xpath=//*[@data-id='tender-type']
     ${type}=  get_procurementMethod_Type  ${type}
     [Return]  ${type}
 
