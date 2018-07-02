@@ -248,7 +248,6 @@ def get_claim_status (status):
 def get_procurementMethod_Type (type):
     type_dictionary = {
         u'Конкурентний діалог з публікацією англійською мовою 1-ий етап': 'competitiveDialogueEU',
-        # u'Конкурентний діалог': 'competitiveDialogueUA',
         u'Конкурентний діалог 1-ий етап': 'competitiveDialogueUA',
         u'Переговорна процедура для потреб оборони': 'aboveThresholdUA.defense'
     }
@@ -328,13 +327,6 @@ def get_scenarios_name():
         if 'txt' in param:
             name = param
     return name
-
-
-# def is_click_button(lot_index, item_index):
-#     status = 'true'
-#     if int(item_index) == 1 and int(lot_index) == 1:
-#         return 'false'
-#     return status
 
 
 def is_click_button(item_index, items_count):
