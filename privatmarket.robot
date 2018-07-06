@@ -133,6 +133,7 @@ ${tender_data_awards[0].suppliers[0].name}  css=.participant-info-block [data-id
 ${tender_data_awards[0].value.valueAddedTaxIncluded}  css=.participant-info-block [data-id='value.valueAddedTaxIncluded']
 ${tender_data_awards[0].value.currency}  css=.participant-info-block [data-id='value.currency']
 ${tender_data_awards[0].value.amount}  css=.participant-info-block [data-id='value.amount']
+${tender_data_awards[1].value.amount}  css=.participant-info-block [data-id='value.amount']
 ${tender_data_contracts[0].status}  css=#contractStatus
 ${tender_data_features[0].title}  xpath=//div[@class='no-price']//span[@data-id='feature.title']
 
@@ -548,9 +549,10 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 
 #step 3
     Wait For Ajax
+    ${exist_features}=  Run Keyword And Return Status  Should not be empty  ${features}
     Run Keyword IF
     ...  ${type} == 'aboveThresholdEU'  Додати нецінові показники  ${features}  ${type}
-    ...  ELSE IF  ${type} == 'aboveThresholdUA'  Додати нецінові показники  ${features}  ${type}
+    ...  ELSE IF  ${type} == 'aboveThresholdUA' and ${exist_features}  Додати нецінові показники  ${features}  ${type}
     ...  ELSE IF  'competitiveDialogue' in ${type}  Додати нецінові показники  ${features}  ${type}
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
@@ -1193,7 +1195,8 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Run Keyword And Return If  '${field_name}' == 'description_ru'  Отримати інформацію зі зміною локалізації  ${field_name}  RU
     Run Keyword And Return If  '${field_name}' == 'causeDescription'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'cause'  Отримати інформацію з ${field_name}  ${field_name}
-    Run Keyword And Return If  '${field_name}' == 'awards[0].complaintPeriod.endDate'  Отримати інформацію з ${field_name}  1
+    Run Keyword And Return If  '${field_name}' == 'awards[0].complaintPeriod.endDate' or '${field_name}' == 'awards[1].complaintPeriod.endDate'  Отримати інформацію з awadrs.complaintPeriod.endDate
+#    Run Keyword And Return If  '${field_name}' == 'awards[0].complaintPeriod.endDate'  Отримати інформацію з ${field_name}  1
     Run Keyword And Return If  '${field_name}' == 'procurementMethodType'  Отримати інформацію з ${field_name}  1
     Run Keyword And Return If  '${field_name}' == 'complaintPeriod.endDate'  Отримати інформацію з ${field_name}  ${field_name}  0
     Run Keyword And Return If  '${field_name}' == 'items[0].deliveryDate.startDate'  Отримати дату та час  ${field_name}
@@ -1364,7 +1367,8 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Run Keyword And Return If  '${field_name}' == 'awards[0].status'  Отримати статус заявки  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'awards[0].value.valueAddedTaxIncluded'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'awards[0].value.currency'  Отримати інформацію з ${field_name}  ${field_name}
-    Run Keyword And Return If  '${field_name}' == 'awards[0].value.amount'  Отримати інформацію з ${field_name}  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'awards[0].value.amount' or '${field_name}' == 'awards[1].value.amount'  Отримати інформацію з awards.value.amount  ${field_name}
+    #Run Keyword And Return If  '${field_name}' == 'awards[0].value.amount'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'contracts[0].status'  Отримати статус договору  ${field_name}
 
     Wait Until Element Is Visible  ${tender_data_${field_name}}  ${COMMONWAIT}
@@ -1663,6 +1667,15 @@ Try To Search Complaint
     [Return]  ${currency_type}
 
 
+Отримати інформацію з awards.value.amount
+    [Arguments]  ${element_name}
+    ${text}=  Отримати текст елемента  ${element_name}
+    ${text_new}=  Strip String  ${text}
+    ${text_new}=  Replace String  ${text_new}  ${SPACE}  ${EMPTY}
+    ${result}=  convert to number  ${text_new}
+    [Return]  ${result}
+
+
 Отримати інформацію з awards[0].value.amount
     [Arguments]  ${element_name}
     ${text}=  Отримати текст елемента  ${element_name}
@@ -1873,6 +1886,17 @@ Try To Search Complaint
     Unselect Frame
     Wait Visibility And Click Element  xpath=//*[@id='langMenu']
     Wait Visibility And Click Element  xpath=//li[contains(text(),'UK')]
+    [Return]  ${result}
+
+
+Отримати інформацію з awadrs.complaintPeriod.endDate
+    Reload Page
+    ${class}=  Get Element Attribute  xpath=(//a[contains(@ng-class, 'lot-parts')])[1]@class
+    Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=(//a[contains(@ng-class, 'lot-parts')])[1]
+    Wait For Element With Reload  xpath=//a[contains(., 'Переможець')]  1
+    ${title}=  Get Element Attribute  xpath=//a[contains(., 'Переможець')]@title
+    ${date}=  privatmarket_service.get_match_from_string  ${title}  до (.+)  1
+    ${result}=  privatmarket_service.get_time_with_offset_formatted  ${date}  %d.%m.%Y %H:%M  %Y-%m-%d %H:%M:%S.%f%z
     [Return]  ${result}
 
 
@@ -2119,6 +2143,7 @@ Try Search Element
     ...  ELSE IF  '${tab_number}' == '1' and 'пропозицію кваліфікації' in '${TEST_NAME}'  Wait Visibility And Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
     ...  ELSE IF  '${tab_number}' == '1' and 'вичитати посилання на аукціон' in '${TEST_NAME}'  Відкрити модальне вікно з посиланням на аукціон
     ...  ELSE IF  '${tab_number}' == '1' and 'дочекатися завершення аукціону' in '${TEST_NAME}'  Відкрити модальне вікно з посиланням на аукціон
+    ...  ELSE IF  '${tab_number}' == '1' and 'періоду подачі скарг на пропозицію' in '${TEST_NAME}'  Відкрити детальну інформацію про постачальника
     ...  ELSE IF  '${tab_number}' == '1'  Відкрити детальну інформацію по позиціям
     ...  ELSE IF  '${tab_number}' == '2' and 'відповіді на запитання' in '${TEST_NAME}'  Відкрити повну відповідь на запитання
     ...  ELSE IF  '${tab_number}' == '3' and 'заголовку документації' in '${TEST_NAME}'  Відкрити інформацію про вкладені файли вимоги
