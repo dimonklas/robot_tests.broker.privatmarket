@@ -2335,8 +2335,43 @@ Get Item Number
     Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'lot-parts')]
     ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'lot-parts')]@class
     Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
+    debug
+    Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
+    Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
+    debug
     Wait Visibility And Click Element  xpath=//div[@class='award-section award-actions ng-scope']//button[@data-id='setActive']
+    Sleep  1s
+    Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]
+
+    Reload Page
+    Run Keyword If  'openua_award_complaint' in '${suite_name}'
+    ...  Run Keywords
+    ...  Wait Visibility And Click Element  xpath=(//img[contains(@ng-src,'icon-plus')])[last()]
+    ...  AND  Wait Visibility And Click Element  xpath=//div[contains(text(),'Пiдпис замовника')]/following-sibling::div[@data-id='no-ecp']
+    ...  AND  Завантажити ЕЦП
+    Reload Page
     Sleep  180s
+
+
+Завантажити ЕЦП
+    debug
+    Select Window  title=sign worker
+    debug
+    Wait Until Element Is Visible  css=#CAsServersSelect
+    Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[8]
+    debug
+    ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/boss.jks
+    Choose File  id=PKeyFileInput  ${path}
+    debug
+    Wait Element Visibility And Input Text  id=PKeyPassword  1111111111
+    Wait Visibility And Click Element  id=PKeyReadButton
+    Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'Ключ успішно завантажено')]
+    debug
+    Wait Visibility And Click Element  id=SignDataButton
+    Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'ok')]
+    Close Window
+    debug
+    Select Window
 
 
 Звiрити value of title на сторінці редагуванння
