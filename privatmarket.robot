@@ -915,6 +915,40 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
 
 
+Видалити донора
+    [Arguments]  ${user_name}  ${tenderId}  ${funders_index}
+    privatmarket.Пошук тендера по ідентифікатору  ${tender_owner}  ${tenderId}
+    Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
+    Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
+    Wait For Ajax
+    Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
+    Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
+    Wait Visibility And Click Element  xpath=//select[@data-id='funder']/option[@value='none']
+    Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
+    Wait For Ajax
+    Wait Visibility And Click Element  css=#tab_4 a
+    Wait For Ajax
+    Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
+    Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
+
+
+Додати донора
+    [Arguments]  ${user_name}  ${tenderId}  ${funders_data}
+    privatmarket.Пошук тендера по ідентифікатору  ${tender_owner}  ${tenderId}
+    Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
+    Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
+    Wait For Ajax
+    Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
+    Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
+    Wait Visibility And Click Element  xpath=//select[@data-id='funder']/option[@value='${funders_data.identifier.id}']
+    Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
+    Wait For Ajax
+    Wait Visibility And Click Element  css=#tab_4 a
+    Wait For Ajax
+    Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
+    Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
+
+
 Завантажити документ
     [Arguments]  ${user_name}  ${filepath}  ${tenderId}
     #перейдем к редактированию
@@ -1158,6 +1192,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Sleep  1s
     Choose File  xpath=//div[@class='form-block__item']/form/div/input  ${document}
     Sleep  5s
+    Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
     Wait Visibility And Click Element  css=button[data-id='setActive']
     Sleep  3min
 
