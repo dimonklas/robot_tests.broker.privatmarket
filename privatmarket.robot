@@ -466,11 +466,11 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 
     Wait For Ajax
     Run Keyword If
-    ...  ${type} == 'negotiation'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '1080')]
+    ...  ${type} == 'negotiation' or 'openua_award_complaint' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '1080')]
     ...  ELSE IF  ${type} == '' and 'before_resolved_award_complaint' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '720')]
     ...  ELSE IF  ${type} == '' and 'after_resolved_award_complaint' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '144')]
     ...  ELSE IF  ${type} == ''  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '1440')]
-    ...  ELSE IF  ${type} == 'reporting'  no operation  #если тип = reporting ничего не делать
+    ...  ELSE IF  ${type} == 'reporting'  no operation
     ...  ELSE  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '1440')]
 
 #step 0
@@ -1235,7 +1235,6 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Run Keyword And Return If  '${field_name}' == 'causeDescription'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'cause'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'awards[0].complaintPeriod.endDate' or '${field_name}' == 'awards[1].complaintPeriod.endDate'  Отримати інформацію з awadrs.complaintPeriod.endDate
-#    Run Keyword And Return If  '${field_name}' == 'awards[0].complaintPeriod.endDate'  Отримати інформацію з ${field_name}  1
     Run Keyword And Return If  '${field_name}' == 'procurementMethodType'  Отримати інформацію з ${field_name}  1
     Run Keyword And Return If  '${field_name}' == 'complaintPeriod.endDate'  Отримати інформацію з ${field_name}  ${field_name}  0
     Run Keyword And Return If  '${field_name}' == 'items[0].deliveryDate.startDate'  Отримати дату та час  ${field_name}
@@ -1407,7 +1406,6 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Run Keyword And Return If  '${field_name}' == 'awards[0].value.valueAddedTaxIncluded'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'awards[0].value.currency'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'awards[0].value.amount' or '${field_name}' == 'awards[1].value.amount'  Отримати інформацію з awards.value.amount  ${field_name}
-    #Run Keyword And Return If  '${field_name}' == 'awards[0].value.amount'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'contracts[0].status'  Отримати статус договору  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'contracts[0].period.startDate' or '${field_name}' == 'contracts[1].period.startDate'  Отримати інформацію з contracts.period.startDate  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'contracts[0].period.endDate' or '${field_name}' == 'contracts[1].period.endDate'  Отримати інформацію з contracts.period.endDate  ${field_name}
@@ -2370,16 +2368,18 @@ Get Item Number
     Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'lot-parts')]
     ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'lot-parts')]@class
     Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
-    debug
     Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
     Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
-    debug
     Wait Visibility And Click Element  xpath=//div[@class='award-section award-actions ng-scope']//button[@data-id='setActive']
     Sleep  1s
     Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]
 
     Reload Page
-    Run Keyword If  'openua_award_complaint' in '${suite_name}'
+    ${scenarios_name}=  privatmarket_service.get_scenarios_name
+    Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'lot-parts')]
+    ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'lot-parts')]@class
+    Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
+    Run Keyword If  'openua_award_complaint' in '${scenarios_name}'
     ...  Run Keywords
     ...  Wait Visibility And Click Element  xpath=(//img[contains(@ng-src,'icon-plus')])[last()]
     ...  AND  Wait Visibility And Click Element  xpath=//div[contains(text(),'Пiдпис замовника')]/following-sibling::div[@data-id='no-ecp']
@@ -2389,23 +2389,17 @@ Get Item Number
 
 
 Завантажити ЕЦП
-    debug
     Select Window  title=sign worker
-    debug
     Wait Until Element Is Visible  css=#CAsServersSelect
     Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[8]
-    debug
     ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/boss.jks
     Choose File  id=PKeyFileInput  ${path}
-    debug
     Wait Element Visibility And Input Text  id=PKeyPassword  1111111111
     Wait Visibility And Click Element  id=PKeyReadButton
     Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'Ключ успішно завантажено')]
-    debug
     Wait Visibility And Click Element  id=SignDataButton
     Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'ok')]
     Close Window
-    debug
     Select Window
 
 
@@ -2419,6 +2413,14 @@ Get Item Number
     [Arguments]  ${username}  ${tender_uaid}  ${claim}  ${document}=${None}
     Switch To Tab  3
     Wait Visibility And Click Element  css=#btnSendClaim
+    Заповнити поля вимоги/скарги  ${claim}
+    Reload And Switch To Tab  3
+    ${result}=  Get Text  xpath=(//span[@data-id='complaint-id'])[1]
+    [Return]  ${result}
+
+
+Заповнити поля вимоги/скарги
+    [Arguments]  ${claim}
     Wait Element Visibility And Input Text  css=#titleComplaint  ${claim.data.title}
     Wait Element Visibility And Input Text  css=#descriptionComplaint  ${claim.data.description}
     Run Keyword And Ignore Error  Choose File  css=input[id='fileToUpload']  ${document}
@@ -2439,34 +2441,13 @@ Get Item Number
     Wait Visibility And Click Element  xpath=//button[@data-id="btn-send-complaint"]
     Sleep  10s
     Wait Visibility And Click Element  xpath=//button[@data-id="btn-close"]
-    Reload And Switch To Tab  3
-    ${result}=  Get Text  xpath=(//span[@data-id='complaint-id'])[1]
-    [Return]  ${result}
 
 
 Створити чернетку вимоги про виправлення умов закупівлі
     [Arguments]  ${username}  ${tender_uaid}  ${claim}
     Switch To Tab  3
     Wait Visibility And Click Element  css=#btnSendClaim
-    Wait Element Visibility And Input Text  css=#titleComplaint  ${claim.data.title}
-    Wait Element Visibility And Input Text  css=#descriptionComplaint  ${claim.data.description}
-    Run Keyword And Ignore Error  Wait Visibility And Click Element  xpath=//select[@id='addressCountry']//option[@value='UA']
-    Wait Element Visibility And Input Text  css=#addressPostalCode  ${claim.data.author.address.postalCode}
-    Wait Element Visibility And Input Text  css=#addressRegion  ${claim.data.author.address.countryName}
-    Wait Element Visibility And Input Text  css=#addressLocality  ${claim.data.author.address.locality}
-    Wait Element Visibility And Input Text  css=#addressStreet  ${claim.data.author.address.streetAddress}
-    @{contactPoint} =  Split String  ${claim.data.author.contactPoint.name}
-    Wait Element Visibility And Input Text  css=#personSurname  @{contactPoint}[0]
-    Wait Element Visibility And Input Text  css=#personName  @{contactPoint}[1]
-    Wait Element Visibility And Input Text  css=#personPatronymic  @{contactPoint}[2]
-    ${telephone}=  Привести номер телефону до відповідного формату  ${claim.data.author.contactPoint.telephone}
-    Wait Element Visibility And Input Text  css=#personPhone  ${telephone}
-    ${faxNumber}=  Привести номер телефону до відповідного формату  ${claim.data.author.contactPoint.faxNumber}
-    Wait Element Visibility And Input Text  css=#personFax  ${faxNumber}
-    Wait Element Visibility And Input Text  css=#personEmail  ${claim.data.author.contactPoint.email}
-    Wait Visibility And Click Element  xpath=//button[@data-id="btn-send-complaint"]
-    Sleep  10s
-    Wait Visibility And Click Element  xpath=//button[@data-id="btn-close"]
+    Заповнити поля вимоги/скарги  ${claim}
     Reload And Switch To Tab  3
     ${result}=  Get Text  xpath=(//span[@data-id='complaint-id'])[1]
     [Return]  ${result}
@@ -2477,27 +2458,8 @@ Get Item Number
     Switch To Tab  1
     Відкрити детальну інформацію по лотам
     Wait Visibility And Click Element  css=a[tooltip='Подати вимогу на даний лот']
-    Wait Visibility And Click Element  xpath=//button[@data-id='btn-send-claim']  #Добавлен выбор кнопки ""
-    Wait Element Visibility And Input Text  css=#titleComplaint  ${claim.data.title}
-    Wait Element Visibility And Input Text  css=#descriptionComplaint  ${claim.data.description}
-    Run Keyword And Ignore Error  Choose File  css=input[id='fileToUpload']  ${document}
-    Run Keyword And Ignore Error  Wait Visibility And Click Element  xpath=//select[@id='addressCountry']//option[@value='UA']
-    Wait Element Visibility And Input Text  css=#addressPostalCode  ${claim.data.author.address.postalCode}
-    Wait Element Visibility And Input Text  css=#addressRegion  ${claim.data.author.address.countryName}
-    Wait Element Visibility And Input Text  css=#addressLocality  ${claim.data.author.address.locality}
-    Wait Element Visibility And Input Text  css=#addressStreet  ${claim.data.author.address.streetAddress}
-    @{contactPoint} =  Split String  ${claim.data.author.contactPoint.name}
-    Wait Element Visibility And Input Text  css=#personSurname  @{contactPoint}[0]
-    Wait Element Visibility And Input Text  css=#personName  @{contactPoint}[1]
-    Wait Element Visibility And Input Text  css=#personPatronymic  @{contactPoint}[2]
-    ${telephone}=  Привести номер телефону до відповідного формату  ${claim.data.author.contactPoint.telephone}
-    Wait Element Visibility And Input Text  css=#personPhone  ${telephone}
-    ${faxNumber}=  Привести номер телефону до відповідного формату  ${claim.data.author.contactPoint.faxNumber}
-    Wait Element Visibility And Input Text  css=#personFax  ${faxNumber}
-    Wait Element Visibility And Input Text  css=#personEmail  ${claim.data.author.contactPoint.email}
-    Wait Visibility And Click Element  xpath=//button[@data-id='btn-send-complaint']
-    Sleep  10s
-    Wait Visibility And Click Element  xpath=//button[@data-id='btn-close']
+    Wait Visibility And Click Element  xpath=//button[@data-id='btn-send-claim']
+    Заповнити поля вимоги/скарги  ${claim}
     Reload And Switch To Tab  3
     ${result}=  Get Text  xpath=(//span[@data-id='complaint-id'])[1]
     [Return]  ${result}
@@ -2508,25 +2470,7 @@ Get Item Number
     Switch To Tab  1
     Відкрити детальну інформацію по лотам
     Wait Visibility And Click Element  css=a[tooltip='Подати вимогу на даний лот']
-    Wait Element Visibility And Input Text  css=#titleComplaint  ${claim.data.title}
-    Wait Element Visibility And Input Text  css=#descriptionComplaint  ${claim.data.description}
-    Run Keyword And Ignore Error  Wait Visibility And Click Element  xpath=//select[@id='addressCountry']//option[@value='UA']
-    Wait Element Visibility And Input Text  css=#addressPostalCode  ${claim.data.author.address.postalCode}
-    Wait Element Visibility And Input Text  css=#addressRegion  ${claim.data.author.address.countryName}
-    Wait Element Visibility And Input Text  css=#addressLocality  ${claim.data.author.address.locality}
-    Wait Element Visibility And Input Text  css=#addressStreet  ${claim.data.author.address.streetAddress}
-    @{contactPoint} =  Split String  ${claim.data.author.contactPoint.name}
-    Wait Element Visibility And Input Text  css=#personSurname  @{contactPoint}[0]
-    Wait Element Visibility And Input Text  css=#personName  @{contactPoint}[1]
-    Wait Element Visibility And Input Text  css=#personPatronymic  @{contactPoint}[2]
-    ${telephone}=  Привести номер телефону до відповідного формату  ${claim.data.author.contactPoint.telephone}
-    Wait Element Visibility And Input Text  css=#personPhone  ${telephone}
-    ${faxNumber}=  Привести номер телефону до відповідного формату  ${claim.data.author.contactPoint.faxNumber}
-    Wait Element Visibility And Input Text  css=#personFax  ${faxNumber}
-    Wait Element Visibility And Input Text  css=#personEmail  ${claim.data.author.contactPoint.email}
-    Wait Visibility And Click Element  xpath=//button[@data-id='btn-send-complaint']
-    Sleep  10s
-    Wait Visibility And Click Element  xpath=//button[@data-id='btn-close']
+    Заповнити поля вимоги/скарги  ${claim}
     Reload And Switch To Tab  3
     ${result}=  Get Text  xpath=(//span[@data-id='complaint-id'])[1]
     [Return]  ${result}
@@ -2544,26 +2488,7 @@ Get Item Number
     Sleep  1
     Wait Visibility And Click Element  css=button[data-id='btn-send-complaint']
     Sleep  1
-    Wait Element Visibility And Input Text  css=#titleComplaint  ${claim.data.title}
-    Wait Element Visibility And Input Text  css=#descriptionComplaint  ${claim.data.description}
-    Run Keyword And Ignore Error  Choose File  css=input[id='fileToUpload']  ${document}
-    Run Keyword And Ignore Error  Wait Visibility And Click Element  xpath=//select[@id='addressCountry']//option[@value='UA']
-    Wait Element Visibility And Input Text  css=#addressPostalCode  ${claim.data.author.address.postalCode}
-    Wait Element Visibility And Input Text  css=#addressRegion  ${claim.data.author.address.countryName}
-    Wait Element Visibility And Input Text  css=#addressLocality  ${claim.data.author.address.locality}
-    Wait Element Visibility And Input Text  css=#addressStreet  ${claim.data.author.address.streetAddress}
-    @{contactPoint} =  Split String  ${claim.data.author.contactPoint.name}
-    Wait Element Visibility And Input Text  css=#personSurname  @{contactPoint}[0]
-    Wait Element Visibility And Input Text  css=#personName  @{contactPoint}[1]
-    Wait Element Visibility And Input Text  css=#personPatronymic  @{contactPoint}[2]
-    ${telephone}=  Привести номер телефону до відповідного формату  ${claim.data.author.contactPoint.telephone}
-    Wait Element Visibility And Input Text  css=#personPhone  ${telephone}
-    ${faxNumber}=  Привести номер телефону до відповідного формату  ${claim.data.author.contactPoint.faxNumber}
-    Wait Element Visibility And Input Text  css=#personFax  ${faxNumber}
-    Wait Element Visibility And Input Text  css=#personEmail  ${claim.data.author.contactPoint.email}
-    Wait Visibility And Click Element  xpath=//button[@data-id="btn-send-complaint"]
-    Sleep  10s
-    Wait Visibility And Click Element  xpath=//button[@data-id="btn-close"]
+    Заповнити поля вимоги/скарги  ${claim}
     Reload And Switch To Tab  3
     ${result}=  Get Text  xpath=(//span[@data-id='complaint-id'])[1]
     [Return]  ${result}
@@ -2581,26 +2506,7 @@ Get Item Number
     Sleep  1
     Wait Visibility And Click Element  css=button[data-id='btn-send-claim']
     Sleep  1
-    Wait Element Visibility And Input Text  css=#titleComplaint  ${claim.data.title}
-    Wait Element Visibility And Input Text  css=#descriptionComplaint  ${claim.data.description}
-    Run Keyword And Ignore Error  Choose File  css=input[id='fileToUpload']  ${document}
-    Run Keyword And Ignore Error  Wait Visibility And Click Element  xpath=//select[@id='addressCountry']//option[@value='UA']
-    Wait Element Visibility And Input Text  css=#addressPostalCode  ${claim.data.author.address.postalCode}
-    Wait Element Visibility And Input Text  css=#addressRegion  ${claim.data.author.address.countryName}
-    Wait Element Visibility And Input Text  css=#addressLocality  ${claim.data.author.address.locality}
-    Wait Element Visibility And Input Text  css=#addressStreet  ${claim.data.author.address.streetAddress}
-    @{contactPoint} =  Split String  ${claim.data.author.contactPoint.name}
-    Wait Element Visibility And Input Text  css=#personSurname  @{contactPoint}[0]
-    Wait Element Visibility And Input Text  css=#personName  @{contactPoint}[1]
-    Wait Element Visibility And Input Text  css=#personPatronymic  @{contactPoint}[2]
-    ${telephone}=  Привести номер телефону до відповідного формату  ${claim.data.author.contactPoint.telephone}
-    Wait Element Visibility And Input Text  css=#personPhone  ${telephone}
-    ${faxNumber}=  Привести номер телефону до відповідного формату  ${claim.data.author.contactPoint.faxNumber}
-    Wait Element Visibility And Input Text  css=#personFax  ${faxNumber}
-    Wait Element Visibility And Input Text  css=#personEmail  ${claim.data.author.contactPoint.email}
-    Wait Visibility And Click Element  xpath=//button[@data-id="btn-send-complaint"]
-    Sleep  10s
-    Wait Visibility And Click Element  xpath=//button[@data-id="btn-close"]
+    Заповнити поля вимоги/скарги  ${claim}
     Reload And Switch To Tab  3
     ${result}=  Get Text  xpath=(//span[@data-id='complaint-id'])[1]
     [Return]  ${result}
@@ -2618,25 +2524,7 @@ Get Item Number
     Sleep  1
     Wait Visibility And Click Element  css=button[data-id='btn-send-claim']
     Sleep  1
-    Wait Element Visibility And Input Text  css=#titleComplaint  ${claim.data.title}
-    Wait Element Visibility And Input Text  css=#descriptionComplaint  ${claim.data.description}
-    Run Keyword And Ignore Error  Wait Visibility And Click Element  xpath=//select[@id='addressCountry']//option[@value='UA']
-    Wait Element Visibility And Input Text  css=#addressPostalCode  ${claim.data.author.address.postalCode}
-    Wait Element Visibility And Input Text  css=#addressRegion  ${claim.data.author.address.countryName}
-    Wait Element Visibility And Input Text  css=#addressLocality  ${claim.data.author.address.locality}
-    Wait Element Visibility And Input Text  css=#addressStreet  ${claim.data.author.address.streetAddress}
-    @{contactPoint} =  Split String  ${claim.data.author.contactPoint.name}
-    Wait Element Visibility And Input Text  css=#personSurname  @{contactPoint}[0]
-    Wait Element Visibility And Input Text  css=#personName  @{contactPoint}[1]
-    Wait Element Visibility And Input Text  css=#personPatronymic  @{contactPoint}[2]
-    ${telephone}=  Привести номер телефону до відповідного формату  ${claim.data.author.contactPoint.telephone}
-    Wait Element Visibility And Input Text  css=#personPhone  ${telephone}
-    ${faxNumber}=  Привести номер телефону до відповідного формату  ${claim.data.author.contactPoint.faxNumber}
-    Wait Element Visibility And Input Text  css=#personFax  ${faxNumber}
-    Wait Element Visibility And Input Text  css=#personEmail  ${claim.data.author.contactPoint.email}
-    Wait Visibility And Click Element  xpath=//button[@data-id="btn-send-complaint"]
-    Sleep  10s
-    Wait Visibility And Click Element  xpath=//button[@data-id="btn-close"]
+    Заповнити поля вимоги/скарги  ${claim}
     Reload And Switch To Tab  3
     ${result}=  Get Text  xpath=(//span[@data-id='complaint-id'])[1]
     [Return]  ${result}
