@@ -2413,14 +2413,14 @@ Get Item Number
     [Arguments]  ${username}  ${tender_uaid}  ${claim}  ${document}=${None}
     Switch To Tab  3
     Wait Visibility And Click Element  css=#btnSendClaim
-    Заповнити поля вимоги/скарги  ${claim}
+    Заповнити поля вимоги/скарги  ${claim}  ${document}
     Reload And Switch To Tab  3
     ${result}=  Get Text  xpath=(//span[@data-id='complaint-id'])[1]
     [Return]  ${result}
 
 
 Заповнити поля вимоги/скарги
-    [Arguments]  ${claim}
+    [Arguments]  ${claim}  ${document}
     Wait Element Visibility And Input Text  css=#titleComplaint  ${claim.data.title}
     Wait Element Visibility And Input Text  css=#descriptionComplaint  ${claim.data.description}
     Run Keyword And Ignore Error  Choose File  css=input[id='fileToUpload']  ${document}
@@ -2459,7 +2459,7 @@ Get Item Number
     Відкрити детальну інформацію по лотам
     Wait Visibility And Click Element  css=a[tooltip='Подати вимогу на даний лот']
     Wait Visibility And Click Element  xpath=//button[@data-id='btn-send-claim']
-    Заповнити поля вимоги/скарги  ${claim}
+    Заповнити поля вимоги/скарги  ${claim}  ${document}
     Reload And Switch To Tab  3
     ${result}=  Get Text  xpath=(//span[@data-id='complaint-id'])[1]
     [Return]  ${result}
@@ -2488,7 +2488,7 @@ Get Item Number
     Sleep  1
     Wait Visibility And Click Element  css=button[data-id='btn-send-complaint']
     Sleep  1
-    Заповнити поля вимоги/скарги  ${claim}
+    Заповнити поля вимоги/скарги  ${claim}  ${document}
     Reload And Switch To Tab  3
     ${result}=  Get Text  xpath=(//span[@data-id='complaint-id'])[1]
     [Return]  ${result}
@@ -2506,7 +2506,7 @@ Get Item Number
     Sleep  1
     Wait Visibility And Click Element  css=button[data-id='btn-send-claim']
     Sleep  1
-    Заповнити поля вимоги/скарги  ${claim}
+    Заповнити поля вимоги/скарги  ${claim}  ${document}
     Reload And Switch To Tab  3
     ${result}=  Get Text  xpath=(//span[@data-id='complaint-id'])[1]
     [Return]  ${result}
