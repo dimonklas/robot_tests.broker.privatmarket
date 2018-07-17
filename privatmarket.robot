@@ -2495,24 +2495,6 @@ Get Item Number
     [Return]  ${result}
 
 
-Створити скаргу про виправлення визначення переможця
-    [Arguments]  ${username}  ${tender_uaid}  ${claim}  ${award_index}  ${document}=${None}
-    Wait until keyword succeeds  5min  10s  Звірити статус  ${username}  ${tender_uaid}
-    Reload And Switch To Tab  1
-    Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'lot-parts')]
-    ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'lot-parts')]@class
-    Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
-    Sleep  1
-    Wait Visibility And Click Element  css=a[ng-click="act.showChooseCmplWnd(b.id, 'award', lot.id)"]
-    Sleep  1
-    Wait Visibility And Click Element  css=button[data-id='btn-send-complaint']
-    Sleep  1
-    Заповнити поля вимоги/скарги  ${claim}  ${document}
-    Reload And Switch To Tab  3
-    ${result}=  Get Text  xpath=(//span[@data-id='complaint-id'])[1]
-    [Return]  ${result}
-
-
 Створити вимогу про виправлення визначення переможця
     [Arguments]  ${username}  ${tender_uaid}  ${claim}  ${award_index}  ${document}=${None}
     Wait until keyword succeeds  5min  10s  Звірити статус  ${username}  ${tender_uaid}
