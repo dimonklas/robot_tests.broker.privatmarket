@@ -12,11 +12,11 @@ import dateutil.parser
 def modify_test_data(initial_data):
     # set user name
     # initial_data['procuringEntity']['name'] = u'Товариство З Обмеженою Відповідальністю \'Мак Медіа Прінт\''
-    initial_data['procuringEntity']['name'] = u'ТОВ \'СФ \'РУБІЖНЕ\''
+    initial_data['procuringEntity']['name'] = u'ТОВ \"СФ \"РУБІЖНЕ\"'
     if 'contactPoint' in initial_data['procuringEntity']:
         initial_data['procuringEntity']['contactPoint']['telephone'] = u'+380670444580'
         initial_data['procuringEntity']['contactPoint']['url'] = u'https://dadadad.com'
-    initial_data['procuringEntity']['identifier']['legalName'] = u'ТОВАРИСТВО З ОБМЕЖЕНОЮ ВІДПОВІДАЛЬНІСТЮ \'СІЛЬСЬКОГОСПОДАРСЬКА ФІРМА \'РУБІЖНЕ\''
+    initial_data['procuringEntity']['identifier']['legalName'] = u'ТОВАРИСТВО З ОБМЕЖЕНОЮ ВІДПОВІДАЛЬНІСТЮ \"СІЛЬСЬКОГОСПОДАРСЬКА ФІРМА \"РУБІЖНЕ\"'
     initial_data['procuringEntity']['identifier']['id'] = u'38580144'
     # initial_data['procuringEntity']['name'] = u'Макстрой Діск, Товариство З Обмеженою Відповідальністю'
     # initial_data['procuringEntity']['name'] = u'ФОП ОГАНІН ОЛЕКСАНДР ПЕТРОВИЧ'
