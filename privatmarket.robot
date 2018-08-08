@@ -31,6 +31,12 @@ ${lot_data_decisions[1].decisionID}  xpath=//div[@tid='decision.1.decisionID']
 
 ${lot_data_assets}  xpath=//div[@tid='asset']
 
+
+${lot_data_auctions[0].auctionID}  css=div[tid='auction.0.auctionID']
+${auction_data_cancellations[0].reason}  css=div[tid='cancellations.reason']
+${auction_data_cancellations[0].status}  xpath=//span[@tid='data.statusName']/span[1]
+
+
 ${lot_data_lotHolder.name}  xpath=//div[@tid='lotHolder.name']
 ${lot_data_lotHolder.identifier.scheme}  xpath=//div[@tid='lotHolder.identifier.scheme']
 ${lot_data_lotHolder.identifier.id}  xpath=//div[@tid='lotHolder.identifier.id']
@@ -263,6 +269,11 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   privatmarket.Оновити сторінку з об'єктом МП  ${user_name}  ${tender_id}
 
 
+Оновити сторінку з тендером
+  [Arguments]  ${user_name}  ${tender_id}
+  privatmarket.Оновити сторінку з об'єктом МП  ${user_name}  ${tender_id}
+
+
 Пошук об’єкта МП по ідентифікатору
   [Arguments]  ${user_name}  ${tender_id}
   Wait For Auction  ${tender_id}
@@ -272,6 +283,11 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
 
 
 Пошук лоту по ідентифікатору
+  [Arguments]  ${user_name}  ${tender_id}
+  privatmarket.Пошук об’єкта МП по ідентифікатору  ${user_name}  ${tender_id}
+
+
+Пошук тендера по ідентифікатору
   [Arguments]  ${user_name}  ${tender_id}
   privatmarket.Пошук об’єкта МП по ідентифікатору  ${user_name}  ${tender_id}
 
@@ -341,6 +357,24 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   Wait Until Element Is Visible  ${lot_data_${field_name}}
   ${result_full}=  Get Text  ${lot_data_${field_name}}
   ${result}=  Strip String  ${result_full}
+  [Return]  ${result}
+
+
+Отримати інформацію із тендера
+  [Arguments]  ${user_name}  ${tender_id}  ${field_name}
+  Run Keyword And Return If  '${field_name}' == 'status'  Отримати status аукціону  ${field_name}
+  Run Keyword And Return If  '${field_name}' == 'cancellations[0].status'  Get Cancellation Status  ${auction_data_${field_name}}  # ЗАГЛУШКА (ЧТО ЗА СТАТУС ???)
+  Wait Until Element Is Visible  ${auction_data_${field_name}}
+  ${result_full}=  Get Text  ${auction_data_${field_name}}
+  ${result}=  Strip String  ${result_full}
+  [Return]  ${result}
+
+
+Отримати інформацію із документа
+  [Arguments]  ${username}  ${tender_id}  ${doc_id}  ${element}
+  ${result}=  Run Keyword If  'скасування процедури' in '${TEST_NAME}'  Get Text  css=div[tid='cancellations.doc'] div[tid='doc.title'
+
+  ${result}=  Strip String  ${result}
   [Return]  ${result}
 
 
@@ -598,6 +632,36 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   ...  '${text}' == 'Об’єкт продано'  sold
   ...  '${text}' == 'Об’єкт не продано'  dissolved
   ...  '${text}' == 'Об’єкт виключено'  deleted
+  ...  ${element}
+  [Return]  ${result}
+
+
+Отримати status аукціону
+  [Arguments]  ${element}
+  Reload Page
+  Sleep  5s
+  ${element_text}=  Get Text  xpath=//span[@tid='data.statusName']/span[1]
+  ${text}=  Strip String  ${element_text}
+  ${text}=  Replace String  ${text}  ${\n}  ${EMPTY}
+  ${result}=  Set Variable If
+  ...  '${text}' == 'Аукціон відмінено'  cancelled
+  ...  '${text}' == 'Аукціон не відбувся'  unsuccessful
+  ...  '${text}' == 'Аукціон відбувся'  complete
+  ...  '${text}' == 'Очікується підписання договору'  active.awarded
+  ...  '${text}' == 'Очікується опублікування протоколу'  active.qualification
+  ...  '${text}' == 'Аукціон'  active.auction
+  ...  '${text}' == 'Прийняття заяв на участь'  active.tendering
+  ...  ${element}
+  [Return]  ${result}
+
+
+Get Cancellation Status
+  [Arguments]  ${field_name}
+  Wait Until Element Is Visible  ${field_name}
+  ${element_text}=  Get Text  ${field_name}
+  ${text}=  Strip String  ${element_text}
+  ${result}=  Set Variable If
+  ...  '${text}' == 'Аукціон відмінено'  active
   ...  ${element}
   [Return]  ${result}
 
