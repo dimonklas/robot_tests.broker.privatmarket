@@ -48,12 +48,13 @@ ${procedure_data_guarantee.amount}  xpath=//span[@tid='data.guarantee.amount']
 ${procedure_data_registrationFee.amount}  xpath=//span[@tid='data.registrationFee.amount']
 ${procedure_data_tenderPeriod.endDate}  xpath=//div[@tid='data.enquiryPeriod']//span[@tid='period.to']
 ${procedure_data_auctionPeriod.startDate}  xpath=//div[@tid='data.auctionPeriod']//span[@tid='period.from']
-${procedure_data.auctionPeriod.endDate}  xpath=//div[@tid='data.auctionPeriod']//span[@tid='period.to']
+${procedure_data_auctionPeriod.endDate}  xpath=//div[@tid='data.auctionPeriod']//span[@tid='period.to']
 
 ${procedure_data.questions[0].title}  span[@tid='data.question.title']
 ${procedure_data.questions[0].description}  span[@tid='data.question.description']
 ${procedure_data.questions[0].answer}  span[@tid='data.question.answer']
 
+${procedure_data_awards[0].status}  xpath=(//span[@tid='award.status'])[1]
 
 
 ${lot_data_lotHolder.name}  xpath=//div[@tid='lotHolder.name']
@@ -394,6 +395,8 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   Run Keyword And Return IF  '${field_name}' == 'tenderPeriod.endDate'  Отримати дату та час  ${procedure_data_${field_name}}
   Run Keyword And Return IF  '${field_name}' == 'auctionPeriod.startDate'  Отримати дату та час  ${procedure_data_${field_name}}
   Run Keyword And Return IF  '${field_name}' == 'auctionPeriod.endDate'  Отримати дату та час  ${procedure_data_${field_name}}
+  Run Keyword And Return If  '${field_name}' == 'awards[0].status'  Отримати awards status  ${field_name}
+  Run Keyword And Return If  '${field_name}' == 'awards[1].status'  Отримати awards status  ${field_name}
 
   Wait Until Element Is Visible  ${procedure_data_${field_name}}
   ${result_full}=  Get Text  ${procedure_data_${field_name}}
@@ -658,8 +661,8 @@ Check If Question Is Uploaded
 
 
 Скасувати закупівлю
-  [Arguments]  ${username}  ${tender_id}  ${reason}  ${doc_path}  ${description}
-  privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tender_id}
+  [Arguments]  ${user_name}  ${tender_id}  ${reason}  ${doc_path}  ${description}
+  privatmarket.Пошук тендера по ідентифікатору  ${user_name}  ${tender_id}
   Wait Enable And Click Element  css=button[tid='btn.cancellationLot']
   Wait For Ajax
   #add doc
@@ -794,7 +797,7 @@ Check If Question Is Uploaded
   ${result}=  Set Variable If
   ...  '${text}' == 'Аукціон відмінено'  cancelled
   ...  '${text}' == 'Аукціон не відбувся'  unsuccessful
-  ...  '${text}' == 'Аукціон відбувся'  complete
+  ...  '${text}' == 'Аукціон відбувся (або 1 учасник)'  complete
   ...  '${text}' == 'Очікується підписання договору'  active.awarded
   ...  '${text}' == 'Очікується опублікування протоколу'  active.qualification
   ...  '${text}' == 'Аукціон'  active.auction
@@ -816,13 +819,20 @@ Check If Question Is Uploaded
   Switch Browser  ${ALIAS_NAME}
   Go To  ${USERS.users['${username}'].homepage}
   Run Keyword And Ignore Error  Login  ${user_name}
-  privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tender_id}
+  privatmarket.Пошук тендера по ідентифікатору  ${user_name}  ${tender_id}
   ${url}=  privatmarket.Отримати посилання на аукціон для глядача
   [Return]  ${url}
 
 
+Отримати кількість авардів в тендері
+  [Arguments]  ${user_name}  ${tender_id}
+  Switch Browser  ${ALIAS_NAME}
+  ${number_of_awards}=  Get Matching Xpath Count  xpath=//div[@ng-repeat='award in data.awards']
+  [Return]  ${number_of_awards}
+
+
 Get Cancellation Status
-  [Arguments]  ${field_name}
+  [Arguments]  ${element}
   Wait Until Element Is Visible  ${field_name}
   ${element_text}=  Get Text  ${field_name}
   ${text}=  Strip String  ${element_text}
@@ -830,6 +840,15 @@ Get Cancellation Status
   ...  '${text}' == 'Аукціон відмінено'  active
   ...  ${element}
   [Return]  ${result}
+
+
+Отримати awards status
+  [Arguments]  ${element}
+  Sleep  25s
+  Reload Page
+  Wait For Ajax
+  ${text}=  Get Element Attribute  ${procedure_data_${element}}@tidvalue
+  [Return]  ${text}
 
 
 Отримати дату
