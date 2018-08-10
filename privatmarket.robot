@@ -828,7 +828,8 @@ Check If Question Is Uploaded
   [Arguments]  ${user_name}  ${tender_id}
   Switch Browser  ${ALIAS_NAME}
   ${number_of_awards}=  Get Matching Xpath Count  xpath=//div[@ng-repeat='award in data.awards']
-  [Return]  ${number_of_awards}
+  ${result}=  Convert To Number  ${number_of_awards}
+  [Return]  ${result}
 
 
 Get Cancellation Status
