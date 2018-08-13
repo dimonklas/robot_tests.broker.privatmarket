@@ -834,8 +834,8 @@ Check If Question Is Uploaded
 
 Get Cancellation Status
   [Arguments]  ${element}
-  Wait Until Element Is Visible  ${field_name}
-  ${element_text}=  Get Text  ${field_name}
+  Wait Until Element Is Visible  ${element}
+  ${element_text}=  Get Text  ${element}
   ${text}=  Strip String  ${element_text}
   ${result}=  Set Variable If
   ...  '${text}' == 'Аукціон відмінено'  active
