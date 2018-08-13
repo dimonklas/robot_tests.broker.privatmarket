@@ -31,6 +31,32 @@ ${lot_data_decisions[1].decisionID}  xpath=//div[@tid='decision.1.decisionID']
 
 ${lot_data_assets}  xpath=//div[@tid='asset']
 
+
+
+${lot_data_auctions[0].auctionID}  css=div[tid='auction.0.auctionID']
+${procedure_data_cancellations[0].reason}  css=div[tid='cancellations.reason']
+${procedure_data_cancellations[0].status}  xpath=//span[@tid='data.statusName']/span[1]
+${procedure_data_auctionID}  xpath=//div[@tid='data.auctionID']
+${procedure_data_title}  xpath=//div[@tid='data.title']/b
+${procedure_data_description}  xpath=//div[@tid='data.description']
+${procedure_data_minNumberOfQualifiedBids}  xpath=//div[@tid='data.minNumberOfQualifiedBids']
+${procedure_data_procurementMethodType}  xpath=//div[@tid='data.procurementMethodType']
+${procedure_data_procuringEntity.name}  xpath=//div[@tid='data.procuringEntity.name']
+${procedure_data_value.amount}  xpath=//span[@tid='data.value.amount']
+${procedure_data_minimalStep.amount}  xpath=//span[@tid='data.minimalStep.amount']
+${procedure_data_guarantee.amount}  xpath=//span[@tid='data.guarantee.amount']
+${procedure_data_registrationFee.amount}  xpath=//span[@tid='data.registrationFee.amount']
+${procedure_data_tenderPeriod.endDate}  xpath=//div[@tid='data.enquiryPeriod']//span[@tid='period.to']
+${procedure_data_auctionPeriod.startDate}  xpath=//div[@tid='data.auctionPeriod']//span[@tid='period.from']
+${procedure_data_auctionPeriod.endDate}  xpath=//div[@tid='data.auctionPeriod']//span[@tid='period.to']
+
+${procedure_data.questions[0].title}  span[@tid='data.question.title']
+${procedure_data.questions[0].description}  span[@tid='data.question.description']
+${procedure_data.questions[0].answer}  span[@tid='data.question.answer']
+
+${procedure_data_awards[0].status}  xpath=(//span[@tid='award.status'])[1]
+
+
 ${lot_data_lotHolder.name}  xpath=//div[@tid='lotHolder.name']
 ${lot_data_lotHolder.identifier.scheme}  xpath=//div[@tid='lotHolder.identifier.scheme']
 ${lot_data_lotHolder.identifier.id}  xpath=//div[@tid='lotHolder.identifier.id']
@@ -163,13 +189,20 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   Input text  xpath=//input[@tid='decision.date']  ${correctDate}
   Wait Until Element Is Enabled  xpath=//input[@tid='decision.id']  ${COMMONWAIT}
   Input text  xpath=//input[@tid='decision.id']  ${decisions_id}
-  Execute Javascript  angular.prozorroaccelerator=240
+  Execute Javascript  angular.prozorroaccelerator=150;
+  Execute Javascript  angular.prozorroauctionstartdelay = (30+180)*60*1000;
   Click Element  xpath=//button[@tid='btn.createaInfo']
   Wait For Ajax
   Execute Javascript  document.querySelector("span[tid='lotID']").className = ''
   sleep  2
   ${tender_id}=  Get Element Attribute  xpath=//span[@tid='lotID']@data-id
   [Return]  ${tender_id}
+
+
+Активувати процедуру
+  [Arguments]  ${username}  ${tender_id}
+  Wait For Ajax
+  No Operation
 
 
 Додати умови проведення аукціону
@@ -262,6 +295,11 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   privatmarket.Оновити сторінку з об'єктом МП  ${user_name}  ${tender_id}
 
 
+Оновити сторінку з тендером
+  [Arguments]  ${user_name}  ${tender_id}
+  privatmarket.Оновити сторінку з об'єктом МП  ${user_name}  ${tender_id}
+
+
 Пошук об’єкта МП по ідентифікатору
   [Arguments]  ${user_name}  ${tender_id}
   Wait For Auction  ${tender_id}
@@ -271,6 +309,11 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
 
 
 Пошук лоту по ідентифікатору
+  [Arguments]  ${user_name}  ${tender_id}
+  privatmarket.Пошук об’єкта МП по ідентифікатору  ${user_name}  ${tender_id}
+
+
+Пошук тендера по ідентифікатору
   [Arguments]  ${user_name}  ${tender_id}
   privatmarket.Пошук об’єкта МП по ідентифікатору  ${user_name}  ${tender_id}
 
@@ -340,6 +383,96 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   Wait Until Element Is Visible  ${lot_data_${field_name}}
   ${result_full}=  Get Text  ${lot_data_${field_name}}
   ${result}=  Strip String  ${result_full}
+  [Return]  ${result}
+
+
+Отримати інформацію із тендера
+  [Arguments]  ${user_name}  ${tender_id}  ${field_name}
+  Run Keyword And Return If  '${field_name}' == 'status'  Отримати status аукціону  ${field_name}
+  Run Keyword And Return If  '${field_name}' == 'procurementMethodType'  Get Element Attribute  ${procedure_data_${field_name}}@tidvalue
+  Run Keyword And Return If  '${field_name}' == 'cancellations[0].status'  Get Cancellation Status  ${procedure_data_${field_name}}  # ЗАГЛУШКА (ЧТО ЗА СТАТУС ???)
+  Run Keyword And Return IF  '.amount' in '${field_name}' or '${field_name}' == 'minNumberOfQualifiedBids'  Отримати число  ${procedure_data_${field_name}}
+  Run Keyword And Return IF  '${field_name}' == 'tenderPeriod.endDate'  Отримати дату та час  ${procedure_data_${field_name}}
+  Run Keyword And Return IF  '${field_name}' == 'auctionPeriod.startDate'  Отримати дату та час  ${procedure_data_${field_name}}
+  Run Keyword And Return IF  '${field_name}' == 'auctionPeriod.endDate'  Отримати дату та час  ${procedure_data_${field_name}}
+  Run Keyword And Return If  '${field_name}' == 'awards[0].status'  Отримати awards status  ${field_name}
+  Run Keyword And Return If  '${field_name}' == 'awards[1].status'  Отримати awards status  ${field_name}
+
+  Wait Until Element Is Visible  ${procedure_data_${field_name}}
+  ${result_full}=  Get Text  ${procedure_data_${field_name}}
+  ${result}=  Strip String  ${result_full}
+  [Return]  ${result}
+
+
+Отримати інформацію із предмету
+  [Arguments]  ${username}  ${tender_id}  ${object_id}  ${field_name}
+  ${result}=  privatmarket.Отримати інформацію з активу об'єкта МП  ${username}  ${tender_id}  ${object_id}  ${field_name}
+  [Return]  ${result}
+
+
+Отримати інформацію із документа
+  [Arguments]  ${username}  ${tender_id}  ${doc_id}  ${element}
+  ${result}=  Run Keyword If  'скасування процедури' in '${TEST_NAME}'  Get Text  css=div[tid='cancellations.doc'] div[tid='doc.title']
+
+  ${result}=  Strip String  ${result}
+  [Return]  ${result}
+
+
+Задати запитання на тендер
+  [Arguments]  ${user_name}  ${tender_id}  ${question_data}
+  Wait Until Element Is Visible  css=input[ng-model='newQuestion.title']  ${COMMONWAIT}
+  Input Text  css=input[ng-model='newQuestion.title']  ${question_data.data.title}
+  Input Text  css=textarea[ng-model='newQuestion.text']  ${question_data.data.description}
+
+  Click Element  css=div[ng-model='newQuestion.questionOf'] span
+  Wait Enable And Click Element  xpath=//span[@class='ui-select-choices-row-inner' and contains(., 'Загальне запитання')]
+
+  Click Button  css=button[tid='sendQuestion']
+  Sleep  5s
+  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
+  Wait For Element With Reload  css=span[tid='data.question.date']
+
+
+Задати запитання на предмет
+  [Arguments]  ${user_name}  ${tender_id}  ${item_id}  ${question_data}
+  Wait Until Element Is Visible  css=input[ng-model='newQuestion.title']  ${COMMONWAIT}
+  Input Text  css=input[ng-model='newQuestion.title']  ${question_data.data.title}
+  Input Text  css=textarea[ng-model='newQuestion.text']  ${question_data.data.description}
+
+  Click Element  css=div[ng-model='newQuestion.questionOf'] span
+  Wait Enable And Click Element  xpath=//span[@class='ui-select-choices-row-inner' and contains(., '${item_id}')]
+
+  Click Button  css=button[tid='sendQuestion']
+  Sleep  5s
+  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
+  Wait Until Keyword Succeeds  3min  3s  Check If Question Is Uploaded  ${question_data.data.title}
+
+
+Check If Question Is Uploaded
+  [Arguments]  ${title}
+  Reload Page
+  Wait For Ajax
+  @{subtitle}=  Split String  ${title}  '
+  Wait Until Element Is Enabled  xpath=//div[@ng-repeat='question in data.questions']//span[@tid='data.question.title' and contains(., '${subtitle[0]}')]  3
+  [Return]  True
+
+
+Відповісти на запитання
+  [Arguments]  ${user_name}  ${tender_id}  ${answer}  ${question_id}
+  Wait Until Element Is Visible  xpath=//div[@class='row question' and contains(., '${question_id}')]//button[@tid='answerQuestion']  ${COMMONWAIT}
+  Wait Until Element Is Visible  xpath=//div[@class='row question' and contains(., '${question_id}')]//input[@tid='input.answer']  ${COMMONWAIT}
+  Input Text  xpath=//div[@class='row question' and contains(., '${question_id}')]//input[@tid='input.answer']  ${answer.data.answer}
+  Click Button  xpath=//div[@class='row question' and contains(., '${question_id}')]//button[@tid='answerQuestion']
+  Sleep  3s
+  Wait For Ajax
+
+
+Отримати інформацію із запитання
+  [Arguments]  ${username}  ${tender_id}  ${questions_id}  ${element}
+  ${element}=  Convert To String  questions[0].${element}
+  ${element_for_work}=  Set variable  xpath=//div[contains(@class, 'questionsBox') and contains(., '${questions_id}')]//${procedure_data.${element}}
+  Wait Until Element Is Visible  ${element_for_work}  ${COMMONWAIT}
+  ${result}=  Отримати текст елемента  ${element_for_work}
   [Return]  ${result}
 
 
@@ -419,6 +552,34 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   [Return]  ${result}
 
 
+Подати цінову пропозицію
+  [Arguments]  ${user_name}  ${tender_id}  ${bid}
+  Switch Browser  ${ALIAS_NAME}
+  ${os}=  Evaluate  platform.system()  platform
+  Run Keyword If  'без кваліфікації' in '${TEST NAME}'  Fail  Is not implemented yet
+  #дождаться появления поля ввода ссуммы только в случае выполнения первого позитивного теста
+  Run Keyword Unless  'Неможливість подати цінову' in '${TEST NAME}' or 'подати повторно цінову' in '${TEST NAME}'
+  ...  Wait Until Element Is Enabled  css=button[tid='createBid']  ${COMMONWAIT}
+  Click Button  css=button[tid='createBid']
+  Wait Until Element Is Enabled  css=#amount  ${COMMONWAIT}
+  Run Keyword Unless  '${MODE}' == 'dgfInsider'  Вказати ціну і підтвердити подання пропозиції  ${bid}  ${os}
+
+
+Вказати ціну і підтвердити подання пропозиції
+  [Arguments]  ${bid}  ${os}
+  ${amount}=  Convert To String  ${bid.data.value.amount}
+  ${amount2}=  Replace String  ${amount}  .  ,
+  Run Keyword If  '${os}' == 'Linux'  Input Text  css=input[tid='bid.value.amount']  ${amount}
+  ...  ELSE  Input Text  css=input[tid='bid.value.amount']  ${amount2}
+  Click Button  css=div#bid button[tid='createBid']
+  Wait For Ajax
+  Wait Until Element Is Visible  css=button[tid='saveAndConfirm']  ${COMMONWAIT}
+  Click Button  css=button[tid='saveAndConfirm']
+  Wait For Ajax
+  Wait Until Element Is Not Visible  css=button[tid='saveAndConfirm']
+  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
+
+
 Внести зміни в об'єкт МП
   [Arguments]  ${user_name}  ${tender_id}  ${field_name}  ${value}
   Reload Page
@@ -439,6 +600,8 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   Run Keyword If
     ...  '${field_name}' == 'title'  Внести зміни в поле  css=input[tid='lot.title']  ${value}
     ...  ELSE IF  '${field_name}' == 'description'  Внести зміни в поле  css=textarea[tid="lot.description"]  ${value}
+  Wait Until Element Is Enabled  xpath=//button[@tid='btn.modifyLot']  ${COMMONWAIT}
+
 
 
 Внести зміни в актив об'єкта МП
@@ -457,27 +620,30 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   Reload Page
   Sleep  5s
   Wait Enable And Click Element  xpath=//button[@tid='btn.modifyLot']
-  Завантажити документ про зміни  ${username}  ${tender_id}
   ${quantity}=  Run Keyword If  '${field_name}' == 'quantity'  Convert To String  ${value}
-  Run Keyword If
-    ...  '${field_name}' == 'quantity'  Внести зміни в поле  xpath=(//input[@tid='item.quantity'])  ${quantity}
+  Run Keyword If  '${field_name}' == 'quantity'  Run Keywords
+    ...  Завантажити документ про зміни  ${username}  ${tender_id}
+    ...  AND  Внести зміни в поле  xpath=(//input[@tid='item.quantity'])  ${quantity}
+  Wait Until Element Is Enabled  xpath=//button[@tid='btn.modifyLot']  ${COMMONWAIT}
 
 
 Внести зміни в умови проведення аукціону
   [Arguments]  ${username}  ${tender_id}  ${field_name}  ${value}  ${auction_index}
+  privatmarket.Пошук лоту по ідентифікатору  ${user_name}  ${tender_id}
   Reload Page
   Sleep  5s
   Wait Enable And Click Element  xpath=//button[@tid='btn.modifyLot']
   Завантажити документ про зміни  ${username}  ${tender_id}
   ${correct_value}=  Run Keyword If
     ...  'amount' in '${field_name}'  Convert To String  ${value}
-    ...  ELSE IF  '${field_name}' = 'auctionPeriod.startDate'  Convert Date Format  ${value}
+    ...  ELSE IF  '${field_name}' == 'auctionPeriod.startDate'  Get New Auction Date  ${value}
   Run Keyword If
     ...  '${field_name}' == 'value.amount'  Внести зміни в поле  xpath=(//input[@tid='auction.value'])  ${correct_value}
     ...  ELSE IF  '${field_name}' == 'minimalStep.amount'  Внести зміни в поле  xpath=(//input[@tid='auction.minimalStep'])  ${correct_value}
     ...  ELSE IF  '${field_name}' == 'guarantee.amount'  Внести зміни в поле  xpath=(//input[@tid='auction.guarantee'])  ${correct_value}
     ...  ELSE IF  '${field_name}' == 'registrationFee.amount'  Внести зміни в поле  xpath=(//input[@tid='auction.registrationFee'])  ${correct_value}
-    ...  ELSE IF  '${field_name}' == 'auctionPeriod.startDate'  Внести зміни в поле  xpath=(//input[@tid='auction.period'])  ${correct_value}
+    ...  ELSE IF  '${field_name}' == 'auctionPeriod.startDate'  Змінити дату аукціону  ${correct_value}
+  Wait Until Element Is Enabled  xpath=//button[@tid='btn.modifyLot']  ${COMMONWAIT}
 
 
 Видалити об'єкт МП
@@ -492,6 +658,31 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   Switch Browser  ${ALIAS_NAME}
   Reload Page
   Wait Until Page Contains  Об’єкт виключено  60
+
+
+Скасувати закупівлю
+  [Arguments]  ${user_name}  ${tender_id}  ${reason}  ${doc_path}  ${description}
+  privatmarket.Пошук тендера по ідентифікатору  ${user_name}  ${tender_id}
+  Wait Enable And Click Element  css=button[tid='btn.cancellationLot']
+  Wait For Ajax
+  #add doc
+  Wait Until Element Is Visible  css=button[tid='docCancellation']  ${COMMONWAIT}
+  Execute Javascript  document.querySelector("#docsCancellation").className = ''
+  Sleep  2s
+  Choose File  css=#docsCancellation  ${doc_path}
+  Wait For Ajax
+  #input description
+  Wait Until Element Is Enabled  css=input[tid='cancellation.description']
+  Input text  css=input[tid='cancellation.description']  ${description}
+  #input reason
+  Input text  css=input[tid='cancellation.reason']  ${reason}
+  #confirm
+  Click Button  css=button[tid='btn.cancellation']
+  Sleep  10s
+  Wait For Ajax
+  Wait Until Element Is Not Visible  css=div.progress.progress-bar  60
+  Wait Until Page Contains  Аукціон відмінено  60
+
 
 
 Внести зміни в поле
@@ -594,6 +785,71 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   ...  '${text}' == 'Об’єкт виключено'  deleted
   ...  ${element}
   [Return]  ${result}
+
+
+Отримати status аукціону
+  [Arguments]  ${element}
+  Reload Page
+  Sleep  5s
+  ${element_text}=  Get Text  xpath=//span[@tid='data.statusName']/span[1]
+  ${text}=  Strip String  ${element_text}
+  ${text}=  Replace String  ${text}  ${\n}  ${EMPTY}
+  ${result}=  Set Variable If
+  ...  '${text}' == 'Аукціон відмінено'  cancelled
+  ...  '${text}' == 'Аукціон не відбувся'  unsuccessful
+  ...  '${text}' == 'Аукціон відбувся (або 1 учасник)'  complete
+  ...  '${text}' == 'Очікується підписання договору'  active.awarded
+  ...  '${text}' == 'Очікується опублікування протоколу'  active.qualification
+  ...  '${text}' == 'Аукціон'  active.auction
+  ...  '${text}' == 'Прийняття заяв на участь'  active.tendering
+  ...  ${element}
+  [Return]  ${result}
+
+
+Отримати посилання на аукціон для глядача
+  [Arguments]  ${user_name}  ${tender_id}  ${lot_id}=${Empty}
+  Switch Browser  ${ALIAS_NAME}
+  Wait For Element With Reload  css=a[tid='public.data.auctionUrl']  5
+  ${url}=  Get Element Attribute  css=a[tid='public.data.auctionUrl']@href
+  [Return]  ${url}
+
+
+Отримати посилання на аукціон для учасника
+  [Arguments]  ${user_name}  ${tender_id}  ${lot_id}=${Empty}
+  Switch Browser  ${ALIAS_NAME}
+  Go To  ${USERS.users['${username}'].homepage}
+  Run Keyword And Ignore Error  Login  ${user_name}
+  privatmarket.Пошук тендера по ідентифікатору  ${user_name}  ${tender_id}
+  ${url}=  privatmarket.Отримати посилання на аукціон для глядача
+  [Return]  ${url}
+
+
+Отримати кількість авардів в тендері
+  [Arguments]  ${user_name}  ${tender_id}
+  Switch Browser  ${ALIAS_NAME}
+  ${number_of_awards}=  Get Matching Xpath Count  xpath=//div[@ng-repeat='award in data.awards']
+  ${result}=  Convert To Number  ${number_of_awards}
+  [Return]  ${result}
+
+
+Get Cancellation Status
+  [Arguments]  ${element}
+  Wait Until Element Is Visible  ${field_name}
+  ${element_text}=  Get Text  ${field_name}
+  ${text}=  Strip String  ${element_text}
+  ${result}=  Set Variable If
+  ...  '${text}' == 'Аукціон відмінено'  active
+  ...  ${element}
+  [Return]  ${result}
+
+
+Отримати awards status
+  [Arguments]  ${element}
+  Sleep  25s
+  Reload Page
+  Wait For Ajax
+  ${text}=  Get Element Attribute  ${procedure_data_${element}}@tidvalue
+  [Return]  ${text}
 
 
 Отримати дату
@@ -838,6 +1094,21 @@ Convert Date Format
   [Return]  ${correctDate}
 
 
+Get New Auction Date
+  [Arguments]  ${element}
+  ${result}=  Split String  ${element}  T
+  ${date}=  Set Variable  ${result[0]}
+  ${correctDate}=  Convert Date  ${date}  result_format=%d
+  [Return]  ${correctDate}
+
+
+Змінити дату аукціону
+  [Arguments]  ${value}
+  Wait Enable And Click Element  xpath=//button[@tid='auction.period.btn']
+  Wait Enable And Click Element  xpath=(//button[@ng-click='select(dt.date)']//span)[text()='${value}']
+  Wait Enable And Click Element  css=button[tid="btn.createInfo"]
+
+
 Отримати текст елемента
   [Arguments]  ${element_name}
   ${temp_name}=  Remove String  ${element_name}  '
@@ -856,4 +1127,19 @@ Convert Date Format
   ${value}=  Replace String  ${value}  ${SPACE}  ${EMPTY}
   ${value}=  Replace String  ${value}  ,  .
   ${result}=  Convert To Number  ${value}
+  [Return]  ${result}
+
+
+Отримати дату та час
+  [Arguments]  ${element_name}
+  Switch Browser  ${ALIAS_NAME}
+  ${result_full}=  Отримати текст елемента  ${element_name}
+  ${result_full}=  Split String  ${result_full}
+  ${day_length}=  Get Length  ${result_full[0]}
+  ${day}=  Set Variable If  '${day_length}' == '1'  0${result_full[0]}  ${result_full[0]}
+  ${month}=  Replace String  ${result_full[1]}  ,  ${EMPTY}
+  ${month}=  get month number  ${month}
+  ${year}=  get_current_year
+  ${result_full}=  Set Variable  ${day}-${month}-${year} ${result_full[2]}
+  ${result}=  get_time_with_offset  ${result_full}
   [Return]  ${result}
