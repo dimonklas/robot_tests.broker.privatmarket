@@ -202,7 +202,13 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
 Активувати процедуру
   [Arguments]  ${username}  ${tender_id}
   Wait For Ajax
-  No Operation
+  Wait Until Keyword Succeeds  10min  15s  Дочекатися активованого статусу процедури
+
+
+Дочекатися активованого статусу процедури
+  ${status}=  Get Element Attribute  xpath=//span[@tid='data.status']@data-status
+  ${current_status}=  Strip String  ${status}
+  Should Be Equal  ${current_status}  active.tendering  msg=The procedure is not active
 
 
 Додати умови проведення аукціону
@@ -239,6 +245,7 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   ${count}=  Set Variable If  '${duration}' == 'P1M'  30
   Input Text  xpath=//input[@tid='auction.tenderingDuration']  ${count}
   Click Element  xpath=//button[@tid='btn.createInfo']
+  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
   Wait Until Element Is Visible  ${lot_data_title}  ${COMMONWAIT}
 
 
