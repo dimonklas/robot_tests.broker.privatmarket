@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from pytz import timezone
+import urllib
 
 
 def modify_test_data(tender_data):
