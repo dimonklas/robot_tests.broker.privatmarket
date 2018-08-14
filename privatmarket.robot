@@ -202,6 +202,7 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
 Активувати процедуру
   [Arguments]  ${username}  ${tender_id}
   Wait For Ajax
+  privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tender_id}
   Wait Until Keyword Succeeds  10min  15s  Дочекатися активованого статусу процедури
 
 
