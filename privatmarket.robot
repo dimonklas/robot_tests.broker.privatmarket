@@ -189,7 +189,7 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   Input text  xpath=//input[@tid='decision.date']  ${correctDate}
   Wait Until Element Is Enabled  xpath=//input[@tid='decision.id']  ${COMMONWAIT}
   Input text  xpath=//input[@tid='decision.id']  ${decisions_id}
-  Execute Javascript  angular.prozorroaccelerator=150;
+  Execute Javascript  angular.prozorroaccelerator=1440;
   Execute Javascript  angular.prozorroauctionstartdelay = (30+180)*60*1000;
   Click Element  xpath=//button[@tid='btn.createaInfo']
   Wait For Ajax
@@ -581,11 +581,42 @@ Check If Question Is Uploaded
   ...  ELSE  Input Text  css=input[tid='bid.value.amount']  ${amount2}
   Click Button  css=div#bid button[tid='createBid']
   Wait For Ajax
-  Wait Until Element Is Visible  css=button[tid='saveAndConfirm']  ${COMMONWAIT}
-  Click Button  css=button[tid='saveAndConfirm']
+  Wait Visibility And Click Element  css=button[tid='saveAndConfirm']  ${COMMONWAIT}
   Wait For Ajax
   Wait Until Element Is Not Visible  css=button[tid='saveAndConfirm']
   Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
+  Wait Until Page Contains  Ставка успішно збережена  60
+  Click Element  xpath=//button[@tid='defaultOk']
+
+
+Змінити цінову пропозицію
+  [Arguments]  ${user_name}  ${tender_id}  ${name}  ${value}
+  ${os}=  Evaluate  platform.system()  platform
+  ${amount}=  Convert To String  ${value}
+  ${amount2}=  Replace String  ${amount}  .  ,
+
+  Wait For Element With Reload  css=button[tid='modifyBid']  5
+  Wait Visibility And Click Element  css=button[tid='modifyBid']
+  Clear Element Text  css=input[tid='bid.value.amount']
+  Run Keyword If  '${os}' == 'Linux'  Input Text  css=input[tid='bid.value.amount']  ${amount}
+  ...  ELSE  Input Text  css=input[tid='bid.value.amount']  ${amount2}
+
+  Click Element  css=div#bid button[tid='createBid']
+  Wait For Ajax
+  Wait Visibility And Click Element  css=button[tid='saveAndConfirm']  ${COMMONWAIT}
+  Wait For Ajax
+  Wait Until Element Is Not Visible  css=button[tid='saveAndConfirm']
+  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
+
+
+Скасувати цінову пропозицію
+  [Arguments]  ${user_name}  ${tender_id}
+  Wait For Element With Reload  css=button[tid='btn.deleteBid']  5
+  Wait Visibility And Click Element  css=button[tid='btn.deleteBid']
+  Wait For Ajax
+  Wait Visibility And Click Element  css=button[tid='modal.button.1']
+  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
+  Wait Until Element Is Not Visible  css=button[tid='btn.deleteBid']  ${COMMONWAIT}
 
 
 Внести зміни в об'єкт МП
