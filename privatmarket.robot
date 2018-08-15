@@ -581,7 +581,7 @@ Check If Question Is Uploaded
   ...  ELSE  Input Text  css=input[tid='bid.value.amount']  ${amount2}
   Click Button  css=div#bid button[tid='createBid']
   Wait For Ajax
-  Wait Visibility And Click Element  css=button[tid='saveAndConfirm']  ${COMMONWAIT}
+  Wait Visibility And Click Element  css=button[tid='saveAndConfirm']
   Wait For Ajax
   Wait Until Element Is Not Visible  css=button[tid='saveAndConfirm']
   Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
@@ -603,7 +603,7 @@ Check If Question Is Uploaded
 
   Click Element  css=div#bid button[tid='createBid']
   Wait For Ajax
-  Wait Visibility And Click Element  css=button[tid='saveAndConfirm']  ${COMMONWAIT}
+  Wait Visibility And Click Element  css=button[tid='saveAndConfirm']
   Wait For Ajax
   Wait Until Element Is Not Visible  css=button[tid='saveAndConfirm']
   Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
