@@ -620,6 +620,8 @@ Check If Question Is Uploaded
   Wait For Ajax
   Wait Until Element Is Not Visible  css=button[tid='saveAndConfirm']
   Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
+  Wait Until Page Contains  Ставка успішно збережена  60
+  Click Element  xpath=//button[@tid='defaultOk']
 
 
 Завантажити документ в ставку
