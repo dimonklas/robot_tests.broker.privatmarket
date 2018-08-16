@@ -581,11 +581,76 @@ Check If Question Is Uploaded
   ...  ELSE  Input Text  css=input[tid='bid.value.amount']  ${amount2}
   Click Button  css=div#bid button[tid='createBid']
   Wait For Ajax
-  Wait Until Element Is Visible  css=button[tid='saveAndConfirm']  ${COMMONWAIT}
-  Click Button  css=button[tid='saveAndConfirm']
+  Wait Visibility And Click Element  css=button[tid='saveAndConfirm']
   Wait For Ajax
   Wait Until Element Is Not Visible  css=button[tid='saveAndConfirm']
   Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
+  Wait Until Page Contains  Ставка успішно збережена  60
+  Click Element  xpath=//button[@tid='defaultOk']
+
+
+Отримати інформацію із пропозиції
+  [Arguments]  ${user_name}  ${tender_id}  ${field}
+  ${locator}=  Set Variable If  '${field}' == 'value.amount'  css=span[tid='bid.amount']  null
+  Wait For Ajax
+  Wait For Element With Reload  ${locator}
+  ${result}=  Get Text  ${locator}
+  ${result}=  Replace String  ${result}  ${SPACE}  ${EMPTY}
+  ${result}=  Replace String  ${result}  ,  .
+  ${result}=  Convert To Number  ${result}
+  [Return]  ${result}
+
+
+Змінити цінову пропозицію
+  [Arguments]  ${user_name}  ${tender_id}  ${name}  ${value}
+  ${os}=  Evaluate  platform.system()  platform
+  ${amount}=  Convert To String  ${value}
+  ${amount2}=  Replace String  ${amount}  .  ,
+
+  Wait For Element With Reload  css=button[tid='modifyBid']  5
+  Wait Visibility And Click Element  css=button[tid='modifyBid']
+  Wait Until Element Is Visible  css=input[tid='bid.value.amount']  ${COMMONWAIT}
+  Clear Element Text  css=input[tid='bid.value.amount']
+  Run Keyword If  '${os}' == 'Linux'  Input Text  css=input[tid='bid.value.amount']  ${amount}
+  ...  ELSE  Input Text  css=input[tid='bid.value.amount']  ${amount2}
+
+  Click Element  css=div#bid button[tid='createBid']
+  Wait For Ajax
+  Wait Visibility And Click Element  css=button[tid='saveAndConfirm']
+  Wait For Ajax
+  Wait Until Element Is Not Visible  css=button[tid='saveAndConfirm']
+  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
+  Wait Until Page Contains  Ставка успішно збережена  60
+  Click Element  xpath=//button[@tid='defaultOk']
+
+
+Завантажити документ в ставку
+  [Arguments]  ${user_name}  ${filepath}  ${tender_id}=${None}
+  Wait Visibility And Click Element  css=button[tid='modifyBid']
+  Wait Until Element Is Visible  xpath=//*[@tid='btn.addProposalDocs']  ${COMMONWAIT}
+  Execute Javascript  document.querySelector("input[id='addProposalDocs']").className = ''
+  Sleep  2s
+  Choose File  css=input[id='addProposalDocs']  ${filepath}
+  Sleep  10s
+  Wait For Ajax
+  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
+  Wait Visibility And Click Element  css=div#bid button[tid='createBid']
+  Wait Visibility And Click Element  css=button[tid='saveAndConfirm']
+  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
+  Wait Until Page Contains  Документи додані до пропозиції  60
+  Wait For Ajax
+  Wait Until Element Is Enabled  xpath=//button[@tid='defaultOk']  ${COMMONWAIT}
+  Click Element  xpath=//button[@tid='defaultOk']
+
+
+Скасувати цінову пропозицію
+  [Arguments]  ${user_name}  ${tender_id}
+  Wait For Element With Reload  css=button[tid='btn.deleteBid']  5
+  Wait Visibility And Click Element  css=button[tid='btn.deleteBid']
+  Wait For Ajax
+  Wait Visibility And Click Element  css=button[tid='modal.button.1']
+  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
+  Wait Until Element Is Not Visible  css=button[tid='btn.deleteBid']  ${COMMONWAIT}
 
 
 Внести зміни в об'єкт МП
@@ -828,7 +893,7 @@ Check If Question Is Uploaded
   Go To  ${USERS.users['${username}'].homepage}
   Run Keyword And Ignore Error  Login  ${user_name}
   privatmarket.Пошук тендера по ідентифікатору  ${user_name}  ${tender_id}
-  ${url}=  privatmarket.Отримати посилання на аукціон для глядача
+  ${url}=  privatmarket.Отримати посилання на аукціон для глядача  ${user_name}  ${tender_id}
   [Return]  ${url}
 
 
