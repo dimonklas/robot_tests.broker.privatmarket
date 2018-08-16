@@ -1,8 +1,9 @@
 # coding=utf-8
 
 from datetime import datetime
+from datetime import timedelta
 from pytz import timezone
-import urllib
+import dateutil.parser
 
 
 def modify_test_data(tender_data):
@@ -33,3 +34,9 @@ def get_time_with_offset(date):
     time_zone = timezone('Europe/Kiev')
     localized_date = time_zone.localize(date_obj)
     return localized_date.strftime('%Y-%m-%d %H:%M:%S.%f%z')
+
+
+def increase_date_on_days(date, days):
+    date = dateutil.parser.parse(date).date()
+    date += timedelta(days=int(days))
+    return date.strftime('%d/%m/%Y')
