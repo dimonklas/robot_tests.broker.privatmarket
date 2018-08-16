@@ -4,6 +4,8 @@ from datetime import datetime
 from datetime import timedelta
 from pytz import timezone
 import dateutil.parser
+import sys
+import re
 
 
 def modify_test_data(tender_data):
@@ -40,3 +42,21 @@ def increase_date_on_days(date, days):
     date = dateutil.parser.parse(date).date()
     date += timedelta(days=int(days))
     return date.strftime('%d/%m/%Y')
+
+
+def get_accelerator(scenarios):
+    m = re.search('/(\w*)', scenarios)
+    scenarios = m.group(1)
+    actives_and_lots = ["ssp_full_registry", "ssp_delete_asset", "ssp_delete_lot"]
+    if scenarios in actives_and_lots:
+        return 150
+    else:
+        return 1440
+
+
+def get_scenarios_name():
+    name = ''
+    for param in sys.argv:
+        if 'txt' in param:
+            name = param
+    return name
