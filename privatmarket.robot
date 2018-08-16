@@ -222,7 +222,7 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
 Заповнити дані про аукціон
   [Arguments]  ${tender_data}
   ${date}=  Get From Dictionary  ${tender_data.auctionPeriod}  startDate
-  ${correctDate}=  Convert Date Format  ${date}
+  ${correctDate}=  increase_date_on_days  ${date}  5
   ${value}=  Convert To String  ${tender_data.value.amount}
   ${guarantee}=  Convert To String  ${tender_data.guarantee.amount}
   ${minimalStep}=  Convert To String  ${tender_data.minimalStep.amount}
@@ -1157,14 +1157,6 @@ Try Search Element
   Wait Until Element Is Visible  ${locator}  7
   Wait Until Element Is Enabled  ${locator}  5
   [Return]  True
-
-
-Convert Date Format
-  [Arguments]  ${element}
-  ${result}=  Split String  ${element}  T
-  ${date}=  Set Variable  ${result[0]}
-  ${correctDate}=  Convert Date  ${date}  result_format=%d/%m/%Y
-  [Return]  ${correctDate}
 
 
 Get New Auction Date
