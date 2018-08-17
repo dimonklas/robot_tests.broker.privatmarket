@@ -759,6 +759,18 @@ Check If Question Is Uploaded
   Wait Until Page Contains  Аукціон відмінено  60
 
 
+Скасування рішення кваліфікаційної комісії
+  [Arguments]  ${user_name}  ${tender_id}  ${award_num}
+  privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tender_id}
+  Wait For Element With Reload  css=button[tid='btn.award.cancellation']  4
+  Click Button  css=button[tid='btn.award.cancellation']
+  Wait For Ajax
+  Wait Until Element Is Visible  xpath=(//div[@tid='dialogModal']//button[contains(@class, 'btn btn-success')])[2]  ${COMMONWAIT}
+  Click Button  xpath=(//div[@tid='dialogModal']//button[contains(@class, 'btn btn-success')])[2]
+  Wait For Ajax
+  Wait Until Element Is Visible  css=button[tid='defaultOk']  ${COMMONWAIT}
+  Click Element  css=button[tid='defaultOk']
+
 
 Внести зміни в поле
   [Arguments]  ${elementLocator}  ${input}
