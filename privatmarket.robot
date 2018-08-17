@@ -193,6 +193,7 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   ${accelerator}=  get_accelerator  ${scenarios_name}
   Execute Javascript  angular.prozorroaccelerator=${accelerator};
   Execute Javascript  angular.prozorroauctionstartdelay = (30+180)*60*1000;
+  Execute Javascript  angular.prozorro_submission_method_details='fast-forward'
   Click Element  xpath=//button[@tid='btn.createaInfo']
   Wait For Ajax
   Execute Javascript  document.querySelector("span[tid='lotID']").className = ''
@@ -770,6 +771,27 @@ Check If Question Is Uploaded
   Wait For Ajax
   Wait Until Element Is Visible  css=button[tid='defaultOk']  ${COMMONWAIT}
   Click Element  css=button[tid='defaultOk']
+
+
+Завантажити протокол дискваліфікації в авард
+  [Arguments]  ${user_name}  ${tender_id}  ${doc_path}  ${award_num}
+  ${file_path}  ${file_title}  ${file_content}=  create_fake_doc
+  debug
+  Click Button  css=button[tid='btn.award.disqualify']
+  Wait Until Element Is Visible  css=button[tid='btn.award.addDocForCancel']  ${COMMONWAIT}
+  Execute Javascript  document.querySelector("input[id='rejectQualificationInput${award_num}']").className = ''
+  Sleep  2s
+  Choose File  css=input[id='rejectQualificationInput${award_num}']  ${file_path}
+  Wait For Ajax
+
+
+Дискваліфікувати постачальника
+  [Arguments]  ${user_name}  ${tender_id}  ${award_num}  ${description}
+  debug
+  Wait Until Element Is Visible  css=button[tid='btn.award.unsuccessful']  ${COMMONWAIT}
+  Click Button  css=button[tid='btn.award.unsuccessful']
+  Wait For Ajax
+  Reload Page
 
 
 Внести зміни в поле
