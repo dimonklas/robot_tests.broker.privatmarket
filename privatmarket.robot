@@ -780,12 +780,14 @@ Check If Question Is Uploaded
   [Arguments]  ${user_name}  ${tender_id}  ${doc_path}  ${award_num}
   ${file_path}  ${file_title}  ${file_content}=  create_fake_doc
   debug
-  Click Button  css=button[tid='btn.award.disqualify']
+  Wait Visibility And Click Element  css=button[tid='btn.award.disqualify']
   Wait Until Element Is Visible  css=button[tid='btn.award.addDocForCancel']  ${COMMONWAIT}
+  Click Element  xpath=//input[@tid='disqualifyTypeRejectionProtocol']
   Execute Javascript  document.querySelector("input[id='rejectQualificationInput${award_num}']").className = ''
   Sleep  2s
   Choose File  css=input[id='rejectQualificationInput${award_num}']  ${file_path}
   Wait For Ajax
+  Wait Until Page Contains  ${file_title}  60
 
 
 Дискваліфікувати постачальника
