@@ -767,7 +767,6 @@ Check If Question Is Uploaded
 Завантажити протокол дискваліфікації в авард
   [Arguments]  ${user_name}  ${tender_id}  ${doc_path}  ${award_num}
   ${file_path}  ${file_title}  ${file_content}=  create_fake_doc
-  debug
   Wait Visibility And Click Element  css=button[tid='btn.award.disqualify']
   Wait Until Element Is Visible  css=button[tid='btn.award.addDocForCancel']  ${COMMONWAIT}
   Click Element  xpath=//input[@tid='disqualifyTypeRejectionProtocol']
@@ -780,7 +779,6 @@ Check If Question Is Uploaded
 
 Дискваліфікувати постачальника
   [Arguments]  ${user_name}  ${tender_id}  ${award_num}  ${description}
-  debug
   Wait Until Element Is Visible  css=button[tid='btn.award.unsuccessful']  ${COMMONWAIT}
   Click Button  css=button[tid='btn.award.unsuccessful']
   Wait For Ajax
