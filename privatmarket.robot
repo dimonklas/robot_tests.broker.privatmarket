@@ -175,6 +175,7 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   ${tender_id}=  Get Text  css=div[tid='assetID']
   Go To  ${USERS.users['${username}'].homepage}
   Wait For Ajax
+  Log To Console  ${tender_id}
   [Return]  ${tender_id}
 
 
@@ -199,11 +200,13 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   Execute Javascript  document.querySelector("span[tid='lotID']").className = ''
   sleep  2
   ${tender_id}=  Get Element Attribute  xpath=//span[@tid='lotID']@data-id
+  Log To Console  ${tender_id}
   [Return]  ${tender_id}
 
 
 Активувати процедуру
   [Arguments]  ${username}  ${tender_id}
+  Log To Console  ${tender_id}
   Wait For Ajax
   privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tender_id}
   Wait Until Keyword Succeeds  10min  15s  Дочекатися активованого статусу процедури
@@ -1101,6 +1104,55 @@ Get Cancellation Status
   Wait For Element With Reload  xpath=//div[text()='${item.description}']
 
 
+Завантажити протокол аукціону в авард
+  [Arguments]  ${username}  ${tender_id}  ${file_path}  ${award_index}
+  Wait Until Element Is Visible  xpath=//*[@tid='docProtocol']  ${COMMONWAIT}
+  Execute Javascript  document.querySelector("input[id='docsProtocolI']").className = ''
+  Sleep  2s
+  Choose File  css=input[id='docsProtocolI']  ${file_path}
+  Wait For Ajax
+  Wait Until Element Is Visible  css=button[tid='confirmProtocol']  ${COMMONWAIT}
+  Click Element  css=button[tid='confirmProtocol']
+  Wait For Ajax
+  Wait Until Element Is Visible  css=button[tid='defaultOk']  ${COMMONWAIT}
+  Click Element  css=button[tid='defaultOk']
+
+
+Підтвердити постачальника
+  [Arguments]  ${username}  ${tender_id}  ${award_num}
+  privatmarket.Пошук тендера по ідентифікатору  ${user_name}  ${tender_id}
+
+
+Завантажити угоду до тендера
+  [Arguments]  ${username}  ${tender_id}  ${contract_num}  ${file_path}
+  Wait Until Element Is Visible  xpath=//*[@tid='docContract']  ${COMMONWAIT}
+  Execute Javascript  document.querySelector("input[id='docsContractI']").className = ''
+  Sleep  2s
+  Choose File  css=input[id='docsContractI']  ${file_path}
+  Sleep  10s
+  Wait For Ajax
+  Wait Until Element Is Enabled  xpath=//*[@tid='contractConfirm']  ${COMMONWAIT}
+  Click Element  xpath=//*[@tid='contractConfirm']
+  Wait For Ajax
+  Wait Until Element Is Visible  css=button[tid='defaultOk']  ${COMMONWAIT}
+  Click Element  css=button[tid='defaultOk']
+
+
+Встановити дату підписання угоди
+  [Arguments]  ${username}  ${tender_id}  ${contract_index}  ${fieldvalue}
+  ${date}=  Get New Auction Date  ${fieldvalue}
+  Wait Until Element Is Enabled  css=input[tid='contractSignDate']  ${COMMONWAIT}
+  Input Text  css=input[tid='contractSignDate']  ${date}
+
+
+Підтвердити підписання контракту
+  [Arguments]  ${username}  ${tender_id}  ${contract_num}
+  Wait Enable And Click Element  css=label[tid="contractActivate"]
+  Wait For Ajax
+  Wait Until Element Is Visible  css=button[tid='defaultOk']  ${COMMONWAIT}
+  Click Element  css=button[tid='defaultOk']
+
+
 Login
   [Arguments]  ${username}
   Sleep  15s
@@ -1199,7 +1251,7 @@ Get New Auction Date
   [Arguments]  ${element}
   ${result}=  Split String  ${element}  T
   ${date}=  Set Variable  ${result[0]}
-  ${correctDate}=  Convert Date  ${date}  result_format=%d
+  ${correctDate}=  Convert Date  ${date}  result_format=%d/%m/%Y
   [Return]  ${correctDate}
 
 
