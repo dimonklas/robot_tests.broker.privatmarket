@@ -166,7 +166,6 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
 
   Click Button  css=button[tid="btn.createasset"]
   Wait For Ajax
-  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
   Wait Until Element Is Visible  css=div[tid='data.title']  ${COMMONWAIT}
   Wait For Ajax
   Wait Enable And Click Element  css=button[tid="btn.publicateLot"]
@@ -244,6 +243,7 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   Input Text  css=input[tid='auction.bankAccount.bankName']  ${tender_data.bankAccount.bankName}
   Input Text  css=input[tid='auction.bankAccount.accountIdentification.mfo']  ${tender_data.bankAccount.accountIdentification[0].scheme}
   Input Text  css=input[tid='auction.bankAccount.accountIdentification.crf']  ${tender_data.bankAccount.accountIdentification[0].id}
+  Execute Javascript  angular.prozorro_submission_method_details='fast-forward'
 
 
 Заповнити тривалість аукціону
@@ -252,7 +252,7 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   ${count}=  Set Variable If  '${duration}' == 'P1M'  30
   Input Text  xpath=//input[@tid='auction.tenderingDuration']  ${count}
   Click Element  xpath=//button[@tid='btn.createInfo']
-  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
+  Wait For Ajax
   Wait Until Element Is Visible  ${lot_data_title}  ${COMMONWAIT}
 
 
@@ -443,7 +443,6 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
 
   Click Button  css=button[tid='sendQuestion']
   Sleep  5s
-  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
   Wait For Element With Reload  css=span[tid='data.question.date']
 
 
@@ -458,7 +457,6 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
 
   Click Button  css=button[tid='sendQuestion']
   Sleep  5s
-  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
   Wait Until Keyword Succeeds  3min  3s  Check If Question Is Uploaded  ${question_data.data.title}
 
 
@@ -589,8 +587,6 @@ Check If Question Is Uploaded
   Wait For Ajax
   Wait Visibility And Click Element  css=button[tid='saveAndConfirm']
   Wait For Ajax
-  Wait Until Element Is Not Visible  css=button[tid='saveAndConfirm']
-  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
   Wait Until Page Contains  Ставка успішно збережена  60
   Click Element  xpath=//button[@tid='defaultOk']
 
@@ -624,8 +620,6 @@ Check If Question Is Uploaded
   Wait For Ajax
   Wait Visibility And Click Element  css=button[tid='saveAndConfirm']
   Wait For Ajax
-  Wait Until Element Is Not Visible  css=button[tid='saveAndConfirm']
-  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
   Wait Until Page Contains  Ставка успішно збережена  60
   Click Element  xpath=//button[@tid='defaultOk']
 
@@ -639,10 +633,8 @@ Check If Question Is Uploaded
   Choose File  css=input[id='addProposalDocs']  ${filepath}
   Sleep  10s
   Wait For Ajax
-  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
   Wait Visibility And Click Element  css=div#bid button[tid='createBid']
   Wait Visibility And Click Element  css=button[tid='saveAndConfirm']
-  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
   Wait Until Page Contains  Документи додані до пропозиції  60
   Wait For Ajax
   Wait Until Element Is Enabled  xpath=//button[@tid='defaultOk']  ${COMMONWAIT}
@@ -655,8 +647,6 @@ Check If Question Is Uploaded
   Wait Visibility And Click Element  css=button[tid='btn.deleteBid']
   Wait For Ajax
   Wait Visibility And Click Element  css=button[tid='modal.button.1']
-  Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
-  Wait Until Element Is Not Visible  css=button[tid='btn.deleteBid']  ${COMMONWAIT}
 
 
 Внести зміни в об'єкт МП
@@ -759,7 +749,6 @@ Check If Question Is Uploaded
   Click Button  css=button[tid='btn.cancellation']
   Sleep  10s
   Wait For Ajax
-  Wait Until Element Is Not Visible  css=div.progress.progress-bar  60
   Wait Until Page Contains  Аукціон відмінено  60
 
 
@@ -1143,16 +1132,17 @@ Get Cancellation Status
 Встановити дату підписання угоди
   [Arguments]  ${username}  ${tender_id}  ${contract_index}  ${fieldvalue}
   ${date}=  Get New Auction Date  ${fieldvalue}
+  ${hours}=  Get Regexp Matches  ${fieldvalue}  T(\\d{2})  1
+  ${mins}=  Get Regexp Matches  ${fieldvalue}  T\\d{2}:(\\d{2})  1
   Wait Until Element Is Enabled  css=input[tid='contractSignDate']  ${COMMONWAIT}
   Input Text  css=input[tid='contractSignDate']  ${date}
+  Input Text  css=input[ng-model='hours']  ${hours}
+  Input Text  css=input[ng-model='minutes']  ${mins}
 
 
 Підтвердити підписання контракту
   [Arguments]  ${username}  ${tender_id}  ${contract_num}
   Wait Enable And Click Element  css=label[tid="contractActivate"]
-  Wait For Ajax
-  Wait Until Element Is Visible  css=button[tid='defaultOk']  ${COMMONWAIT}
-  Click Element  css=button[tid='defaultOk']
 
 
 Login
@@ -1162,7 +1152,6 @@ Login
   Login with email  ${username}
   ${notification_visibility}=  Run Keyword And Return Status  Wait Until Element Is Visible  css=button[ng-click='later()']
   Run Keyword If  '${notification_visibility}' == 'True'  Click Element  css=button[ng-click='later()']
-  Wait Until Element Is Not Visible  css=button[ng-click='later()']
   Wait For Ajax
   Wait Until Element Is Visible  css=input[tid='global.search']  ${COMMONWAIT}
 
@@ -1182,8 +1171,6 @@ Login with P24
   Click Element  css=.btn.btn-success.custom-btn-confirm.sms
   Sleep  3s
   Wait For Ajax
-  Wait Until Element Is Not Visible  css=div#preloader  ${COMMONWAIT}
-  Wait Until Element Is Not Visible  css=.btn.btn-success.custom-btn-confirm.sms
 
 
 Login with email
@@ -1229,8 +1216,7 @@ Try Search Auction
   ...  AND  Input Text  css=input[tid='global.search']  ${tender_id}
 
   Press Key  css=input[tid='global.search']  \\13
-  Wait Until Element Is Not Visible  css=div.progress.progress-bar  15s
-  Wait Until Element Is Not Visible  css=div[role='dialog']  15s
+  Wait For Ajax
   Wait Until Element Is Visible  css=div[tid='${tender_id}']  ${COMMONWAIT}
   [Return]  True
 
