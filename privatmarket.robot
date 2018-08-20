@@ -244,6 +244,7 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   Input Text  css=input[tid='auction.bankAccount.accountIdentification.crf']  ${tender_data.bankAccount.accountIdentification[0].id}
 
 
+
 Заповнити тривалість аукціону
   [Arguments]  ${tender_data}
   ${duration}=  Get From Dictionary  ${tender_data}  tenderingDuration
@@ -1151,7 +1152,7 @@ Get Cancellation Status
 
 
 Активувати кваліфікацію учасника
-  [Arguments]  ${username}  ${tender_id}
+  [Arguments]  ${username}  ${tender_uaid}
   Wait Until Element Is Visible  css=button[tid='confirmProtocol']  ${COMMONWAIT}
   Click Element  css=button[tid='confirmProtocol']
   Wait For Ajax
