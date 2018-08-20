@@ -1151,8 +1151,8 @@ Get Cancellation Status
   Wait For Ajax
 
 
-Можливість активувати процес кваліфікації єдиного учасника
-  [Arguments]  ${username}  ${tender_uaid}
+Активувати кваліфікацію учасника
+  [Arguments]  ${username}  ${tender_id}
   Wait Until Element Is Visible  css=button[tid='confirmProtocol']  ${COMMONWAIT}
   Click Element  css=button[tid='confirmProtocol']
   Wait For Ajax
