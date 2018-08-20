@@ -242,6 +242,7 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   Input Text  css=input[tid='auction.bankAccount.bankName']  ${tender_data.bankAccount.bankName}
   Input Text  css=input[tid='auction.bankAccount.accountIdentification.mfo']  ${tender_data.bankAccount.accountIdentification[0].scheme}
   Input Text  css=input[tid='auction.bankAccount.accountIdentification.crf']  ${tender_data.bankAccount.accountIdentification[0].id}
+  Execute Javascript  angular.prozorro_submission_method_details='fast-forward'
 
 
 Заповнити тривалість аукціону
@@ -1117,7 +1118,7 @@ Get Cancellation Status
   Wait For Ajax
 
 
-Можливість активувати процес кваліфікації єдиного учасника
+Активувати кваліфікацію учасника
   [Arguments]  ${username}  ${tender_uaid}
   Wait Until Element Is Visible  css=button[tid='confirmProtocol']  ${COMMONWAIT}
   Click Element  css=button[tid='confirmProtocol']
