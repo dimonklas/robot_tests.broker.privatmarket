@@ -242,7 +242,6 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   Input Text  css=input[tid='auction.bankAccount.bankName']  ${tender_data.bankAccount.bankName}
   Input Text  css=input[tid='auction.bankAccount.accountIdentification.mfo']  ${tender_data.bankAccount.accountIdentification[0].scheme}
   Input Text  css=input[tid='auction.bankAccount.accountIdentification.crf']  ${tender_data.bankAccount.accountIdentification[0].id}
-  Execute Javascript  angular.prozorro_submission_method_details='fast-forward'
 
 
 Заповнити тривалість аукціону
@@ -1107,6 +1106,24 @@ Get Cancellation Status
 Підтвердити підписання контракту
   [Arguments]  ${username}  ${tender_id}  ${contract_num}
   Wait Enable And Click Element  css=label[tid="contractActivate"]
+
+
+Завантажити протокол погодження в авард
+  [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${award_index}
+  Wait Until Element Is Visible  xpath=//*[@tid='docProtocol']  ${COMMONWAIT}
+  Execute Javascript  document.querySelector("input[id='docsProtocolI']").className = ''
+  Sleep  2s
+  Choose File  css=input[id='docsProtocolI']  ${filepath}
+  Wait For Ajax
+
+
+Можливість активувати процес кваліфікації єдиного учасника
+  [Arguments]  ${username}  ${tender_uaid}
+  Wait Until Element Is Visible  css=button[tid='confirmProtocol']  ${COMMONWAIT}
+  Click Element  css=button[tid='confirmProtocol']
+  Wait For Ajax
+  Wait Until Element Is Visible  css=button[tid='defaultOk']  ${COMMONWAIT}
+  Click Element  css=button[tid='defaultOk']
 
 
 Login
