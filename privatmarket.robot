@@ -751,6 +751,39 @@ Check If Question Is Uploaded
   Wait Until Page Contains  Аукціон відмінено  60
 
 
+Скасування рішення кваліфікаційної комісії
+  [Arguments]  ${user_name}  ${tender_id}  ${award_num}
+  privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tender_id}
+  Wait For Element With Reload  css=button[tid='btn.award.cancellation']  4
+  Click Button  css=button[tid='btn.award.cancellation']
+  Wait For Ajax
+  Wait Until Element Is Visible  xpath=(//div[@tid='dialogModal']//button[contains(@class, 'btn btn-success')])[2]  ${COMMONWAIT}
+  Click Button  xpath=(//div[@tid='dialogModal']//button[contains(@class, 'btn btn-success')])[2]
+  Wait For Ajax
+  Wait Until Element Is Visible  css=button[tid='defaultOk']  ${COMMONWAIT}
+  Click Element  css=button[tid='defaultOk']
+
+
+Завантажити протокол дискваліфікації в авард
+  [Arguments]  ${user_name}  ${tender_id}  ${doc_path}  ${award_num}
+  ${file_path}  ${file_title}  ${file_content}=  create_fake_doc
+  Wait Visibility And Click Element  css=button[tid='btn.award.disqualify']
+  Wait Until Element Is Visible  css=button[tid='btn.award.addDocForCancel']  ${COMMONWAIT}
+  Click Element  xpath=//input[@tid='disqualifyTypeRejectionProtocol']
+  Execute Javascript  document.querySelector("input[id='rejectQualificationInput${award_num}']").className = ''
+  Sleep  2s
+  Choose File  css=input[id='rejectQualificationInput${award_num}']  ${file_path}
+  Wait For Ajax
+  Wait Until Page Contains  ${file_title}  60
+
+
+Дискваліфікувати постачальника
+  [Arguments]  ${user_name}  ${tender_id}  ${award_num}  ${description}
+  Wait Until Element Is Visible  css=button[tid='btn.award.unsuccessful']  ${COMMONWAIT}
+  Click Button  css=button[tid='btn.award.unsuccessful']
+  Wait For Ajax
+  Reload Page
+
 
 Внести зміни в поле
   [Arguments]  ${elementLocator}  ${input}
