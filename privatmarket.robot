@@ -193,7 +193,6 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   ${accelerator}=  get_accelerator  ${scenarios_name}
   Execute Javascript  angular.prozorroaccelerator=${accelerator};
   Execute Javascript  angular.prozorroauctionstartdelay = (30+180)*60*1000;
-  Execute Javascript  angular.prozorro_submission_method_details='fast-forward'
   Click Element  xpath=//button[@tid='btn.createaInfo']
   Wait For Ajax
   Execute Javascript  document.querySelector("span[tid='lotID']").className = ''
