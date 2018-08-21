@@ -770,7 +770,7 @@ Check If Question Is Uploaded
   Click Element  xpath=//input[@tid='disqualifyTypeRejectionProtocol']
   Execute Javascript  document.querySelector("input[id^='rejectQualificationInput']").className = ''
   Sleep  2s
-  Choose File  css=input[id^='rejectQualificationInput']  ${file_path}
+  Choose File  css=input[id^='rejectQualificationInput']  ${doc_path}
   Wait For Ajax
 
 
