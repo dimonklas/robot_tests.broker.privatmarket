@@ -779,8 +779,8 @@ Check If Question Is Uploaded
 
 Дискваліфікувати постачальника
   [Arguments]  ${user_name}  ${tender_id}  ${award_num}  ${description}
-  Wait Until Element Is Visible  css=button[tid='btn.award.unsuccessful']  ${COMMONWAIT}
-  Click Button  css=button[tid='btn.award.unsuccessful']
+  Wait For Ajax
+  Wait Enable And Click Element  css=button[tid='btn.award.unsuccessful']
   Wait For Ajax
   Reload Page
 
