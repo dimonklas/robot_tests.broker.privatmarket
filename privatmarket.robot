@@ -193,7 +193,6 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   ${accelerator}=  get_accelerator  ${scenarios_name}
   Execute Javascript  angular.prozorroaccelerator=${accelerator};
   Execute Javascript  angular.prozorroauctionstartdelay = (30+180)*60*1000;
-  Execute Javascript  angular.prozorro_submission_method_details='fast-forward'
   Click Element  xpath=//button[@tid='btn.createaInfo']
   Wait For Ajax
   Execute Javascript  document.querySelector("span[tid='lotID']").className = ''
@@ -243,7 +242,6 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   Input Text  css=input[tid='auction.bankAccount.bankName']  ${tender_data.bankAccount.bankName}
   Input Text  css=input[tid='auction.bankAccount.accountIdentification.mfo']  ${tender_data.bankAccount.accountIdentification[0].scheme}
   Input Text  css=input[tid='auction.bankAccount.accountIdentification.crf']  ${tender_data.bankAccount.accountIdentification[0].id}
-
 
 
 Заповнити тривалість аукціону
@@ -767,21 +765,32 @@ Check If Question Is Uploaded
 
 Завантажити протокол дискваліфікації в авард
   [Arguments]  ${user_name}  ${tender_id}  ${doc_path}  ${award_num}
-  #${file_path}  ${file_title}  ${file_content}=  create_fake_doc
-  Wait Enable And Click Element  css=button[tid='btn.award.disqualify']
+  Wait Visibility And Click Element  css=button[tid='btn.award.disqualify']
   Wait Until Element Is Visible  css=button[tid='btn.award.addDocForCancel']  ${COMMONWAIT}
   Click Element  xpath=//input[@tid='disqualifyTypeRejectionProtocol']
-  Execute Javascript  document.querySelector("input[id='rejectQualificationInput${award_num}']").className = ''
+  Execute Javascript  document.querySelector("input[id^='rejectQualificationInput']").className = ''
   Sleep  2s
-  Choose File  css=input[id='rejectQualificationInput${award_num}']  ${doc_path}
+  Choose File  css=input[id^='rejectQualificationInput']  ${file_path}
   Wait For Ajax
-  Wait Until Page Contains  ${file_title}  60
 
 
 Дискваліфікувати постачальника
   [Arguments]  ${user_name}  ${tender_id}  ${award_num}  ${description}
+  Wait Until Element Is Visible  css=button[tid='btn.award.unsuccessful']  ${COMMONWAIT}
+  Click Button  css=button[tid='btn.award.unsuccessful']
   Wait For Ajax
-  Wait Enable And Click Element  css=button[tid='btn.award.unsuccessful']
+  Reload Page
+
+
+Завантажити протокол скасування в контракт
+  [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${contract_index}
+  privatmarket.Завантажити протокол дискваліфікації в авард  ${username}  ${tender_uaid}  ${filepath}  ${contract_index}
+
+
+Скасувати контракт
+  [Arguments]  ${username}  ${tender_id}  ${contract_num}
+  Wait Until Element Is Visible  css=button[tid='btn.award.unsuccessful']  ${COMMONWAIT}
+  Click Button  css=button[tid='btn.award.unsuccessful']
   Wait For Ajax
   Reload Page
 
