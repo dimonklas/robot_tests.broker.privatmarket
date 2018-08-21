@@ -193,6 +193,7 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   ${accelerator}=  get_accelerator  ${scenarios_name}
   Execute Javascript  angular.prozorroaccelerator=${accelerator};
   Execute Javascript  angular.prozorroauctionstartdelay = (30+180)*60*1000;
+  Execute Javascript  angular.prozorro_submission_method_details='fast-forward'
   Click Element  xpath=//button[@tid='btn.createaInfo']
   Wait For Ajax
   Execute Javascript  document.querySelector("span[tid='lotID']").className = ''
@@ -766,13 +767,13 @@ Check If Question Is Uploaded
 
 Завантажити протокол дискваліфікації в авард
   [Arguments]  ${user_name}  ${tender_id}  ${doc_path}  ${award_num}
-  ${file_path}  ${file_title}  ${file_content}=  create_fake_doc
-  Wait Visibility And Click Element  css=button[tid='btn.award.disqualify']
+  #${file_path}  ${file_title}  ${file_content}=  create_fake_doc
+  Wait Enable And Click Element  css=button[tid='btn.award.disqualify']
   Wait Until Element Is Visible  css=button[tid='btn.award.addDocForCancel']  ${COMMONWAIT}
   Click Element  xpath=//input[@tid='disqualifyTypeRejectionProtocol']
   Execute Javascript  document.querySelector("input[id='rejectQualificationInput${award_num}']").className = ''
   Sleep  2s
-  Choose File  css=input[id='rejectQualificationInput${award_num}']  ${file_path}
+  Choose File  css=input[id='rejectQualificationInput${award_num}']  ${doc_path}
   Wait For Ajax
   Wait Until Page Contains  ${file_title}  60
 
