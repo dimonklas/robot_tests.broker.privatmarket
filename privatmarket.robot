@@ -1179,12 +1179,14 @@ Get Cancellation Status
   sleep  1s
   debug
   sleep  1s
+  Fail  Ключевое слово не реализовано
   Log To Console  ${contract}
 
 
 Отримати інформацію з активу в договорі
   [Arguments]  ${username}  ${contract_id}  ${item_id}  ${field_name}
   debug
+  Fail  Ключевое слово не реализовано
   ${element}=  Convert To String  questions[0].${element}
   ${element_for_work}=  Set variable  xpath=//div[contains(@class, 'questionsBox') and contains(., '${questions_id}')]//${procedure_data.${element}}
 
@@ -1200,12 +1202,14 @@ Get Cancellation Status
   sleep  1s
   debug
   sleep  1s
+  Fail  Ключевое слово не реализовано
 
 
 Завантажити наказ про завершення приватизації
   [Arguments]  ${username}  ${contract_id}  ${filepath}
   sleep  1s
   debug
+  Fail  Ключевое слово не реализовано
   Wait Until Element Is Visible  xpath=//*[@tid='docProtocol']  ${COMMONWAIT}
   Execute Javascript  document.querySelector("input[id='docsProtocolI']").className = ''
   Sleep  2s
@@ -1218,6 +1222,7 @@ Get Cancellation Status
   sleep  1s
   debug
   sleep  1s
+  Fail  Ключевое слово не реализовано
 
 
 Вказати дату виконання умов контракту
@@ -1225,11 +1230,13 @@ Get Cancellation Status
   sleep  1s
   debug
   sleep  1s
+  Fail  Ключевое слово не реализовано
 
 
 Отримати інформацію із договору
   [Arguments]  ${username}  ${contract_id}  ${field_name}
   debug
+  Fail  Ключевое слово не реализовано
   ${element}=  Convert To String  questions[0].${element}
   ${element_for_work}=  Set variable  xpath=//div[contains(@class, 'questionsBox') and contains(., '${questions_id}')]//${procedure_data.${element}}
 
@@ -1244,6 +1251,7 @@ Get Cancellation Status
   [Arguments]  ${username}  ${contract_id}  ${file_path}
   sleep  1s
   debug
+  Fail  Ключевое слово не реализовано
   Wait Until Element Is Visible  xpath=//*[@tid='docProtocol']  ${COMMONWAIT}
   Execute Javascript  document.querySelector("input[id='docsProtocolI']").className = ''
   Sleep  2s
@@ -1256,6 +1264,7 @@ Get Cancellation Status
   sleep  1s
   debug
   sleep  1s
+  Fail  Ключевое слово не реализовано
 
 
 Підтвердити невиконання умов приватизації
@@ -1263,6 +1272,7 @@ Get Cancellation Status
   sleep  1s
   debug
   sleep  1s
+  Fail  Ключевое слово не реализовано
 
 
 Login
