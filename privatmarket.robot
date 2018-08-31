@@ -196,7 +196,7 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   Click Element  xpath=//button[@tid='btn.createaInfo']
   Wait For Ajax
   Execute Javascript  document.querySelector("span[tid='lotID']").className = ''
-  sleep  2
+  Sleep  2
   ${tender_id}=  Get Element Attribute  xpath=//span[@tid='lotID']@data-id
   Log To Console  ${tender_id}
   [Return]  ${tender_id}
@@ -1170,6 +1170,99 @@ Get Cancellation Status
   Wait For Ajax
   Wait Until Element Is Visible  css=button[tid='defaultOk']  ${COMMONWAIT}
   Click Element  css=button[tid='defaultOk']
+
+
+#############################    CONTRACT_MANAGEMENT    ################################################################
+
+Активувати контракт
+  [Arguments]  ${username}  ${contract_id}
+  sleep  1s
+  debug
+  sleep  1s
+  Log To Console  ${contract}
+
+
+Отримати інформацію з активу в договорі
+  [Arguments]  ${username}  ${contract_id}  ${item_id}  ${field_name}
+  debug
+  ${element}=  Convert To String  questions[0].${element}
+  ${element_for_work}=  Set variable  xpath=//div[contains(@class, 'questionsBox') and contains(., '${questions_id}')]//${procedure_data.${element}}
+
+  Run Keyword And Return If  '${field_name}' == 'quantity'  Отримати число  ${element_for_work}
+
+  Wait Until Element Is Visible  ${element_for_work}  timeout=${COMMONWAIT}
+  ${result}=  Отримати текст елемента  ${element_for_work}
+  [Return]  ${result}
+
+
+Вказати дату отримання оплати
+  [Arguments]  ${username}  ${contract_id}  ${dateMet}  ${milestone_index}
+  sleep  1s
+  debug
+  sleep  1s
+
+
+Завантажити наказ про завершення приватизації
+  [Arguments]  ${username}  ${contract_id}  ${filepath}
+  sleep  1s
+  debug
+  Wait Until Element Is Visible  xpath=//*[@tid='docProtocol']  ${COMMONWAIT}
+  Execute Javascript  document.querySelector("input[id='docsProtocolI']").className = ''
+  Sleep  2s
+  Choose File  css=input[id='docsProtocolI']  ${file_path}
+  Wait For Ajax
+
+
+Вказати дату прийняття наказу
+  [Arguments]  ${username}  ${contract_id}  ${dateMet}
+  sleep  1s
+  debug
+  sleep  1s
+
+
+Вказати дату виконання умов контракту
+  [Arguments]  ${username}  ${contract_id}  ${dateMet}
+  sleep  1s
+  debug
+  sleep  1s
+
+
+Отримати інформацію із договору
+  [Arguments]  ${username}  ${contract_id}  ${field_name}
+  debug
+  ${element}=  Convert To String  questions[0].${element}
+  ${element_for_work}=  Set variable  xpath=//div[contains(@class, 'questionsBox') and contains(., '${questions_id}')]//${procedure_data.${element}}
+
+  Run Keyword And Return If  '${field_name}' == 'quantity'  Отримати число  ${element_for_work}
+
+  Wait Until Element Is Visible  ${element_for_work}  timeout=${COMMONWAIT}
+  ${result}=  Отримати текст елемента  ${element_for_work}
+  [Return]  ${result}
+
+
+Підтвердити відсутність наказу про приватизацію
+  [Arguments]  ${username}  ${contract_id}  ${file_path}
+  sleep  1s
+  debug
+  Wait Until Element Is Visible  xpath=//*[@tid='docProtocol']  ${COMMONWAIT}
+  Execute Javascript  document.querySelector("input[id='docsProtocolI']").className = ''
+  Sleep  2s
+  Choose File  css=input[id='docsProtocolI']  ${file_path}
+  Wait For Ajax
+
+
+Підтвердити відсутність оплати
+  [Arguments]  ${username}  ${contract_id}  ${milestone_index}
+  sleep  1s
+  debug
+  sleep  1s
+
+
+Підтвердити невиконання умов приватизації
+  [Arguments]  ${username}  ${contract_ua}
+  sleep  1s
+  debug
+  sleep  1s
 
 
 Login
