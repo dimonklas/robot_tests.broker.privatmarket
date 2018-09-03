@@ -128,6 +128,7 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   ${items}=  Get From Dictionary  ${tender_data.data}  items
   ${items_number}=  Get Length  ${items}
 
+  Sleep  40s
   Wait Enable And Click Element  css=#simple-dropdown
   Wait Enable And Click Element  css=a[href='#/add-asset']
   Wait Until Element Is Visible  css=input[tid="asset.title"]  ${COMMONWAIT}
@@ -196,7 +197,7 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
   Click Element  xpath=//button[@tid='btn.createaInfo']
   Wait For Ajax
   Execute Javascript  document.querySelector("span[tid='lotID']").className = ''
-  sleep  2
+  Sleep  2
   ${tender_id}=  Get Element Attribute  xpath=//span[@tid='lotID']@data-id
   Log To Console  ${tender_id}
   [Return]  ${tender_id}
@@ -1172,9 +1173,112 @@ Get Cancellation Status
   Click Element  css=button[tid='defaultOk']
 
 
+#############################    CONTRACT_MANAGEMENT    ################################################################
+
+Активувати контракт
+  [Arguments]  ${username}  ${contract_id}
+  sleep  1s
+  debug
+  sleep  1s
+  Fail  Ключевое слово не реализовано
+  Log To Console  ${contract}
+
+
+Отримати інформацію з активу в договорі
+  [Arguments]  ${username}  ${contract_id}  ${item_id}  ${field_name}
+  debug
+  Fail  Ключевое слово не реализовано
+  ${element}=  Convert To String  questions[0].${element}
+  ${element_for_work}=  Set variable  xpath=//div[contains(@class, 'questionsBox') and contains(., '${questions_id}')]//${procedure_data.${element}}
+
+  Run Keyword And Return If  '${field_name}' == 'quantity'  Отримати число  ${element_for_work}
+
+  Wait Until Element Is Visible  ${element_for_work}  timeout=${COMMONWAIT}
+  ${result}=  Отримати текст елемента  ${element_for_work}
+  [Return]  ${result}
+
+
+Вказати дату отримання оплати
+  [Arguments]  ${username}  ${contract_id}  ${dateMet}  ${milestone_index}
+  sleep  1s
+  debug
+  sleep  1s
+  Fail  Ключевое слово не реализовано
+
+
+Завантажити наказ про завершення приватизації
+  [Arguments]  ${username}  ${contract_id}  ${filepath}
+  sleep  1s
+  debug
+  Fail  Ключевое слово не реализовано
+  Wait Until Element Is Visible  xpath=//*[@tid='docProtocol']  ${COMMONWAIT}
+  Execute Javascript  document.querySelector("input[id='docsProtocolI']").className = ''
+  Sleep  2s
+  Choose File  css=input[id='docsProtocolI']  ${file_path}
+  Wait For Ajax
+
+
+Вказати дату прийняття наказу
+  [Arguments]  ${username}  ${contract_id}  ${dateMet}
+  sleep  1s
+  debug
+  sleep  1s
+  Fail  Ключевое слово не реализовано
+
+
+Вказати дату виконання умов контракту
+  [Arguments]  ${username}  ${contract_id}  ${dateMet}
+  sleep  1s
+  debug
+  sleep  1s
+  Fail  Ключевое слово не реализовано
+
+
+Отримати інформацію із договору
+  [Arguments]  ${username}  ${contract_id}  ${field_name}
+  debug
+  Fail  Ключевое слово не реализовано
+  ${element}=  Convert To String  questions[0].${element}
+  ${element_for_work}=  Set variable  xpath=//div[contains(@class, 'questionsBox') and contains(., '${questions_id}')]//${procedure_data.${element}}
+
+  Run Keyword And Return If  '${field_name}' == 'quantity'  Отримати число  ${element_for_work}
+
+  Wait Until Element Is Visible  ${element_for_work}  timeout=${COMMONWAIT}
+  ${result}=  Отримати текст елемента  ${element_for_work}
+  [Return]  ${result}
+
+
+Підтвердити відсутність наказу про приватизацію
+  [Arguments]  ${username}  ${contract_id}  ${file_path}
+  sleep  1s
+  debug
+  Fail  Ключевое слово не реализовано
+  Wait Until Element Is Visible  xpath=//*[@tid='docProtocol']  ${COMMONWAIT}
+  Execute Javascript  document.querySelector("input[id='docsProtocolI']").className = ''
+  Sleep  2s
+  Choose File  css=input[id='docsProtocolI']  ${file_path}
+  Wait For Ajax
+
+
+Підтвердити відсутність оплати
+  [Arguments]  ${username}  ${contract_id}  ${milestone_index}
+  sleep  1s
+  debug
+  sleep  1s
+  Fail  Ключевое слово не реализовано
+
+
+Підтвердити невиконання умов приватизації
+  [Arguments]  ${username}  ${contract_ua}
+  sleep  1s
+  debug
+  sleep  1s
+  Fail  Ключевое слово не реализовано
+
+
 Login
   [Arguments]  ${username}
-  Sleep  15s
+  Sleep  40s
   Wait Enable And Click Element  css=a[ui-sref='modal.login']
   Login with email  ${username}
   ${notification_visibility}=  Run Keyword And Return Status  Wait Until Element Is Visible  css=button[ng-click='later()']
@@ -1217,6 +1321,7 @@ Wait For Ajax
 
 Wait Enable And Click Element
   [Arguments]  ${elementLocator}
+  Wait Until Element Is Visible  ${elementLocator}  ${COMMONWAIT}
   Wait Until Element Is Enabled  ${elementLocator}  ${COMMONWAIT}
   Click Element  ${elementLocator}
   Wait For Ajax
