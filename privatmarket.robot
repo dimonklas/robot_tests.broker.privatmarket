@@ -1186,15 +1186,7 @@ Get Cancellation Status
 
 Отримати інформацію з активу в договорі
   [Arguments]  ${username}  ${contract_id}  ${item_id}  ${field_name}
-  debug
-  Fail  Ключевое слово не реализовано
-  ${element}=  Convert To String  questions[0].${element}
-  ${element_for_work}=  Set variable  xpath=//div[contains(@class, 'questionsBox') and contains(., '${questions_id}')]//${procedure_data.${element}}
-
-  Run Keyword And Return If  '${field_name}' == 'quantity'  Отримати число  ${element_for_work}
-
-  Wait Until Element Is Visible  ${element_for_work}  timeout=${COMMONWAIT}
-  ${result}=  Отримати текст елемента  ${element_for_work}
+  ${result}=  privatmarket.Отримати інформацію з активу об'єкта МП  ${username}  ${contract_id}  ${item_id}  ${field_name}
   [Return]  ${result}
 
 
@@ -1236,15 +1228,19 @@ Get Cancellation Status
 
 Отримати інформацію із договору
   [Arguments]  ${username}  ${contract_id}  ${field_name}
-  debug
-  Fail  Ключевое слово не реализовано
-  ${element}=  Convert To String  questions[0].${element}
-  ${element_for_work}=  Set variable  xpath=//div[contains(@class, 'questionsBox') and contains(., '${questions_id}')]//${procedure_data.${element}}
+  Run Keyword And Return If  '${field_name}' == 'status'  Отримати статус договору  ${field_name}
 
-  Run Keyword And Return If  '${field_name}' == 'quantity'  Отримати число  ${element_for_work}
 
-  Wait Until Element Is Visible  ${element_for_work}  timeout=${COMMONWAIT}
-  ${result}=  Отримати текст елемента  ${element_for_work}
+Отримати статус договору
+  [Arguments]  ${element}
+  Reload Page
+  Sleep  5s
+  ${element_text}=  Get Text  xpath=//span[@tid='contracting.status']/span[1]
+  ${text}=  Strip String  ${element_text}
+  ${text}=  Replace String  ${text}  ${\n}  ${EMPTY}
+  ${result}=  Set Variable If
+  ...  '${text}' == 'Приватизація об’єкта завершена'  terminated
+  ...  ${element}
   [Return]  ${result}
 
 
