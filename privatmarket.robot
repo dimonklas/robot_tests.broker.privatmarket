@@ -1186,6 +1186,7 @@ Get Cancellation Status
 
 Отримати інформацію з активу в договорі
   [Arguments]  ${username}  ${contract_id}  ${item_id}  ${field_name}
+  privatmarket.Пошук тендера по ідентифікатору  ${username}  ${contract_id}
   ${result}=  privatmarket.Отримати інформацію з активу об'єкта МП  ${username}  ${contract_id}  ${item_id}  ${field_name}
   [Return]  ${result}
 
