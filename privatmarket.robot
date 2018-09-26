@@ -1358,8 +1358,8 @@ Try Search Element
   [Arguments]  ${locator}
   Reload Page
   Wait For Ajax
-  Wait Until Element Is Visible  ${locator}  7
-  Wait Until Element Is Enabled  ${locator}  5
+  Wait Until Element Is Visible  ${locator}  20
+  Wait Until Element Is Enabled  ${locator}  20
   [Return]  True
 
 
