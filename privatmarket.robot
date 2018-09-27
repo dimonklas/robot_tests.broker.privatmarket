@@ -317,8 +317,8 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
 
 Пошук об’єкта МП по ідентифікатору
   [Arguments]  ${user_name}  ${tender_id}
-  ${tender_id}=  Run Keyword If  'Відображення опису активу' in '${TEST_NAME}'  Get Regexp Matches  ${tender_id}  (.+)-\\d+$  1
-  ...  ELSE  Set Variable  ${tender_id}
+  ${changed_id}=  Get Regexp Matches  ${tender_id}  (.+)-\\d+$  1
+  ${tender_id}=  Set Variable If  'Відображення опису активу' in '${TEST_NAME}'  ${changed_id[0]}  ${tender_id}
   Wait For Auction  ${tender_id}
   Wait For Ajax
   Wait Enable And Click Element  css=div[tid='${tender_id}']
