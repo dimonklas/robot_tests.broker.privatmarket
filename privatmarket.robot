@@ -90,6 +90,10 @@ ${tender_data.assets.unit.name}  span[@tid="item.unit.name"]
 ${tender_data.assets.quantity}  span[@tid="item.quantity"]
 ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDetails.status"]
 
+${contracting_data_milestones[0].status}  xpath=//div[@data-type='financing']//div[@tid='contracting.milestone.status']
+${contracting_data_milestones[1].status}  xpath=//div[@data-type='approval']//div[@tid='contracting.milestone.status']
+${contracting_data_milestones[2].status}  xpath=//div[@data-type='reporting']//div[@tid='contracting.milestone.status']
+
 
 *** Keywords ***
 Підготувати клієнт для користувача
@@ -1232,6 +1236,9 @@ Get Cancellation Status
 Отримати інформацію із договору
   [Arguments]  ${username}  ${contract_id}  ${field_name}
   Run Keyword And Return If  '${field_name}' == 'status'  Отримати статус договору  ${field_name}
+  Run Keyword And Return If  '${field_name}' == 'milestones[0].status'  Отримати статус майлстоуну  ${field_name}
+  Run Keyword And Return If  '${field_name}' == 'milestones[1].status'  Отримати статус майлстоуну  ${field_name}
+  Run Keyword And Return If  '${field_name}' == 'milestones[2].status'  Отримати статус майлстоуну  ${field_name}
 
 
 Отримати статус договору
@@ -1246,6 +1253,14 @@ Get Cancellation Status
   ...  '${text}' == 'Приватизація об’єкта неуспішна'  unsuccessful
   ...  ${element}
   [Return]  ${result}
+
+
+Отримати статус майлстоуну
+  [Arguments]  ${element}
+  Reload Page
+  Sleep  5s
+  ${text}=  Get Element Attribute  ${contracting_data_${element}}@data-status
+  [Return]  ${text}
 
 
 Підтвердити відсутність наказу про приватизацію
