@@ -1186,6 +1186,7 @@ Get Cancellation Status
 
 Отримати інформацію з активу в договорі
   [Arguments]  ${username}  ${contract_id}  ${item_id}  ${field_name}
+  privatmarket.Пошук тендера по ідентифікатору  ${username}  ${contract_id}
   ${result}=  privatmarket.Отримати інформацію з активу об'єкта МП  ${username}  ${contract_id}  ${item_id}  ${field_name}
   [Return]  ${result}
 
@@ -1358,8 +1359,8 @@ Try Search Element
   [Arguments]  ${locator}
   Reload Page
   Wait For Ajax
-  Wait Until Element Is Visible  ${locator}  7
-  Wait Until Element Is Enabled  ${locator}  5
+  Wait Until Element Is Visible  ${locator}  20
+  Wait Until Element Is Enabled  ${locator}  20
   [Return]  True
 
 
