@@ -1243,6 +1243,7 @@ Get Cancellation Status
   ${text}=  Replace String  ${text}  ${\n}  ${EMPTY}
   ${result}=  Set Variable If
   ...  '${text}' == 'Приватизація об’єкта завершена'  terminated
+  ...  '${text}' == 'Приватизація об’єкта неуспішна'  unsuccessful
   ...  ${element}
   [Return]  ${result}
 
