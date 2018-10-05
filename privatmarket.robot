@@ -1210,10 +1210,9 @@ Get Cancellation Status
 
 Вказати дату отримання оплати
   [Arguments]  ${username}  ${contract_id}  ${dateMet}  ${milestone_index}
-  ${date}=  Get New Auction Date  ${fieldvalue}
-  ${hours}=  Get Regexp Matches  ${fieldvalue}  T(\\d{2})  1
-  ${mins}=  Get Regexp Matches  ${fieldvalue}  T\\d{2}:(\\d{2})  1
-  debug
+  ${date}=  Get New Auction Date  ${dateMet}
+  ${hours}=  Get Regexp Matches  ${dateMet}  T(\\d{2})  1
+  ${mins}=  Get Regexp Matches  ${dateMet}  T\\d{2}:(\\d{2})  1
   Wait Until Element Is Enabled  xpath=//input[@tid='financingMilestoneDateMet']  ${COMMONWAIT}
   Input Text  xpath=//input[@tid='financingMilestoneDateMet']  ${date}
   Input Text  css=input[ng-model='hours']  ${hours}
@@ -1282,13 +1281,14 @@ Get Cancellation Status
 Підтвердити відсутність наказу про приватизацію
   [Arguments]  ${username}  ${contract_id}  ${file_path}
   sleep  1s
-  debug
-  Fail  Ключевое слово не реализовано
-  Wait Until Element Is Visible  xpath=//*[@tid='docProtocol']  ${COMMONWAIT}
-  Execute Javascript  document.querySelector("input[id='docsProtocolI']").className = ''
+  Wait Until Element Is Visible  xpath=//a[@tid='btn.approval.unsuccess']  ${COMMONWAIT}
+  Click Element  xpath=//a[@tid='btn.approval.unsuccess']
+  Wait Until Element Is Visible  xpath=//button[@tid='btn.addApprovalRejectionProtocol']  ${COMMONWAIT}
+  Execute Javascript  document.querySelector("input[id='docsMilestoneRejectionProtocolI']").className = ''
   Sleep  2s
-  Choose File  css=input[id='docsProtocolI']  ${file_path}
+  Choose File  css=input[id='docsMilestoneRejectionProtocolI']  ${file_path}
   Wait For Ajax
+  Wait Visibility And Click Element  xpath=//label[@tid='milestoneRejectionProtocolConfirm']
 
 
 Підтвердити відсутність оплати
