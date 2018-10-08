@@ -1252,6 +1252,7 @@ Get Cancellation Status
   Input Text  xpath=//input[@ng-model='hours']  ${hours}
   Input Text  xpath=//input[@ng-model='minutes']  ${mins}
   Wait Visibility And Click Element  xpath=//button[@tid='btn.milestone.success']
+  Wait Visibility And Click Element  xpath=//button[@tid='btn.milestone.success']
 
 
 Отримати інформацію із договору
