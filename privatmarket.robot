@@ -90,6 +90,10 @@ ${tender_data.assets.unit.name}  span[@tid="item.unit.name"]
 ${tender_data.assets.quantity}  span[@tid="item.quantity"]
 ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDetails.status"]
 
+${contracting_data_milestones[0].status}  xpath=//div[@data-type='financing']//div[@tid='contracting.milestone.status']
+${contracting_data_milestones[1].status}  xpath=//div[@data-type='approval']//div[@tid='contracting.milestone.status']
+${contracting_data_milestones[2].status}  xpath=//div[@data-type='reporting']//div[@tid='contracting.milestone.status']
+
 
 *** Keywords ***
 Підготувати клієнт для користувача
@@ -318,7 +322,9 @@ ${tender_data.assets.registrationDetails.status}  div[@tid="item.registrationDet
 Пошук об’єкта МП по ідентифікатору
   [Arguments]  ${user_name}  ${tender_id}
   ${changed_id}=  Get Regexp Matches  ${tender_id}  (.+)-\\d+$  1
-  ${tender_id}=  Set Variable If  'Відображення опису активу' in '${TEST_NAME}'  ${changed_id[0]}  ${tender_id}
+  ${tender_id}=  Set Variable If  'Відображення опису активу' in '${TEST_NAME}'  ${changed_id[0]}
+    ...  'активувати договір' in '${TEST_NAME}' and 'Owner' in '${user_name}'  ${changed_id[0]}
+    ...  ${tender_id}
   Wait For Auction  ${tender_id}
   Wait For Ajax
   Wait Enable And Click Element  css=div[tid='${tender_id}']
@@ -1128,7 +1134,8 @@ Get Cancellation Status
 
 Завантажити угоду до тендера
   [Arguments]  ${username}  ${tender_id}  ${contract_num}  ${file_path}
-  Wait Until Element Is Visible  xpath=//*[@tid='docContract']  ${COMMONWAIT}
+  Wait For Element With Reload  xpath=//*[@tid='docContract']  1
+  # Wait Until Element Is Visible  xpath=//*[@tid='docContract']  ${COMMONWAIT}
   Execute Javascript  document.querySelector("input[id='docsContractI']").className = ''
   Sleep  2s
   Choose File  css=input[id='docsContractI']  ${file_path}
@@ -1146,7 +1153,8 @@ Get Cancellation Status
   ${date}=  Get New Auction Date  ${fieldvalue}
   ${hours}=  Get Regexp Matches  ${fieldvalue}  T(\\d{2})  1
   ${mins}=  Get Regexp Matches  ${fieldvalue}  T\\d{2}:(\\d{2})  1
-  Wait Until Element Is Enabled  css=input[tid='contractSignDate']  ${COMMONWAIT}
+  Wait For Element With Reload  css=input[tid='contractSignDate']  1
+  # Wait Until Element Is Enabled  css=input[tid='contractSignDate']  ${COMMONWAIT}
   Input Text  css=input[tid='contractSignDate']  ${date}
   Input Text  css=input[ng-model='hours']  ${hours}
   Input Text  css=input[ng-model='minutes']  ${mins}
@@ -1154,7 +1162,9 @@ Get Cancellation Status
 
 Підтвердити підписання контракту
   [Arguments]  ${username}  ${tender_id}  ${contract_num}
-  Wait Enable And Click Element  css=label[tid="contractActivate"]
+  Wait For Element With Reload  css=label[tid="contractActivate"]  1
+  Click Element  css=label[tid="contractActivate"]
+  # Wait Enable And Click Element  css=label[tid="contractActivate"]
 
 
 Завантажити протокол погодження в авард
@@ -1179,11 +1189,16 @@ Get Cancellation Status
 
 Активувати контракт
   [Arguments]  ${username}  ${contract_id}
-  sleep  1s
-  debug
-  sleep  1s
-  Fail  Ключевое слово не реализовано
-  Log To Console  ${contract}
+  Log To Console  ${contract_id}
+  Wait For Ajax
+  privatmarket.Пошук тендера по ідентифікатору  ${username}  ${contract_id}
+  Wait Until Keyword Succeeds  10min  15s  Дочекатися активованого статусу контракту
+
+
+Дочекатися активованого статусу контракту
+  ${status}=  Get Element Attribute  xpath=//span[@tid='contracting.status']@tidvalue
+  ${current_status}=  Strip String  ${status}
+  Should Be Equal  ${current_status}  active.payment  msg=The contract is not active
 
 
 Отримати інформацію з активу в договорі
@@ -1195,10 +1210,14 @@ Get Cancellation Status
 
 Вказати дату отримання оплати
   [Arguments]  ${username}  ${contract_id}  ${dateMet}  ${milestone_index}
-  sleep  1s
-  debug
-  sleep  1s
-  Fail  Ключевое слово не реализовано
+  ${date}=  Get New Auction Date  ${dateMet}
+  ${hours}=  Get Regexp Matches  ${dateMet}  T(\\d{2})  1
+  ${mins}=  Get Regexp Matches  ${dateMet}  T\\d{2}:(\\d{2})  1
+  Wait Until Element Is Enabled  xpath=//input[@tid='financingMilestoneDateMet']  ${COMMONWAIT}
+  Input Text  xpath=//input[@tid='financingMilestoneDateMet']  ${date}
+  Input Text  css=input[ng-model='hours']  ${hours}
+  Input Text  css=input[ng-model='minutes']  ${mins}
+  Wait Enable And Click Element  xpath=//button[@tid='btn.milestone.success']
 
 
 Завантажити наказ про завершення приватизації
@@ -1232,6 +1251,9 @@ Get Cancellation Status
 Отримати інформацію із договору
   [Arguments]  ${username}  ${contract_id}  ${field_name}
   Run Keyword And Return If  '${field_name}' == 'status'  Отримати статус договору  ${field_name}
+  Run Keyword And Return If  '${field_name}' == 'milestones[0].status'  Отримати статус майлстоуну  ${field_name}
+  Run Keyword And Return If  '${field_name}' == 'milestones[1].status'  Отримати статус майлстоуну  ${field_name}
+  Run Keyword And Return If  '${field_name}' == 'milestones[2].status'  Отримати статус майлстоуну  ${field_name}
 
 
 Отримати статус договору
@@ -1248,24 +1270,34 @@ Get Cancellation Status
   [Return]  ${result}
 
 
+Отримати статус майлстоуну
+  [Arguments]  ${element}
+  Reload Page
+  Sleep  5s
+  ${text}=  Get Element Attribute  ${contracting_data_${element}}@data-status
+  [Return]  ${text}
+
+
 Підтвердити відсутність наказу про приватизацію
   [Arguments]  ${username}  ${contract_id}  ${file_path}
   sleep  1s
-  debug
-  Fail  Ключевое слово не реализовано
-  Wait Until Element Is Visible  xpath=//*[@tid='docProtocol']  ${COMMONWAIT}
-  Execute Javascript  document.querySelector("input[id='docsProtocolI']").className = ''
+  Wait Until Element Is Visible  xpath=//a[@tid='btn.approval.unsuccess']  ${COMMONWAIT}
+  Click Element  xpath=//a[@tid='btn.approval.unsuccess']
+  Wait Until Element Is Visible  xpath=//button[@tid='btn.addApprovalRejectionProtocol']  ${COMMONWAIT}
+  Execute Javascript  document.querySelector("input[id='docsMilestoneRejectionProtocolI']").className = ''
   Sleep  2s
-  Choose File  css=input[id='docsProtocolI']  ${file_path}
+  Choose File  css=input[id='docsMilestoneRejectionProtocolI']  ${file_path}
   Wait For Ajax
+  Wait Visibility And Click Element  xpath=//label[@tid='milestoneRejectionProtocolConfirm']
 
 
 Підтвердити відсутність оплати
   [Arguments]  ${username}  ${contract_id}  ${milestone_index}
-  sleep  1s
-  debug
-  sleep  1s
-  Fail  Ключевое слово не реализовано
+  Wait For Ajax
+  Reload Page
+  Wait Enable And Click Element  xpath=//button[@tid='btn.milestone.unsuccess']
+  ${milistone_status}=  Get Element Attribute  ${contracting_data_milestones[0].status}@data-status
+  Should Be Equal  ${milistone_status}  notMet
 
 
 Підтвердити невиконання умов приватизації
