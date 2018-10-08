@@ -1237,7 +1237,7 @@ Get Cancellation Status
   Wait For Element With Reload  xpath=(//input[@tid='approvalMilestoneDateMet'])[1]  1
   Input Text  xpath=(//input[@tid='approvalMilestoneDateMet'])[1]  ${date}
   Input Text  xpath=(//input[@ng-model='hours'])[1]  ${hours}
-  Input Text  xpath=(//input[@ng-model='minutes'])[1]  ${hours}
+  Input Text  xpath=(//input[@ng-model='minutes'])[1]  ${mins}
   Wait Visibility And Click Element  xpath=//label[@tid='btn.approval.success']
 
 
@@ -1250,7 +1250,7 @@ Get Cancellation Status
   Wait For Element With Reload  xpath=//input[@tid='financingMilestoneDateMet']  1
   Input Text  xpath=//input[@tid='financingMilestoneDateMet']  ${date}
   Input Text  xpath=//input[@ng-model='hours']  ${hours}
-  Input Text  xpath=//input[@ng-model='minutes']  ${hours}
+  Input Text  xpath=//input[@ng-model='minutes']  ${mins}
   Wait Visibility And Click Element  xpath=//button[@tid='btn.milestone.success']
 
 
