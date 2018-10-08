@@ -1311,6 +1311,7 @@ Get Cancellation Status
   [Arguments]  ${username}  ${contract_ua}
   sleep  1s
   Wait Enable And Click Element  xpath=//button[@tid='btn.milestone.unsuccess']
+  Wait Enable And Click Element  xpath=//button[@tid='btn.milestone.unsuccess']
 
 
 Login
