@@ -2471,7 +2471,6 @@ Get Item Number
     Відкрити детальну інформацію по лотам
     Wait Visibility And Click Element  css=a[tooltip='Подати вимогу на даний лот']
     Заповнити поля вимоги/скарги  ${claim}
-    Заповнити поля вимоги/скарги  ${claim}
     Reload And Switch To Tab  3
     ${result}=  Get Text  xpath=(//span[@data-id='complaint-id'])[1]
     [Return]  ${result}
