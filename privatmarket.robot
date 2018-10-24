@@ -200,8 +200,10 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Go To  ${USERS.users['${username}'].homepage}
     Wait Until Element Is Visible  ${locator_tenderSearch.searchInput}  timeout=${COMMONWAIT}
 
-    ${class}=  Get Element Attribute  xpath=//span[@data-id='pinhead']@class
-    Run Keyword If  'color-green' in '${class}'  Click Element  css=[data-id='pinhead']
+    Check Current Mode New Realisation
+    #${demo}=  Get Text  xpath=//a[@id='test-model-switch']
+    #Run Keyword If  'Увійти' in '${demo}'  Click Element  xpath=//a[@id='test-model-switch']
+
 
     ${suite_name}=  Convert To Lowercase  ${SUITE_NAME}
     ${education_type}=  Run Keyword If  'negotiation' in '${suite_name}'  Set Variable  False
@@ -543,7 +545,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 
 #Заповнити лоти та предмети закупівлі для процедури 'reporting'
     Run Keyword IF  ${type} == 'reporting'  Додати предмети закупівлі в план  ${items}
-
+    debug
 #step 1
     Run Keyword Unless  ${type} == 'reporting'  Додати lots  ${lots}  ${items}  ${type}
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
@@ -1638,8 +1640,8 @@ Try To Search Complaint
 
 Отримати посилання на аукціон для глядача
     [Arguments]  ${user}  ${tenderId}  ${object_id}=${Empty}
-    Wait For Element With Reload  xpath=//a[contains(@href, 'https://auction-sandbox.openprocurement.org/tenders/')]  1  30
-    ${result}=  Get Element Attribute  xpath=//a[contains(@href, 'https://auction-sandbox.openprocurement.org/tenders/')]@href
+    Wait For Element With Reload  xpath=//a[contains(@href, 'https://auction-sandbox.prozorro.gov.ua/tenders/')]  1  30
+    ${result}=  Get Element Attribute  xpath=//a[contains(@href, 'https://auction-sandbox.prozorro.gov.ua/tenders/')]@href
     [Return]  ${result}
 
 
