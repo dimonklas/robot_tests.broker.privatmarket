@@ -545,7 +545,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 
 #Заповнити лоти та предмети закупівлі для процедури 'reporting'
     Run Keyword IF  ${type} == 'reporting'  Додати предмети закупівлі в план  ${items}
-    debug
+
 #step 1
     Run Keyword Unless  ${type} == 'reporting'  Додати lots  ${lots}  ${items}  ${type}
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
