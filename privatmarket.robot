@@ -2638,7 +2638,8 @@ Get Item Number
     [Arguments]  ${username}  ${tender_uaid}  ${bid}  ${lots_ids}=${None}  ${features_ids}=${None}
     Run Keyword Unless  'Неможливість' in '${TEST_NAME}'  Wait For Element With Reload  xpath=//button[@data-id='createBidBtn']  1
     Click Element  xpath=//button[@data-id='createBidBtn']
-    ${value_amount}=  privatmarket_service.convert_float_to_string  ${bid.data.lotValues[0].value.amount}
+
+    ${value_amount}=  privatmarket_service.convert_float_to_string  ${bid.data.value.amount}
     Sleep  2s
 
     ${status}  ${elements}=  Run Keyword And Ignore Error  Get Webelements  xpath=//button[contains(@id, 'dropdownMenu')]
@@ -2657,7 +2658,7 @@ Get Item Number
     ${scenarios_name}=  privatmarket_service.get_scenarios_name
     Run Keyword If  'Неможливість' in '${TEST_NAME}'  Відмітити лот
     ...  ELSE IF  'dialogue' in '${scenarios_name}'  Відмітити лот
-    ...  ELSE  Wait Element Visibility And Input Text  css=input[id^='userprice-lot']  ${value_amount}
+    ...  ELSE  Wait Element Visibility And Input Text  css=input[id='price']  ${value_amount}
 
     Click Button  css=button[data-id='save-bid-btn']
     Wait For Ajax
@@ -2827,8 +2828,8 @@ Get Item Number
 
 Отримати посилання на аукціон для учасника
     [Arguments]  ${username}  ${tender_uaid}
-    Wait For Element With Reload  xpath=//a[contains(@href, 'https://auction-sandbox.openprocurement.org/tenders/')]  1  30
-    ${result}=  Get Element Attribute  xpath=//a[contains(@href, 'https://auction-sandbox.openprocurement.org/tenders/')]@href
+    Wait For Element With Reload  xpath=//a[contains(@href, 'https://auction-sandbox.prozorro.gov.ua/tenders/')]  1  30
+    ${result}=  Get Element Attribute  xpath=//a[contains(@href, 'https://auction-sandbox.prozorro.gov.ua/tenders/')]@href
     [Return]  ${result}
 
 
