@@ -1389,7 +1389,6 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 
     Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'checked-item')]
     ${count}=  Get Matching Xpath Count  xpath=//section//div[@class='description']/a
-    debug
     Run Keyword if  ${count} != 0  Відкрити itemObject  ${count}
 
 
@@ -2716,7 +2715,7 @@ Get Item Number
 
 
 Отримати інформацію з пропозиції value.amount
-    ${value}=  Отримати текст елемента  xpath=//tr[contains(@ng-repeat, 'currBids[lot.id] ')]//td[3]
+    ${value}=  Отримати текст елемента  xpath=//tr[contains(@ng-repeat, 'currBids')]//td[2]/span
     ${text_new}=  Strip String  ${value}
     ${text_new}=  Replace String  ${text_new}  ${SPACE}  ${EMPTY}
     ${result}=  convert to number  ${text_new}
@@ -2810,7 +2809,7 @@ Get Item Number
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modalOkBtn']
     Wait For Ajax
     ${value}=  privatmarket_service.convert_float_to_string  ${value}
-    Run Keyword If  'value.amount' in '${field}'  Wait Element Visibility And Input Text  css=input[id^='userprice-lot']  ${value}
+    Run Keyword If  'value.amount' in '${field}'  Wait Element Visibility And Input Text  css=input[id='price']  ${value}
     Click Button  css=button[data-id='save-bid-btn']
     Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
     Wait For Ajax
