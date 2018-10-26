@@ -220,8 +220,9 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Go To  ${USERS.users['${username}'].homepage}
     Wait Until Element Is Visible  ${locator_tenderSearch.searchInput}  timeout=${COMMONWAIT}
 
-    ${class}=  Get Element Attribute  xpath=//span[@data-id='pinhead']@class
-    Run Keyword If  'color-green' in '${class}'  Click Element  css=[data-id='pinhead']
+    Check Current Mode New Realisation
+    #${class}=  Get Element Attribute  xpath=//span[@data-id='pinhead']@class
+    #Run Keyword If  'color-green' in '${class}'  Click Element  css=[data-id='pinhead']
     Wait Until Element Is Not Visible  xpath=//div[contains(@class,'ajax_overflow')]
     Wait Visibility And Click Element  css=[data-id='ttype-plans-label']
 
@@ -1387,14 +1388,14 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Run Keyword if  ${count} == 0  Click Element  xpath=//a[contains(@ng-click, 'itemShowTab')]
 
     Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'checked-item')]
-    ${count}=  Get Matching Xpath Count  xpath=//section//a[@class="ng-binding"]
-
+    ${count}=  Get Matching Xpath Count  xpath=//section//div[@class='description']/a
+    debug
     Run Keyword if  ${count} != 0  Відкрити itemObject  ${count}
 
 
 Відкрити itemObject
     [Arguments]  ${count}
-    @{list}=  Get Webelements  xpath=//section//a[@class="ng-binding"]
+    @{list}=  Get Webelements  xpath=//section//div[@class='description']/a
     :FOR  ${i}  IN  @{list}
      \  Click Element  ${i}
 
@@ -1880,8 +1881,8 @@ Try To Search Complaint
 Отримати інформацію зі зміною локалізації
     [Arguments]  ${element}  ${lang}
     Unselect Frame
-    Wait Visibility And Click Element  xpath=//*[@id='langMenu']
-    Wait Visibility And Click Element  xpath=//li[contains(text(),'${lang}')]
+    Wait Visibility And Click Element  xpath=//div[contains(@class,'lang-toggle')]
+    Wait Visibility And Click Element  xpath=//div[contains(@class,'lang-toggle')]//li[contains(text(),'${lang}')]
     Wait For Ajax
     ${element}=  Set Variable If
     ...  'title' in '${element}'  title
@@ -1889,8 +1890,8 @@ Try To Search Complaint
     ${text}=  Отримати текст елемента  ${element}
     ${result}=  Strip String  ${text}
     Unselect Frame
-    Wait Visibility And Click Element  xpath=//*[@id='langMenu']
-    Wait Visibility And Click Element  xpath=//li[contains(text(),'UK')]
+    Wait Visibility And Click Element  xpath=//div[contains(@class,'lang-toggle')]
+    Wait Visibility And Click Element  xpath=//div[contains(@class,'lang-toggle')]//li[contains(text(),'UK')]
     [Return]  ${result}
 
 
