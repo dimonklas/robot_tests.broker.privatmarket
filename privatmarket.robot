@@ -1222,13 +1222,13 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Run Keyword And Return If  '${field_name}' == 'value.amount'  Convert Amount To Number  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'value.currency'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'value.valueAddedTaxIncluded'  Отримати інформацію з ${field_name}  ${field_name}
-    Run Keyword And Return If  '${field_name}' == 'enquiryPeriod.startDate'  Отримати дату та час  ${field_name}
-    Run Keyword And Return If  '${field_name}' == 'enquiryPeriod.endDate'  Отримати дату та час  ${field_name}
-    Run Keyword And Return If  '${field_name}' == 'tenderPeriod.startDate'  Отримати дату та час  ${field_name}
-    Run Keyword And Return If  '${field_name}' == 'tenderPeriod.endDate'  Отримати дату та час  ${field_name}
+#    Run Keyword And Return If  '${field_name}' == 'enquiryPeriod.startDate'  Отримати дату та час  ${field_name}
+#    Run Keyword And Return If  '${field_name}' == 'enquiryPeriod.endDate'  Отримати дату та час  ${field_name}
+#    Run Keyword And Return If  '${field_name}' == 'tenderPeriod.startDate'  Отримати дату та час  ${field_name}
+#    Run Keyword And Return If  '${field_name}' == 'tenderPeriod.endDate'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'minimalStep.amount'  Convert Amount To Number  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'status'  Отримати інформацію з ${field_name}  ${user_name}  ${base_tender_uaid}  ${field_name}
-    Run Keyword And Return If  '${field_name}' == 'qualificationPeriod.endDate'  Отримати дату та час  ${field_name}
+#    Run Keyword And Return If  '${field_name}' == 'qualificationPeriod.endDate'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'qualifications[0].status'  Отримати статус пропозиції кваліфікації  1
     Run Keyword And Return If  '${field_name}' == 'qualifications[1].status'  Отримати статус пропозиції кваліфікації  2
     Run Keyword And Return If  '${field_name}' == 'title_en'  Отримати інформацію зі зміною локалізації  ${field_name}  EN
@@ -1240,18 +1240,19 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Run Keyword And Return If  '${field_name}' == 'awards[0].complaintPeriod.endDate' or '${field_name}' == 'awards[1].complaintPeriod.endDate'  Отримати інформацію з awadrs.complaintPeriod.endDate
     Run Keyword And Return If  '${field_name}' == 'procurementMethodType'  Отримати інформацію з ${field_name}  1
     Run Keyword And Return If  '${field_name}' == 'complaintPeriod.endDate'  Отримати інформацію з ${field_name}  ${field_name}  0
-    Run Keyword And Return If  '${field_name}' == 'items[0].deliveryDate.startDate'  Отримати дату та час  ${field_name}
+#    Run Keyword And Return If  '${field_name}' == 'items[0].deliveryDate.startDate'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '].deliveryAddress.countryName_en' in '${field_name}'  Отримати інформацію із предмету зі зміною локалізації для пропозицій  ${field_name}  EN
     Run Keyword And Return If  '].deliveryAddress.countryName_ru' in '${field_name}'  Отримати інформацію із предмету зі зміною локалізації для пропозицій  ${field_name}  RU
     Run Keyword And Return If  '${field_name}' == 'items[0].deliveryDate.endDate'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'stage2TenderID'  Отримати інформацію з ${field_name}
     Run Keyword And Return If  '${field_name}' == 'features[0].title'  Отримати інформацію з ${field_name}  ${field_name}
-    Run Keyword And Return If  '${field_name}' == 'lots[0].auctionPeriod.endDate'  Отримати дату та час  ${field_name}
-    Run Keyword And Return If  '${field_name}' == 'lots[0].auctionPeriod.startDate'  Отримати дату та час  ${field_name}
+#    Run Keyword And Return If  '${field_name}' == 'lots[0].auctionPeriod.endDate'  Отримати дату та час  ${field_name}
+#    Run Keyword And Return If  '${field_name}' == 'lots[0].auctionPeriod.startDate'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'questions[0].title'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'questions[0].description'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'questions[0].answer'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'contracts[0].status' or '${field_name}' == 'contracts[1].status'  Отримати статус договору  ${field_name}
+    Run Keyword And Return If  'endDate' in '${field_name}' or 'startDate' in '${field_name}'  Отримати дату та час  ${field_name}
 
     Wait Until Element Is Visible  ${tender_data_${field_name}}
     ${result_full}=  Get Text  ${tender_data_${field_name}}
@@ -1913,8 +1914,8 @@ Try To Search Complaint
 Отримати інформацію із предмету зі зміною локалізації для пропозицій
     [Arguments]  ${field_name}  ${lang}
     Unselect Frame
-    Wait Visibility And Click Element  xpath=//*[@id='langMenu']
-    Wait Visibility And Click Element  xpath=//li[contains(text(),'${lang}')]
+    Wait Visibility And Click Element  xpath=//div[contains(@class,'lang-toggle')]
+    Wait Visibility And Click Element  xpath=//div[contains(@class,'lang-toggle')]//li[contains(text(),'${lang}')]
     Wait For Ajax
     Відкрити детальну інформацію по позиціям
     ${index}=  privatmarket_service.get_match_from_string  ${field_name}  items\\[(.+?)\\]  1
@@ -1925,8 +1926,8 @@ Try To Search Complaint
     ${text}=  Отримати текст елемента  ${element}
     ${result}=  Strip String  ${text}
     Unselect Frame
-    Wait Visibility And Click Element  xpath=//*[@id='langMenu']
-    Wait Visibility And Click Element  xpath=//li[contains(text(),'UK')]
+    Wait Visibility And Click Element  xpath=//div[contains(@class,'lang-toggle')]
+    Wait Visibility And Click Element  xpath=//div[contains(@class,'lang-toggle')]//li[contains(text(),'UK')]
     [Return]  ${result}
 
 
