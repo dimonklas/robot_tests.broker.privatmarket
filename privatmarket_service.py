@@ -55,11 +55,18 @@ def get_time_with_offset(date):
     return localized_date.strftime('%Y-%m-%d %H:%M:%S.%f%z')
 
 
-def get_time_with_offset_formatted(date, input_format_date, output_format):
+# def get_time_with_offset_formatted(date, input_format_date, output_format):
+#     date_obj = datetime.datetime.strptime(date, input_format_date)
+#     time_zone = timezone('Europe/Kiev')
+#     localized_date = time_zone.localize(date_obj)
+#     return localized_date.strftime(output_format)
+
+def get_time_with_offset_formatted(date, input_format_date):
+    tz = timezone('Europe/Kiev')
     date_obj = datetime.datetime.strptime(date, input_format_date)
-    time_zone = timezone('Europe/Kiev')
-    localized_date = time_zone.localize(date_obj)
-    return localized_date.strftime(output_format)
+    res = tz.localize(date_obj)
+    result = res.isoformat()
+    return result
 
 
 def get_current_date():

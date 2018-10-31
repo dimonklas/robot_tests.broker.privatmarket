@@ -1203,6 +1203,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 Підтвердити підписання контракту
     [Arguments]  ${username}  ${tender_uaid}  ${contract_num}
     Wait For Element With Reload  css=input[data-id='contract.title']  1
+
     Wait Element Visibility And Input Text  css=input[data-id='contract.title']  ${tender_uaid}
     Wait Element Visibility And Input Text  css=#contractNumber  ${tender_uaid}
     Click Element  css=#dateSigned
@@ -1375,10 +1376,17 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     [Return]  ${result}
 
 
+#Отримати та привести дату до заданого формату
+#    [Arguments]  ${locator}
+#    ${date}=  Отримати текст з item  ${locator}
+#    ${result}=  get_time_with_offset_formatted  ${date}  %d.%m.%Y  %Y-%m-%dT%H:%M:%S%z
+#    [Return]  ${result}
+
+
 Отримати та привести дату до заданого формату
     [Arguments]  ${locator}
     ${date}=  Отримати текст з item  ${locator}
-    ${result}=  get_time_with_offset_formatted  ${date}  %d.%m.%Y  %Y-%m-%d %H:%M:%S.%f%z
+    ${result}=  get_time_with_offset_formatted  ${date}  %d.%m.%Y
     [Return]  ${result}
 
 
@@ -2371,8 +2379,9 @@ Get Item Number
     Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'lot-parts')]
     ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'lot-parts')]@class
     Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
-    Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
-    Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
+
+#    Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
+#    Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
     Wait Visibility And Click Element  xpath=//div[@class='award-section award-actions ng-scope']//button[@data-id='setActive']
     Sleep  1s
     Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]
@@ -2382,6 +2391,7 @@ Get Item Number
     Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'lot-parts')]
     ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'lot-parts')]@class
     Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
+
     Run Keyword If  'openua_award_complaint' in '${scenarios_name}'
     ...  Run Keywords
     ...  Wait Visibility And Click Element  xpath=(//img[contains(@ng-src,'icon-plus')])[last()]
