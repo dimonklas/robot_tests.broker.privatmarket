@@ -36,7 +36,8 @@ ${tender_data_enquiryPeriod.startDate}  id=active.enquiries-bd
 ${tender_data_enquiryPeriod.endDate}  id=active.enquiries-ed
 ${tender_data_tenderPeriod.startDate}  id=active.tendering-bd
 ${tender_data_tenderPeriod.endDate}  id=active.tendering-ed
-${tender_data_auctionPeriod.startDate}  xpath=(//span[@ng-if='p.bd'])[3]
+${tender_data_auctionPeriod.startDate}  xpath=//span[@id='active.auction-bd']
+${tender_data_auctionPeriod.endDate}  xpath=//span[@id='active.auction-ed']
 ${tender_data_minimalStep.amount}  css=div#lotMinStepAmount
 ${tender_data_documentation.title}  xpath=//div[contains(@class, 'doc-file-title')]
 ${tender_data_documents[0].title}  xpath=//div[contains(@class, 'doc-file-title')]
@@ -2051,7 +2052,7 @@ Try To Search Complaint
     Run Keyword unless  ${element_present}  Wait For Element With Reload  ${tender_data_${element_name}}  1
 
     ${date}=  Отримати текст елемента  ${element_name}
-    ${result}=  privatmarket_service.get_time_with_offset_formatted  ${date}  %d.%m.%Y %H:%M  %Y-%m-%d %H:%M
+    ${result}=  privatmarket_service.get_time_with_offset_formatted  ${date}  %d.%m.%Y %H:%M
     [Return]  ${result}
 
 
