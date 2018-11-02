@@ -1966,9 +1966,9 @@ Try To Search Complaint
     ${class}=  Get Element Attribute  xpath=(//a[contains(@ng-class, 'lot-parts')])[1]@class
     Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=(//a[contains(@ng-class, 'lot-parts')])[1]
     Wait For Element With Reload  xpath=//a[contains(., 'Переможець')]  1
-    ${title}=  Get Element Attribute  xpath=//a[contains(., 'Переможець')]@title
-    ${date}=  privatmarket_service.get_match_from_string  ${title}  до (.+)  1
-    ${result}=  privatmarket_service.get_time_with_offset_formatted  ${date}  %d.%m.%Y %H:%M  %Y-%m-%d %H:%M:%S.%f%z
+    ${date}=  Get Element Attribute  xpath=//a[contains(., 'Переможець')]@data-complaint-period-end
+#    ${date}=  privatmarket_service.get_match_from_string  ${title}  до (.+)  1
+    ${result}=  privatmarket_service.get_time_with_offset_formatted  ${date}  %d.%m.%Y %H:%M
     [Return]  ${result}
 
 
@@ -1977,10 +1977,9 @@ Try To Search Complaint
     Reload Page
     ${class}=  Get Element Attribute  xpath=(//a[contains(@ng-class, 'lot-parts')])[1]@class
     Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=(//a[contains(@ng-class, 'lot-parts')])[1]
-    ${title}=  Get Element Attribute  xpath=//a[contains(., 'Переможець')]@title
-    ${date}=  privatmarket_service.get_match_from_string  ${title}  до (.+)  1
-    ${result}=  privatmarket_service.get_time_with_offset_formatted  ${date}  %d.%m.%Y %H:%M  %Y-%m-%d %H:%M:%S.%f%z
-    [Return]  ${result}
+    ${date}=  Get Element Attribute  xpath=//a[contains(., 'Переможець')]@data-complaint-period-end
+#    ${date}=  privatmarket_service.get_match_from_string  ${title}  до (.+)  1
+    ${result}=  privatmarket_service.get_time_with_offset_formatted  ${date}  %d.%m.%Y %H:%M
 
 
 Отримати інформацію з complaintPeriod.endDate
@@ -1988,7 +1987,7 @@ Try To Search Complaint
     Reload Page
     Reload And Switch To Tab  3
     ${result_full}=  Отримати текст елемента  ${element_name}
-    ${result}=  privatmarket_service.get_time_with_offset_formatted  ${result_full}  %d.%m.%Y %H:%M  %Y-%m-%d %H:%M:%S.%f%z
+    ${result}=  privatmarket_service.get_time_with_offset_formatted  ${result_full}  %d.%m.%Y %H:%M
     #    ${work_string}=  Replace String  ${result_full}  ${SPACE},${SPACE}  ${SPACE}
 #    ${work_string}=  Replace String  ${result_full}  ,${SPACE}  ${SPACE}
 #    ${values_list}=  Split String  ${work_string}
