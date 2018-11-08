@@ -330,6 +330,11 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='description'])[${index_xpath}]  ${items[${index}].description}
     \  Input Text  xpath=(//input[@data-id='quantity'])[${index_xpath}]  ${items[${index}].quantity}
     \  Select From List By Label  xpath=(//select[@data-id='unit'])[${index_xpath}]  ${items[${index}].unit.name}
+    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='postalCode'])[${index_xpath}]  ${items[${index}].deliveryAddress.postalCode}
+    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='countryName'])[${index_xpath}]  ${items[${index}].deliveryAddress.countryName}
+    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='region'])[${index_xpath}]  ${items[${index}].deliveryAddress.region}
+    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='locality'])[${index_xpath}]  ${items[${index}].deliveryAddress.locality}
+    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='streetAddress'])[${index_xpath}]  ${items[${index}].deliveryAddress.streetAddress}
     \  Set Date In Item  ${index}  deliveryDate  endDate  ${items[${index}].deliveryDate.endDate}
     \  ${classif_xpath}=  Set Variable  xpath=(//div[@data-id='mozAtcClassification'])[${index_xpath}]//a[@data-id='actChoose']
     \  ${classif_id}=  Set Variable If  '336' in '${items[${index}].classification.id}'  ${items[${index}].additionalClassifications[1].id}
@@ -498,15 +503,12 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Wait Visibility And Click Element  css=button[data-id='actConfirm']
 #    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
 
-    # Добавил ввод значения в поле "Очікувана вартість"
-
     ${amount}=  convert_float_to_string  ${tender_data.data.value.amount}
     Run Keyword If  ${type} == 'reporting'  Input Text  xpath=//input[@data-id='valueAmount']  ${amount}
 #    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
 
     #date
     Wait For Ajax
-    #Дописаны условия для ${type} == 'reporting'
     Run Keyword Unless  ${type} == 'aboveThresholdEU' or ${type} == 'aboveThresholdUA' or ${type} == 'negotiation' or ${type} == 'competitiveDialogueEU' or ${type} == 'competitiveDialogueUA' or ${type} == 'reporting'  Set Enquiry Period  ${tender_data.data.enquiryPeriod.startDate}  ${tender_data.data.enquiryPeriod.endDate}
     Run Keyword If  ${type} == ''  Set Start Tender Period  ${tender_data.data.tenderPeriod.startDate}
     Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'reporting'  Set End Tender Period  ${tender_data.data.tenderPeriod.endDate}
@@ -1083,14 +1085,18 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Sleep  2s
     Select Window  name=signWin
     Wait Until Element Is Visible  id=CAsServersSelect
-    Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[8]
-    ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/boss.jks
+#    Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[8]
+    Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[19]
+#    ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/boss.jks
+    ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/Key-6.dat
     Choose File  id=PKeyFileInput  ${path}
-    Wait Element Visibility And Input Text  id=PKeyPassword  1111111111
+#    Wait Element Visibility And Input Text  id=PKeyPassword  1111111111
+    Wait Element Visibility And Input Text  id=PKeyPassword  12345677
     Wait Visibility And Click Element  id=PKeyReadButton
     Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'Ключ успішно завантажено')]
     Wait Visibility And Click Element  id=SignDataButton
-    Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'ok')]
+#    Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'ok')]
+    Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'Ок')]
     Close Window
     Select Window
 
@@ -1179,7 +1185,6 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Wait Element Visibility And Input Text  css=input[ng-model='supplier.contactPoint.telephone']  ${supplier_data.data.suppliers[0].contactPoint.telephone}
     Wait Element Visibility And Input Text  css=input[ng-model='supplier.contactPoint.email']  ${supplier_data.data.suppliers[0].contactPoint.email}
     Wait Element Visibility And Input Text  css=input[ng-model='supplier.contactPoint.url']  ${supplier_data.data.suppliers[0].contactPoint.url}
-
     Wait Element Visibility And Input Text  css=input[ng-model='model.awardDraft.value.amount']  ${supplier_data.data.value.amount}
     Wait Visibility And Click Element  css=.modal.fade.in input[type='checkbox']
     Wait Visibility And Click Element  css=button[data-id='btn-send-award']
@@ -1188,7 +1193,9 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Wait Visibility And Click Element  xpath=//button[@data-id='btn-close']
     Wait For Ajax
     Reload Page
+    Sleep  5s
     Wait Visibility And Click Element  xpath=(//a[contains(@ng-class, 'lot-parts')])[1]
+    Wait For Element With Reload  xpath=//span[@ng-click="act.openAward(b)"]  1
     Wait Visibility And Click Element  xpath=//span[@ng-click="act.openAward(b)"]
     Wait Visibility And Click Element  xpath=//div[@class='form-block__item']/form/select[1]/option[2]
     Sleep  1s
@@ -1196,15 +1203,22 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Sleep  1s
     Choose File  xpath=//div[@class='form-block__item']/form/div/input  ${document}
     Sleep  5s
-    Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
+#    Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
     Wait Visibility And Click Element  css=button[data-id='setActive']
+    Sleep  5s
+    Reload Page
+    Wait Visibility And Click Element  xpath=(//a[contains(@ng-class, 'lot-parts')])[1]
+    Wait For Element With Reload  xpath=//span[@ng-click="act.openAward(b)"]  1
+    Wait Visibility And Click Element  xpath=//span[@ng-click="act.openAward(b)"]
+    Wait Visibility And Click Element  xpath=//button[@data-id='addAwardFileEcp']
+    Sleep  1s
+    Run Keyword  Завантажити ЕЦП
     Sleep  3min
 
 
 Підтвердити підписання контракту
     [Arguments]  ${username}  ${tender_uaid}  ${contract_num}
     Wait For Element With Reload  css=input[data-id='contract.title']  1
-
     Wait Element Visibility And Input Text  css=input[data-id='contract.title']  ${tender_uaid}
     Wait Element Visibility And Input Text  css=#contractNumber  ${tender_uaid}
     Click Element  css=#dateSigned
@@ -1216,6 +1230,12 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Wait Until Element Is Enabled  css=button[ng-click="act.saveContract('active')"]  ${COMMONWAIT}
     Click Button  css=button[ng-click="act.saveContract('active')"]
     Wait Until Element Is Visible  css=.notify  ${COMMONWAIT}
+    Sleep  1min
+    Reload Page
+    Wait For Element With Reload  xpath=//span[@id='contractStatus']  1
+    Wait Visibility And Click Element  xpath=//div[contains(@class,'contracts info')]//div[@id='noEcp']
+    Sleep  1s
+    Run Keyword  Завантажити ЕЦП
     Sleep  3min
 
 
@@ -2210,11 +2230,13 @@ Try Search Element
     ...  ELSE IF  '${tab_number}' == '1' and 'запитання на всі лоти' in '${TEST_NAME}'  Відкрити інформацію по запитанням на всі лоти
     ...  ELSE IF  '${tab_number}' == '1' and 'статусу підписаної угоди з постачальником' in '${TEST_NAME}'  Відкрити детальну інформацію про контракт
     ...  ELSE IF  '${tab_number}' == '1' and '${TEST_NAME}' == 'Можливість укласти угоду для закупівлі'  Відкрити детальну інформацію про контракт
+    ...  ELSE IF  '${tab_number}' == '1' and '${TEST_NAME}' == 'Можливість укласти угоду для звіту про укладений договір'  Відкрити детальну інформацію про контракт
     ...  ELSE IF  '${tab_number}' == '1' and '${TEST_NAME}' == 'Можливість укласти угоду для переговорної процедури'  Відкрити детальну інформацію про контракт
     ...  ELSE IF  '${tab_number}' == '1' and 'пропозицію кваліфікації' in '${TEST_NAME}'  Wait Visibility And Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
     ...  ELSE IF  '${tab_number}' == '1' and 'вичитати посилання на аукціон' in '${TEST_NAME}'  Відкрити модальне вікно з посиланням на аукціон
     ...  ELSE IF  '${tab_number}' == '1' and 'дочекатися завершення аукціону' in '${TEST_NAME}'  Відкрити модальне вікно з посиланням на аукціон
     ...  ELSE IF  '${tab_number}' == '1' and 'періоду подачі скарг на пропозицію' in '${TEST_NAME}'  Відкрити детальну інформацію про постачальника
+    ...  ELSE IF  '${tab_number}' == '1' and 'підтвердити постачальника до звіту про укладений договір' in '${TEST_NAME}'  Відкрити детальну інформацію про постачальника
     ...  ELSE IF  '${tab_number}' == '1'  Відкрити детальну інформацію по позиціям
     ...  ELSE IF  '${tab_number}' == '2' and 'відповіді на запитання' in '${TEST_NAME}'  Відкрити повну відповідь на запитання
     ...  ELSE IF  '${tab_number}' == '3' and 'заголовку документації' in '${TEST_NAME}'  Відкрити інформацію про вкладені файли вимоги
@@ -2379,7 +2401,6 @@ Get Item Number
     Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'lot-parts')]
     ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'lot-parts')]@class
     Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
-
 #    Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
 #    Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
     Wait Visibility And Click Element  xpath=//div[@class='award-section award-actions ng-scope']//button[@data-id='setActive']
@@ -2404,14 +2425,14 @@ Get Item Number
 Завантажити ЕЦП
     Select Window  title=sign worker
     Wait Until Element Is Visible  css=#CAsServersSelect
-    Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[8]
-    ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/boss.jks
+    Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[19]
+    ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/Key-6.dat
     Choose File  id=PKeyFileInput  ${path}
-    Wait Element Visibility And Input Text  id=PKeyPassword  1111111111
+    Wait Element Visibility And Input Text  id=PKeyPassword  12345677
     Wait Visibility And Click Element  id=PKeyReadButton
     Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'Ключ успішно завантажено')]
     Wait Visibility And Click Element  id=SignDataButton
-    Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'ok')]
+    Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(),'Ок')]
     Close Window
     Select Window
 
