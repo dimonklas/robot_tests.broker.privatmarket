@@ -266,6 +266,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 
 Створити план
     [Arguments]  ${username}  ${tender_data}
+
     ${presence}=  Run Keyword And Return Status  List Should Contain Value  ${tender_data.data}  lots
     @{lots}=  Run Keyword If  ${presence}  Get From Dictionary  ${tender_data.data}  lots
     ${presence}=  Run Keyword And Return Status  List Should Contain Value  ${tender_data.data}  items
@@ -276,6 +277,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Wait Visibility And Click Element  ${locator_tenderSearch.addTender}
     Wait Visibility And Click Element  xpath=(//a[@data-toggle='tab'])[2]
     Wait Visibility And Click Element  xpath=//a[@data-id='choosedPrzPlanBelowThreshold']
+
 #    Wait Element Visibility And Input Text  //input[@data-id='budgetId']   ${tender_data.data.budget.id}
     Input Text  xpath=//input[@data-id='procurementName']  ${tender_data.data.budget.description}
 #    Input Text  xpath=//input[@data-id='projectId']  ${tender_data.data.budget.project.id}
@@ -295,8 +297,13 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 
     Wait Visibility And Click Element  xpath=//label[@for='plan_items_yes']
 
+    ${status}  ${type}=  Run Keyword And Ignore Error  Set Variable  '${tender_data.data.tender.procurementMethodType}'
+    ${type}=  Run Keyword If
+    ...  '${status}' == 'PASS'  Set Variable  ${type}
+    ...  ELSE  Set Variable  ''
+
     #Заповнити лоти та предмети закупівлі
-    Додати предмети закупівлі в план  ${items}
+    Додати предмети закупівлі в план  ${items}  ${type}
     Click Element  xpath=//button[@data-id='actSave']
     Wait Visibility And Click Element  xpath=//button[@data-id='actSend']
     Wait Visibility And Click Element  xpath=//button[@data-id='modal-close']
@@ -321,7 +328,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 
 
 Додати предмети закупівлі в план
-    [Arguments]  ${items}
+    [Arguments]  ${items}  ${type}
     ${items_count}=  Get Length  ${items}
 
     : FOR  ${index}  IN RANGE  0  ${items_count}
@@ -330,11 +337,13 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='description'])[${index_xpath}]  ${items[${index}].description}
     \  Input Text  xpath=(//input[@data-id='quantity'])[${index_xpath}]  ${items[${index}].quantity}
     \  Select From List By Label  xpath=(//select[@data-id='unit'])[${index_xpath}]  ${items[${index}].unit.name}
-    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='postalCode'])[${index_xpath}]  ${items[${index}].deliveryAddress.postalCode}
-    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='countryName'])[${index_xpath}]  ${items[${index}].deliveryAddress.countryName}
-    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='region'])[${index_xpath}]  ${items[${index}].deliveryAddress.region}
-    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='locality'])[${index_xpath}]  ${items[${index}].deliveryAddress.locality}
-    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='streetAddress'])[${index_xpath}]  ${items[${index}].deliveryAddress.streetAddress}
+    \  Run Keyword If  ${type} == 'reporting'
+    \  ...  Run Keywords
+    \  ...  Wait Element Visibility And Input Text  xpath=(//input[@data-id='postalCode'])[${index_xpath}]  ${items[${index}].deliveryAddress.postalCode}
+    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='countryName'])[${index_xpath}]  ${items[${index}].deliveryAddress.countryName}
+    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='region'])[${index_xpath}]  ${items[${index}].deliveryAddress.region}
+    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='locality'])[${index_xpath}]  ${items[${index}].deliveryAddress.locality}
+    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='streetAddress'])[${index_xpath}]  ${items[${index}].deliveryAddress.streetAddress}
     \  Set Date In Item  ${index}  deliveryDate  endDate  ${items[${index}].deliveryDate.endDate}
     \  ${classif_xpath}=  Set Variable  xpath=(//div[@data-id='mozAtcClassification'])[${index_xpath}]//a[@data-id='actChoose']
     \  ${classif_id}=  Set Variable If  '336' in '${items[${index}].classification.id}'  ${items[${index}].additionalClassifications[1].id}
@@ -548,7 +557,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
 #Заповнити лоти та предмети закупівлі для процедури 'reporting'
-    Run Keyword IF  ${type} == 'reporting'  Додати предмети закупівлі в план  ${items}
+    Run Keyword IF  ${type} == 'reporting'  Додати предмети закупівлі в план  ${items}  ${type}
 
 #step 1
     Run Keyword Unless  ${type} == 'reporting'  Додати lots  ${lots}  ${items}  ${type}
