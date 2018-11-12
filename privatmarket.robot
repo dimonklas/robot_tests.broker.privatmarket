@@ -2501,7 +2501,7 @@ Get Item Number
     Switch To Tab  1
     Відкрити детальну інформацію по лотам
     Wait Visibility And Click Element  css=a[tooltip='Подати вимогу на даний лот']
-    Wait Visibility And Click Element  xpath=//button[@data-id='btn-send-claim']
+#    Wait Visibility And Click Element  xpath=//button[@data-id='btn-send-claim']
     Заповнити поля вимоги/скарги  ${claim}  ${document}
     Reload And Switch To Tab  3
     ${result}=  Get Text  xpath=(//span[@data-id='complaint-id'])[1]
