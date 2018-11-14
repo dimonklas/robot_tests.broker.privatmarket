@@ -2680,7 +2680,9 @@ Get Item Number
     Run Keyword Unless  'Неможливість' in '${TEST_NAME}'  Wait For Element With Reload  xpath=//button[@data-id='createBidBtn']  1
     Click Element  xpath=//button[@data-id='createBidBtn']
 
-    ${value_amount}=  privatmarket_service.convert_float_to_string  ${bid.data.value.amount}
+    ${bid_value}=  Set Variable If  ${NUMBER_OF_LOTS} == 0  ${bid.data.value.amount}  ${bid.data.lotValues[0].value.amount}
+
+    ${value_amount}=  privatmarket_service.convert_float_to_string  ${bid_value}
     Sleep  2s
 
     ${status}  ${elements}=  Run Keyword And Ignore Error  Get Webelements  xpath=//button[contains(@id, 'dropdownMenu')]
@@ -2694,12 +2696,12 @@ Get Item Number
     \  Click Element  xpath=(//ul[@class='dropdown-menu btn-feature-dropdown-menu'])[${item}]/li[1]
     \  Sleep  1s
 
-#    Run Keyword Unless  'Неможливість' in '${TEST_NAME}'  Wait Element Visibility And Input Text  css=input[id^='userprice-lot']  ${value_amount}
+    ${input_field}=  Set Variable If  ${NUMBER_OF_LOTS} == 0  input[id='price']  input[id^='userprice-lot']
 
     ${scenarios_name}=  privatmarket_service.get_scenarios_name
     Run Keyword If  'Неможливість' in '${TEST_NAME}'  Відмітити лот
     ...  ELSE IF  'dialogue' in '${scenarios_name}'  Відмітити лот
-    ...  ELSE  Wait Element Visibility And Input Text  css=input[id='price']  ${value_amount}
+    ...  ELSE  Wait Element Visibility And Input Text  css=${input_field}  ${value_amount}
 
     Click Button  css=button[data-id='save-bid-btn']
     Wait For Ajax
