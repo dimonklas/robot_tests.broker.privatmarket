@@ -2501,6 +2501,8 @@ Get Item Number
     Switch To Tab  1
     Відкрити детальну інформацію по лотам
     Wait Visibility And Click Element  css=a[tooltip='Подати вимогу на даний лот']
+    ${scenarios_name}=  privatmarket_service.get_scenarios_name
+    Run Keyword Unless  'single_item' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//button[@data-id='btn-send-claim']
 #    Wait Visibility And Click Element  xpath=//button[@data-id='btn-send-claim']
     Заповнити поля вимоги/скарги  ${claim}  ${document}
     Reload And Switch To Tab  3
