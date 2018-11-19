@@ -1897,7 +1897,7 @@ Try To Search Complaint
 Отримати інформацію з causeDescription
     [Arguments]  ${element}
     Execute JavaScript    window.scrollTo(${0},${0})
-    Wait Visibility And Click Element  xpath=//div[contains(@ng-click, 'showReason')]
+    Wait Visibility And Click Element  xpath=//div[@id='tenderType']/a
     ${result_full}=  Отримати текст елемента  ${element}
     ${result}=  Strip String  ${result_full}
     [Return]  ${result}
@@ -1906,7 +1906,7 @@ Try To Search Complaint
 Отримати інформацію з cause
     [Arguments]  ${element}
     Execute JavaScript    window.scrollTo(${0},${0})
-    Wait Visibility And Click Element  xpath=//div[contains(@ng-click, 'showReason')]
+    Wait Visibility And Click Element  xpath=xpath=//div[@id='tenderType']/a
     ${result_full}=  Отримати текст елемента  ${element}
     ${result_full}=  Strip String  ${result_full}
     ${result}=  privatmarket_service.get_cause  ${result_full}
@@ -2438,7 +2438,7 @@ Get Item Number
 
 Завантажити ЕЦП
     Select Window  title=sign worker
-    Wait Until Element Is Visible  css=#CAsServersSelect
+    Wait Until Element Is Visible  css=#CAsServersSelect  ${COMMONWAIT}
     Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[19]
     ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/Key-6.dat
     Choose File  id=PKeyFileInput  ${path}
