@@ -1240,6 +1240,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Click Element  css=#endDate
     Wait Visibility And Click Element  xpath=//div[@class="datepicker-days"]//tbody//tr[6]//td[4]
     Wait For Ajax
+    Wait Visibility And Click Element  xpath=//label[@for='agree']
     Wait Until Element Is Enabled  css=button[ng-click="act.saveContract('active')"]  ${COMMONWAIT}
     Click Button  css=button[ng-click="act.saveContract('active')"]
     Wait Until Element Is Visible  css=.notify  ${COMMONWAIT}
