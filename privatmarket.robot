@@ -1212,7 +1212,11 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Sleep  1s
     Choose File  xpath=//div[@class='form-block__item']/form/div/input  ${document}
     Sleep  5s
+    ${scenarios_name}=  privatmarket_service.get_scenarios_name
+    Run Keyword Unless  'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
+    Run Keyword Unless  'до переговорної процедури' in '${TEST_NAME}' or 'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
 #    Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
+#    Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
     Wait Visibility And Click Element  css=button[data-id='setActive']
     Sleep  5s
     Reload Page
@@ -2502,6 +2506,8 @@ Get Item Number
     Switch To Tab  1
     Відкрити детальну інформацію по лотам
     Wait Visibility And Click Element  css=a[tooltip='Подати вимогу на даний лот']
+    ${scenarios_name}=  privatmarket_service.get_scenarios_name
+    Run Keyword Unless  'single_item' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//button[@data-id='btn-send-claim']
 #    Wait Visibility And Click Element  xpath=//button[@data-id='btn-send-claim']
     Заповнити поля вимоги/скарги  ${claim}  ${document}
     Reload And Switch To Tab  3
