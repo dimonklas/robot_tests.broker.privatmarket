@@ -1893,7 +1893,7 @@ Try To Search Complaint
 Отримати інформацію з causeDescription
     [Arguments]  ${element}
     Execute JavaScript    window.scrollTo(${0},${0})
-    Wait Visibility And Click Element  xpath=//div[contains(@ng-click, 'showReason')]
+    Wait Visibility And Click Element  xpath=//div[@id='tenderType']/a
     ${result_full}=  Отримати текст елемента  ${element}
     ${result}=  Strip String  ${result_full}
     [Return]  ${result}
@@ -1902,7 +1902,7 @@ Try To Search Complaint
 Отримати інформацію з cause
     [Arguments]  ${element}
     Execute JavaScript    window.scrollTo(${0},${0})
-    Wait Visibility And Click Element  xpath=//div[contains(@ng-click, 'showReason')]
+    Wait Visibility And Click Element  xpath=//div[@id='tenderType']/a
     ${result_full}=  Отримати текст елемента  ${element}
     ${result_full}=  Strip String  ${result_full}
     ${result}=  privatmarket_service.get_cause  ${result_full}
@@ -2246,6 +2246,7 @@ Try Search Element
     ...  ELSE IF  '${tab_number}' == '1' and 'дочекатися завершення аукціону' in '${TEST_NAME}'  Відкрити модальне вікно з посиланням на аукціон
     ...  ELSE IF  '${tab_number}' == '1' and 'періоду подачі скарг на пропозицію' in '${TEST_NAME}'  Відкрити детальну інформацію про постачальника
     ...  ELSE IF  '${tab_number}' == '1' and 'підтвердити постачальника до звіту про укладений договір' in '${TEST_NAME}'  Відкрити детальну інформацію про постачальника
+    ...  ELSE IF  '${tab_number}' == '1' and 'підтвердити постачальника до переговорної процедури' in '${TEST_NAME}'  Відкрити детальну інформацію про постачальника
     ...  ELSE IF  '${tab_number}' == '1'  Відкрити детальну інформацію по позиціям
     ...  ELSE IF  '${tab_number}' == '2' and 'відповіді на запитання' in '${TEST_NAME}'  Відкрити повну відповідь на запитання
     ...  ELSE IF  '${tab_number}' == '3' and 'заголовку документації' in '${TEST_NAME}'  Відкрити інформацію про вкладені файли вимоги
