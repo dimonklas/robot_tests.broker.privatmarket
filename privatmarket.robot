@@ -1212,7 +1212,12 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Sleep  1s
     Choose File  xpath=//div[@class='form-block__item']/form/div/input  ${document}
     Sleep  5s
+    ${scenarios_name}=  privatmarket_service.get_scenarios_name
+    debug
+    Run Keyword Unless  'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
+    Run Keyword Unless  'до переговорної процедури' in '${TEST_NAME}' or 'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
 #    Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
+#    Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
     Wait Visibility And Click Element  css=button[data-id='setActive']
     Sleep  5s
     Reload Page
@@ -2246,6 +2251,7 @@ Try Search Element
     ...  ELSE IF  '${tab_number}' == '1' and 'дочекатися завершення аукціону' in '${TEST_NAME}'  Відкрити модальне вікно з посиланням на аукціон
     ...  ELSE IF  '${tab_number}' == '1' and 'періоду подачі скарг на пропозицію' in '${TEST_NAME}'  Відкрити детальну інформацію про постачальника
     ...  ELSE IF  '${tab_number}' == '1' and 'підтвердити постачальника до звіту про укладений договір' in '${TEST_NAME}'  Відкрити детальну інформацію про постачальника
+    ...  ELSE IF  '${tab_number}' == '1' and 'підтвердити постачальника до переговорної процедури' in '${TEST_NAME}'  Відкрити детальну інформацію про постачальника
     ...  ELSE IF  '${tab_number}' == '1'  Відкрити детальну інформацію по позиціям
     ...  ELSE IF  '${tab_number}' == '2' and 'відповіді на запитання' in '${TEST_NAME}'  Відкрити повну відповідь на запитання
     ...  ELSE IF  '${tab_number}' == '3' and 'заголовку документації' in '${TEST_NAME}'  Відкрити інформацію про вкладені файли вимоги
