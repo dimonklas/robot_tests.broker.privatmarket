@@ -1213,7 +1213,6 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Choose File  xpath=//div[@class='form-block__item']/form/div/input  ${document}
     Sleep  5s
     ${scenarios_name}=  privatmarket_service.get_scenarios_name
-    debug
     Run Keyword Unless  'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
     Run Keyword Unless  'до переговорної процедури' in '${TEST_NAME}' or 'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
 #    Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
