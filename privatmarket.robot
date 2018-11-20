@@ -2404,6 +2404,7 @@ Get Item Number
     Reload Page
     Wait Visibility And Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
     Wait Visibility And Click Element  xpath=//div[@class='lot-info ng-scope' and contains(.,'Кваліфікація учасників') ]//table[@class='bids']//a[@class='ng-binding']
+    Wait Until Element Is Visible  xpath=//div[@class='files-upload']
 
 
 Відповісти на вимогу про виправлення визначення переможця
