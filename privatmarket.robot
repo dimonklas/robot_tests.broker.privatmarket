@@ -2440,6 +2440,7 @@ Get Item Number
 
 Завантажити ЕЦП
     Select Window  title=sign worker
+    Wait Until Keyword Succeeds  2min  10s  Дочекатися завантаження сторінки підписання ЕЦП
     Wait Until Element Is Visible  css=#CAsServersSelect  ${COMMONWAIT}
     Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[19]
     ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/Key-6.dat
@@ -2451,6 +2452,11 @@ Get Item Number
     Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(),'Ок')]
     Close Window
     Select Window
+
+
+Дочекатися завантаження сторінки підписання ЕЦП
+    ${passed}=  Run Keyword And Return Status  Element Should Be Visible  xpath=//select[@id='CAsServersSelect']
+    Run Keyword Unless  '${passed}' == 'PASS'  Reload Page
 
 
 Звiрити value of title на сторінці редагуванння
