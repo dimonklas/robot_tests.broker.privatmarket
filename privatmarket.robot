@@ -1169,8 +1169,11 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     :FOR  ${item}  In Range  0  ${count}
     \  ${item}=  privatmarket_service.sum_of_numbers  ${item}  1
     \  ${class}=  Get Element Attribute  xpath=(//a[contains(@ng-class, 'description')])[${item}]@class
-    \  Sleep  1s
-    \  Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=(//a[contains(@ng-class, 'description')])[${item}]
+    \  Sleep  5s
+    \  Run Keyword Unless  'checked' in '${class}'
+    \  ...  Run Keywords
+    \  ...  Wait Until Element Is Enabled  xpath=(//a[contains(@ng-class, 'description')])[${item}]
+    \  ...  AND  Click Element  xpath=(//a[contains(@ng-class, 'description')])[${item}]
 
 
 Створити постачальника, додати документацію і підтвердити його
