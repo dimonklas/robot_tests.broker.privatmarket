@@ -2822,6 +2822,10 @@ Get Item Number
 
 Завантажити документ в ставку
     [Arguments]  ${username}  ${filePath}  ${tenderId}  ${doc_type}=documents
+
+#    ${status}=  Run Keyword And Return Status  Wait Until Element Is Visible  ${tender_data_title}  5s
+#    Run Keyword If  '${status}' == 'False'  privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tenderId}
+
     privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tenderId}
     Wait For Element With Reload  xpath=//button[@data-id="editBidBtn"]  1  1
     Wait Visibility And Click Element  xpath=//button[@data-id="editBidBtn"]
@@ -2893,8 +2897,9 @@ Get Item Number
 
 Змінити цінову пропозицію
     [Arguments]  ${username}  ${tender_uaid}  ${field}  ${value}
-    Run Keyword If  '${field}' == 'status'  Wait Visibility And Click Element  xpath=//button[@data-id="createBidBtn"]
-    ...  ELSE  Wait Visibility And Click Element  xpath=//button[@data-id="editBidBtn"]
+#    Run Keyword If  '${field}' == 'status'  Wait Visibility And Click Element  xpath=//button[@data-id="createBidBtn"]
+#    ...  ELSE  Wait Visibility And Click Element  xpath=//button[@data-id="editBidBtn"]
+    Wait Visibility And Click Element  xpath=//button[@data-id="editBidBtn"]
     Sleep  2s
     Wait For Ajax
     Run Keyword Unless  '${field}' == 'status'  Wait Until Element Is Visible  css=select[data-id='filetype']  ${COMMONWAIT}
