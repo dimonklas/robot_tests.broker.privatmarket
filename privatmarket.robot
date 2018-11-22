@@ -597,6 +597,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     ...  ELSE IF  ${type} == 'negotiation' or ${type} == 'reporting'  Wait For Element With Reload  css=[data-tender-status='active']  1
     ...  ELSE  Wait For Element With Reload  css=[data-tender-status='active.enquiries']  1
     ${tender_id}=  Get Text  ${tender_data_tenderID}
+    Log To Console  ${tender_id}
     [Return]  ${tender_id}
 
 
@@ -2870,8 +2871,8 @@ Get Item Number
 Змінити документацію в ставці
     [Arguments]  ${username}  ${tender_uaid}  ${doc_data}  ${doc_id}
     Wait Visibility And Click Element  xpath=//button[@data-id="editBidBtn"]
-    Sleep  2s
-    Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
+#    Sleep  2s
+#    Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
     Wait For Ajax
     Wait Visibility And Click Element  css=label[data-id="confidentiality-toggle"]
     Wait Element Visibility And Input Text  css=textarea[data-if="confidentiality-rationale-text"]  ${doc_data.data.confidentialityRationale}
@@ -2884,6 +2885,8 @@ Get Item Number
     Wait For Ajax
     Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
     Sleep  1s
+    Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
+    Wait For Ajax
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']
     Sleep  60s
 
@@ -2894,13 +2897,15 @@ Get Item Number
     ...  ELSE  Wait Visibility And Click Element  xpath=//button[@data-id="editBidBtn"]
     Sleep  2s
     Wait For Ajax
-    Wait Until Element Is Visible  css=select[data-id='filetype']
+    Wait Until Element Is Visible  css=select[data-id='filetype']  ${COMMONWAIT}
     Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
     Wait For Ajax
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modalOkBtn']
     Wait For Ajax
     ${value}=  privatmarket_service.convert_float_to_string  ${value}
-    Run Keyword If  'value.amount' in '${field}'  Wait Element Visibility And Input Text  css=input[id='price']  ${value}
+
+    ${value_field}=  Set Variable If  ${NUMBER_OF_LOTS} == 0  input[id='price']  input[id^='userprice-lot']
+    Run Keyword If  'value.amount' in '${field}'  Wait Element Visibility And Input Text  css=${value_field}  ${value}
     Click Button  css=button[data-id='save-bid-btn']
     Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
     Wait For Ajax
