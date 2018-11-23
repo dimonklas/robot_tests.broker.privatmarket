@@ -1469,13 +1469,32 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 Отримати інформацію з контракту
     [Arguments]  ${tender_uaid}  ${field_name}
     Відкрити детальну інформацію про контракт
-    Run Keyword And Return If  '${field_name}' == 'contracts[0].period.startDate' or '${field_name}' == 'contracts[1].period.startDate'  Отримати інформацію з contracts.period.startDate  ${field_name}
-    Run Keyword And Return If  '${field_name}' == 'contracts[0].period.endDate' or '${field_name}' == 'contracts[1].period.endDate'  Отримати інформацію з contracts.period.endDate  ${field_name}
-    Run Keyword And Return If  '${field_name}' == 'contracts[0].value.amount' or '${field_name}' == 'contracts[1].value.amount'  Отримати інформацію з contracts.value.amount  ${field_name}
-    Run Keyword And Return If  '${field_name}' == 'contracts[0].dateSigned' or '${field_name}' == 'contracts[1].dateSigned'  Отримати інформацію з contracts.dateSigned  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'awards[1].value.amount' or '${field_name}' == 'contracts[1].value.amount'  Отримати вартість угоди
+    Run Keyword And Return If  '${field_name}' == 'contracts[0].period.startDate' or '${field_name}' == 'contracts[1].period.startDate'  Отримати інформацію з contracts.period.startDate  ${tender_data_${field_name}}
+    Run Keyword And Return If  '${field_name}' == 'contracts[0].period.endDate' or '${field_name}' == 'contracts[1].period.endDate'  Отримати інформацію з contracts.period.endDate  ${tender_data_${field_name}}
+#    Run Keyword And Return If  '${field_name}' == 'contracts[0].value.amount' or '${field_name}' == 'contracts[1].value.amount'  Отримати інформацію з contracts.value.amount  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'contracts[0].dateSigned' or '${field_name}' == 'contracts[1].dateSigned'  Отримати дату підписання угоди  ${tender_data_${field_name}}
     Wait Until Element Is Visible  ${tender_data_${field_name}}  ${COMMONWAIT}
     ${result_full}=  Get Text  ${tender_data_${field_name}}
     ${result}=  Strip String  ${result_full}
+    [Return]  ${result}
+
+
+Отримати вартість угоди
+    Wait Until Element Is Visible  xpath=//div[@id='contractAmount']  ${COMMONWAIT}
+    ${text}=  Get Text  xpath=//div[@id='contractAmount']
+    ${text_new}=  Strip String  ${text}
+    ${value}=  Replace String  ${text_new}  ${SPACE}  ${EMPTY}
+    ${result}=  convert to number  ${value}
+    [Return]  ${result}
+
+
+Отримати дату підписання угоди
+    [Arguments]  ${field_name}
+    ${result}=  Get Text  ${field_name}
+    ${result_full}=  Split String  ${result_full}  ${SPACE}
+    ${date}=  Set Variable  ${result_full[2]}
+    ${result}=  get_time_with_offset_formatted  ${date}  %d.%m.%Y
     [Return]  ${result}
 
 
