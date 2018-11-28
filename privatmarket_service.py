@@ -256,7 +256,13 @@ def get_procurementMethod_Type (type):
     type_dictionary = {
         u'Конкурентний діалог з публікацією англійською мовою 1-ий етап': 'competitiveDialogueEU',
         u'Конкурентний діалог 1-ий етап': 'competitiveDialogueUA',
-        u'Переговорна процедура для потреб оборони': 'aboveThresholdUA.defense'
+        u'Переговорна процедура для потреб оборони': 'aboveThresholdUA.defense',
+        u'Укладання рамкової угоди': 'closeFrameworkAgreementUA',
+        u'Допорогові закупівлі': 'belowThreshold',
+        u'Переговорна процедура': 'negotiation',
+        u'Звіт про укладений договір': 'reporting',
+        u'Відкриті торги': 'aboveThresholdUA',
+        u'Відкриті торги з публікацією англійською мовою': 'aboveThresholdEU'
     }
     type_name = type_dictionary.get(type)
     return type_name
