@@ -262,7 +262,8 @@ def get_procurementMethod_Type (type):
         u'Переговорна процедура': 'negotiation',
         u'Звіт про укладений договір': 'reporting',
         u'Відкриті торги': 'aboveThresholdUA',
-        u'Відкриті торги з публікацією англійською мовою': 'aboveThresholdEU'
+        u'Відкриті торги з публікацією англійською мовою': 'aboveThresholdEU',
+        u'Відкриті торги для закупівлі енергосервісу': 'esco'
     }
     type_name = type_dictionary.get(type)
     return type_name

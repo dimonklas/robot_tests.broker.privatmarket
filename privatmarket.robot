@@ -165,6 +165,11 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 ${tender_data_agreementDuration}  xpath=//div[@class='agreement-duration']
 ${tender_data_maxAwardsCount}  xpath=//div[@data-id='maxAwardsCount']
 
+${tender_data_minimalStepPercentage}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[1]
+${tender_data_NBUdiscountRate}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[2]
+${tender_data_yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[3]
+${tender_data_fundingKind}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[4]
+
 
 
 *** Keywords ***
@@ -2925,9 +2930,9 @@ Get Item Number
 #    Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
     Wait For Ajax
     Wait Visibility And Click Element  css=label[data-id="confidentiality-toggle"]
-    Wait Element Visibility And Input Text  css=textarea[data-if="confidentiality-rationale-text"]  ${doc_data.data.confidentialityRationale}
-    Sleep  1s
-    Wait Visibility And Click Element  css=button[data-id="save-confidentiality"]
+#    Wait Element Visibility And Input Text  css=textarea[data-if="confidentiality-rationale-text"]  ${doc_data.data.confidentialityRationale}
+#    Sleep  1s
+#    Wait Visibility And Click Element  css=button[data-id="save-confidentiality"]
     Sleep  10s
     Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
     Wait For Ajax
