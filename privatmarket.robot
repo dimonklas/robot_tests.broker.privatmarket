@@ -170,6 +170,10 @@ ${tender_data_NBUdiscountRate}  xpath=(//div[@ng-include='page.financialItems']/
 ${tender_data_yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[3]
 ${tender_data_fundingKind}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[4]
 
+${tender_data_lots[0].minimalStepPercentage}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[1]
+${tender_data_lots[0].fundingKind}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[4]
+${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[3]
+
 
 
 *** Keywords ***
@@ -1302,6 +1306,9 @@ ${tender_data_fundingKind}  xpath=(//div[@ng-include='page.financialItems']//fol
     Run Keyword And Return If  '${field_name}' == 'contracts[0].status' or '${field_name}' == 'contracts[1].status'  Отримати статус договору  ${field_name}
     Run Keyword And Return If  'endDate' in '${field_name}' or 'startDate' in '${field_name}'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'agreementDuration'  Отримати інформацію з ${field_name}  ${field_name}
+    Run Keyword And Return If  'fundingKind' in '${field_name}'  Отримати інформацію з fundingKind  ${field_name}
+    Run Keyword And Return If  'NBUdiscountRate' in '${field_name}'  Отримати інформацію з NBUdiscountRate  ${field_name}
+    Run Keyword And Return If  'yearlyPaymentsPercentageRange' in '${field_name}'  Отримати інформацію з yearlyPaymentsPercentageRange  ${field_name}
 
     Wait Until Element Is Visible  ${tender_data_${field_name}}
     ${result_full}=  Get Text  ${tender_data_${field_name}}
@@ -1342,6 +1349,36 @@ ${tender_data_fundingKind}  xpath=(//div[@ng-include='page.financialItems']//fol
     ${second}=  Set Variable If  ${matches[5]} > 0  ${matches[5]}S  ${EMPTY}
     Log Many  ${year}  ${month}  ${day}  ${hour}  ${minute}  ${second}
     ${result}=  Set Variable  P${year}${month}${day}T${hour}${minute}${second}
+    [Return]  ${result}
+
+
+Отримати інформацію з fundingKind
+    [Arguments]  ${field_name}
+    ${text}=  Отримати текст елемента  ${tender_data_${field_name}}
+    ${result}=  Set Variable If
+    ...  'з бюджетних коштів' in '${text}'  budget
+    [Return]  ${result}
+
+
+Отримати інформацію з NBUdiscountRate
+    [Arguments]  ${field_name}
+    ${text}=  Отримати текст елемента  ${tender_data_${field_name}}
+    ${result}=  Привести відсоток до частини від цілого  ${text}
+    [Return]  ${result}
+
+
+Отримати інформацію з yearlyPaymentsPercentageRange
+    [Arguments]  ${field_name}
+    ${text}=  Отримати текст елемента  ${tender_data_${field_name}}
+    ${result}=  Привести відсоток до частини від цілого  ${text}
+    [Return]  ${result}
+
+
+Привести відсоток до частини від цілого
+    [Arguments]  ${text}
+    ${rate}=  Remove String Using Regexp  ${text}  \\s%$
+    ${rate}=  Convert To Number  ${rate}  3
+    ${result}=  Evaluate  ${rate}/${100}
     [Return]  ${result}
 
 
