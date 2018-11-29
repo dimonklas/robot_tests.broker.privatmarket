@@ -2929,7 +2929,14 @@ Get Item Number
 #    Sleep  2s
 #    Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
     Wait For Ajax
+    ${tender_type}=  Отримати інформацію з procurementMethodType
     Wait Visibility And Click Element  css=label[data-id="confidentiality-toggle"]
+
+    Run Keyword If  'aboveThresholdEU' in '${tender_type}'
+    ...  Run Keywords
+    ...  Wait Element Visibility And Input Text  css=textarea[data-if="confidentiality-rationale-text"]  ${doc_data.data.confidentialityRationale}
+    ...  AND  Sleep  1s
+    ...  AND  Wait Visibility And Click Element  css=button[data-id="save-confidentiality"]
 #    Wait Element Visibility And Input Text  css=textarea[data-if="confidentiality-rationale-text"]  ${doc_data.data.confidentialityRationale}
 #    Sleep  1s
 #    Wait Visibility And Click Element  css=button[data-id="save-confidentiality"]
