@@ -645,9 +645,9 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     \  ...  Wait Element Visibility And Input Text  xpath=(//input[@data-id='procurementNameEn'])[${lot_index}]  ${lots[${index}].title_en}
     \  ...  AND  Wait Element Visibility And Input Text  xpath=(//textarea[@data-id='lotDescriptionEn'])[${lot_index}]  ${lots[${index}].description}
     \  ${auction_step}=  Set Variable If  ${type} == 'esco'  ${lots[${index}].minimalStepPercentage}  ''
-    \  ${auction_step}=  Привести до відсотків  ${auction_step}
+    \  ${auction_step}=  Run Keyword IF  ${type} == 'esco'  Привести до відсотків  ${auction_step}
     \  ${yearly_payments}=  Set Variable If  ${type} == 'esco'  ${lots[${index}].yearlyPaymentsPercentageRange}  ''
-    \  ${yearly_payments}=  Привести до відсотків  ${yearly_payments}
+    \  ${yearly_payments}=  Run Keyword IF  ${type} == 'esco'  Привести до відсотків  ${yearly_payments}
     \  Run Keyword IF  ${type} == 'esco'  Wait Element Visibility And Input Text  xpath=(//input[contains(@ng-model,'minimalStepPercentage')])[${lot_index}]  ${auction_step}
     \  Run Keyword IF  ${type} == 'esco'  Wait Element Visibility And Input Text  xpath=(//input[contains(@ng-model,'yearlyPaymentsPercentageRange')])[${lot_index}]  ${yearly_payments}
 
