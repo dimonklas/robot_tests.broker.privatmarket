@@ -162,6 +162,18 @@ ${tender_data_classification.description}  xpath=//*[@data-id='common-classif-de
 ${tender_data_classification.scheme}  xpath=//*[@data-id='common-classif-scheme']
 ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 
+${tender_data_agreementDuration}  xpath=//div[@class='agreement-duration']
+${tender_data_maxAwardsCount}  xpath=//div[@data-id='maxAwardsCount']
+
+${tender_data_minimalStepPercentage}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[1]
+${tender_data_NBUdiscountRate}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[2]
+${tender_data_yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[3]
+${tender_data_fundingKind}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[4]
+
+${tender_data_lots[0].minimalStepPercentage}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[1]
+${tender_data_lots[0].fundingKind}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[4]
+${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[3]
+
 
 
 *** Keywords ***
@@ -1281,7 +1293,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Run Keyword And Return If  '${field_name}' == 'causeDescription'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'cause'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'awards[0].complaintPeriod.endDate' or '${field_name}' == 'awards[1].complaintPeriod.endDate'  Отримати інформацію з awadrs.complaintPeriod.endDate
-    Run Keyword And Return If  '${field_name}' == 'procurementMethodType'  Отримати інформацію з ${field_name}  1
+    Run Keyword And Return If  '${field_name}' == 'procurementMethodType'  Отримати інформацію з procurementMethodType
     Run Keyword And Return If  '${field_name}' == 'complaintPeriod.endDate'  Отримати інформацію з ${field_name}  ${field_name}  0
 #    Run Keyword And Return If  '${field_name}' == 'items[0].deliveryDate.startDate'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '].deliveryAddress.countryName_en' in '${field_name}'  Отримати інформацію із предмету зі зміною локалізації для пропозицій  ${field_name}  EN
@@ -1296,6 +1308,10 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     Run Keyword And Return If  '${field_name}' == 'questions[0].answer'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'contracts[0].status' or '${field_name}' == 'contracts[1].status'  Отримати статус договору  ${field_name}
     Run Keyword And Return If  'endDate' in '${field_name}' or 'startDate' in '${field_name}'  Отримати дату та час  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'agreementDuration'  Отримати інформацію з ${field_name}  ${field_name}
+    Run Keyword And Return If  'fundingKind' in '${field_name}'  Отримати інформацію з fundingKind  ${field_name}
+    Run Keyword And Return If  'NBUdiscountRate' in '${field_name}'  Отримати інформацію з NBUdiscountRate  ${field_name}
+    Run Keyword And Return If  'yearlyPaymentsPercentageRange' in '${field_name}'  Отримати інформацію з yearlyPaymentsPercentageRange  ${field_name}
 
     Wait Until Element Is Visible  ${tender_data_${field_name}}
     ${result_full}=  Get Text  ${tender_data_${field_name}}
@@ -1321,6 +1337,51 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     [Arguments]  ${field_name}
     Wait For Element With Reload  ${tender_data_lot_question.${field_name}}  1
     ${result}=  Отримати текст елемента  ${element_name}
+    [Return]  ${result}
+
+
+Отримати інформацію з agreementDuration
+    [Arguments]  ${field_name}
+    ${text}=  Отримати текст елемента  ${tender_data_${field_name}}
+    ${matches}=  Get Regexp Matches  ${text}  \\d+
+    ${year}=  Set Variable If  ${matches[0]} > 0  ${matches[0]}Y  ${EMPTY}
+    ${month}=  Set Variable If  ${matches[1]} > 0  ${matches[1]}M  ${EMPTY}
+    ${day}=  Set Variable If  ${matches[2]} > 0  ${matches[2]}D  ${EMPTY}
+    ${hour}=  Set Variable If  ${matches[3]} > 0  ${matches[3]}H  ${EMPTY}
+    ${minute}=  Set Variable If  ${matches[4]} > 0  ${matches[4]}M  ${EMPTY}
+    ${second}=  Set Variable If  ${matches[5]} > 0  ${matches[5]}S  ${EMPTY}
+    Log Many  ${year}  ${month}  ${day}  ${hour}  ${minute}  ${second}
+    ${result}=  Set Variable  P${year}${month}${day}T${hour}${minute}${second}
+    [Return]  ${result}
+
+
+Отримати інформацію з fundingKind
+    [Arguments]  ${field_name}
+    ${text}=  Отримати текст елемента  ${tender_data_${field_name}}
+    ${result}=  Set Variable If
+    ...  'з бюджетних коштів' in '${text}'  budget
+    [Return]  ${result}
+
+
+Отримати інформацію з NBUdiscountRate
+    [Arguments]  ${field_name}
+    ${text}=  Отримати текст елемента  ${tender_data_${field_name}}
+    ${result}=  Привести відсоток до частини від цілого  ${text}
+    [Return]  ${result}
+
+
+Отримати інформацію з yearlyPaymentsPercentageRange
+    [Arguments]  ${field_name}
+    ${text}=  Отримати текст елемента  ${tender_data_${field_name}}
+    ${result}=  Привести відсоток до частини від цілого  ${text}
+    [Return]  ${result}
+
+
+Привести відсоток до частини від цілого
+    [Arguments]  ${text}
+    ${rate}=  Remove String Using Regexp  ${text}  \\s%$
+    ${rate}=  Convert To Number  ${rate}  3
+    ${result}=  Evaluate  ${rate}/${100}
     [Return]  ${result}
 
 
@@ -1454,7 +1515,6 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     [Arguments]  ${tender_uaid}  ${field_name}
     ${open_status}=  Run Keyword And Return Status  Wait Until Element Is Visible  xpath=//img[contains(@ng-src, 'icon-minus.png')]  1s
     Run Keyword Unless  ${open_status}  Відкрити детальну інформацію про постачальника
-
     Run Keyword And Return If  '${field_name}' == 'awards[0].status'  Отримати статус заявки  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'awards[0].value.valueAddedTaxIncluded'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'awards[0].value.currency'  Отримати інформацію з ${field_name}  ${field_name}
@@ -1471,8 +1531,10 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
 
 Отримати інформацію з контракту
     [Arguments]  ${tender_uaid}  ${field_name}
-    Відкрити детальну інформацію про контракт
-    Run Keyword And Return If  '${field_name}' == 'awards[1].value.amount' or '${field_name}' == 'contracts[1].value.amount'  Отримати вартість угоди
+#    Відкрити детальну інформацію про контракт
+    Run Keyword And Return If  '${field_name}' == 'awards[0].value.amount' or '${field_name}' == 'awards[1].value.amount'  Отримати інформацію про постачальника  ${tender_uaid}  ${field_name}
+    Wait Until Keyword Succeeds  10min  10s  Дочекатися відображення активного контракту
+    Run Keyword And Return If  '${field_name}' == 'contracts[0].value.amount' or '${field_name}' == 'contracts[1].value.amount'  Отримати вартість угоди
     Run Keyword And Return If  '${field_name}' == 'contracts[0].period.startDate' or '${field_name}' == 'contracts[1].period.startDate'  Отримати інформацію з contracts.period.startDate  ${tender_data_${field_name}}
     Run Keyword And Return If  '${field_name}' == 'contracts[0].period.endDate' or '${field_name}' == 'contracts[1].period.endDate'  Отримати інформацію з contracts.period.endDate  ${tender_data_${field_name}}
 #    Run Keyword And Return If  '${field_name}' == 'contracts[0].value.amount' or '${field_name}' == 'contracts[1].value.amount'  Отримати інформацію з contracts.value.amount  ${field_name}
@@ -1481,6 +1543,12 @@ ${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
     ${result_full}=  Get Text  ${tender_data_${field_name}}
     ${result}=  Strip String  ${result_full}
     [Return]  ${result}
+
+
+Дочекатися відображення активного контракту
+    Reload Page
+    Відкрити детальну інформацію про контракт
+    Wait Until Element Is Visible  xpath=//div[contains(@class,'contracts info')]
 
 
 Отримати вартість угоди
@@ -1954,7 +2022,7 @@ Try To Search Complaint
 
 
 Отримати інформацію з procurementMethodType
-    [Arguments]  ${element}
+#    [Arguments]  ${element}
     ${type}=  Отримати текст елемента  xpath=//*[@data-id='tender-type']
     ${type}=  get_procurementMethod_Type  ${type}
     [Return]  ${type}
@@ -2463,8 +2531,11 @@ Get Item Number
     ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'lot-parts')]@class
     Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
     ${scenarios_name}=  privatmarket_service.get_scenarios_name
-    Run Keyword Unless  'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
-    Run Keyword Unless  'до переговорної процедури' in '${TEST_NAME}' or 'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
+
+    ${tender_type}=  Отримати інформацію з procurementMethodType
+
+    Run Keyword Unless  'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}' or 'belowThreshold' in '${tender_type}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
+    Run Keyword Unless  'до переговорної процедури' in '${TEST_NAME}' or 'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}' or 'belowThreshold' in '${tender_type}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
     Wait Visibility And Click Element  xpath=//div[@class='award-section award-actions ng-scope']//button[@data-id='setActive']
     Sleep  1s
     Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]  ${COMMONWAIT}
@@ -2908,10 +2979,17 @@ Get Item Number
 #    Sleep  2s
 #    Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
     Wait For Ajax
+    ${tender_type}=  Отримати інформацію з procurementMethodType
     Wait Visibility And Click Element  css=label[data-id="confidentiality-toggle"]
-    Wait Element Visibility And Input Text  css=textarea[data-if="confidentiality-rationale-text"]  ${doc_data.data.confidentialityRationale}
-    Sleep  1s
-    Wait Visibility And Click Element  css=button[data-id="save-confidentiality"]
+
+    Run Keyword If  'aboveThresholdEU' in '${tender_type}'
+    ...  Run Keywords
+    ...  Wait Element Visibility And Input Text  css=textarea[data-if="confidentiality-rationale-text"]  ${doc_data.data.confidentialityRationale}
+    ...  AND  Sleep  1s
+    ...  AND  Wait Visibility And Click Element  css=button[data-id="save-confidentiality"]
+#    Wait Element Visibility And Input Text  css=textarea[data-if="confidentiality-rationale-text"]  ${doc_data.data.confidentialityRationale}
+#    Sleep  1s
+#    Wait Visibility And Click Element  css=button[data-id="save-confidentiality"]
     Sleep  10s
     Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
     Wait For Ajax
