@@ -2838,7 +2838,17 @@ Get Item Number
 
 Отримати інформацію з пропозиції status
     ${value}=  Отримати текст елемента  xpath=//tr[contains(@ng-repeat, 'currBids[lot.id] ')]//td[4]
+    Run Keyword If  '${value}' != 'Недійсна' and 'після редагування інформації про тендер' in '${TEST_NAME}'  Wait Until Keyword Succeeds  10min  30s  Дочекатися зміни статусу пропозиції
     ${value}=  Set Variable If  '${value}' == 'Недійсна'  invalid  ${value}
+    [Return]  ${value}
+
+
+Дочекатися зміни статусу пропозиції
+    Reload Page
+    Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'lot-parts')]
+    Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
+    Element Should Contain  xpath=//tr[contains(@ng-repeat, 'currBids[lot.id] ')]//td[4]  'Недійсна'
+    ${value}=  Отримати текст елемента  xpath=//tr[contains(@ng-repeat, 'currBids[lot.id] ')]//td[4]
     [Return]  ${value}
 
 
