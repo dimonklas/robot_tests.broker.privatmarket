@@ -1398,6 +1398,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ${rate}=  Remove String Using Regexp  ${text}  \\s%$
     ${rate}=  Convert To Number  ${rate}  3
     ${result}=  Evaluate  ${rate}/${100}
+    ${result}=  Convert To String  ${result}
     [Return]  ${result}
 
 
