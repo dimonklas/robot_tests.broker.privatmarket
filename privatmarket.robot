@@ -476,6 +476,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 #go to form
     Wait For Ajax
     Wait Visibility And Click Element  ${locator_tenderSearch.addTender}
+
     ${status}  ${type}=  Run Keyword And Ignore Error  Set Variable  '${tender_data.data.procurementMethodType}'
     ${type}=  Run Keyword If
     ...  '${status}' == 'PASS'  Set Variable  ${type}
@@ -495,6 +496,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ...  ELSE IF  ${type} == 'competitiveDialogueUA'  Wait Visibility And Click Element  css=a[data-id='choosedPrzCompetitiveDialogueUA']
     ...  ELSE IF  ${type} == 'reporting'  Wait Visibility And Click Element  css=a[data-id='choosedPrzReporting']
     ...  ELSE IF  ${type} == 'esco'  Wait Visibility And Click Element  css=a[data-id='choosedPrzEsco']
+    ...  ELSE IF  ${type} == 'closeFrameworkAgreementUA'  Wait Visibility And Click Element  css=a[data-id='choosedPrzCloseFrameworkAgreementUA']
     ...  ELSE  Wait Visibility And Click Element  css=a[data-id='choosedPrzBelowThreshold']
 
     Wait For Ajax
@@ -511,7 +513,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait For Ajax
     Wait Element Visibility And Input Text  css=input[data-id='procurementName']  ${tender_data.data.title}
     Wait Element Visibility And Input Text  css=textarea[data-id='procurementDescription']  ${tender_data.data.description}
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco'
+    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'
     ...  Run Keywords
     ...  Wait Element Visibility And Input Text  css=input[data-id='procurementNameEn']  ${tender_data.data.title_en}
     ...  AND  Wait Element Visibility And Input Text  css=textarea[data-id='procurementDescriptionEn']  ${tender_data.data.description_en}
@@ -527,6 +529,11 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait Visibility And Click Element  css=button[data-id='actConfirm']
 #    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
 
+    Run Keyword If  ${type} == 'closeFrameworkAgreementUA'
+    ...  Run Keywords
+    ...  Wait Element Visibility And Input Text  xpath=//input[@data-id='maxAwardsCount']  ${tender_data.data.maxAwardsCount}
+    ...  AND  Заповнити срок дії рамкової угоди  ${tender_data.data.agreementDuration}
+
     Run Keyword If  ${type} == 'esco'  Wait Visibility And Click Element  xpath=//input[@value='${tender_data.data.fundingKind}']
 
     ${value_amount}=  Set Variable If  ${type} != 'esco'  ${tender_data.data.value.amount}  ''
@@ -537,7 +544,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
     #date
     Wait For Ajax
-    Run Keyword Unless  ${type} == 'aboveThresholdEU' or ${type} == 'aboveThresholdUA' or ${type} == 'negotiation' or ${type} == 'competitiveDialogueEU' or ${type} == 'competitiveDialogueUA' or ${type} == 'reporting' or ${type} == 'esco'  Set Enquiry Period  ${tender_data.data.enquiryPeriod.startDate}  ${tender_data.data.enquiryPeriod.endDate}
+    Run Keyword Unless  ${type} == 'aboveThresholdEU' or ${type} == 'aboveThresholdUA' or ${type} == 'negotiation' or ${type} == 'competitiveDialogueEU' or ${type} == 'competitiveDialogueUA' or ${type} == 'reporting' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'  Set Enquiry Period  ${tender_data.data.enquiryPeriod.startDate}  ${tender_data.data.enquiryPeriod.endDate}
     Run Keyword If  ${type} == ''  Set Start Tender Period  ${tender_data.data.tenderPeriod.startDate}
     Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'reporting'  Set End Tender Period  ${tender_data.data.tenderPeriod.endDate}
 
@@ -559,7 +566,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
     #contactPoint
     Wait Element Visibility And Input Text  css=[data-id='contactPoint'] input[data-id='fullNameUa']  ${tender_data.data.procuringEntity.contactPoint.name}
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco'
+    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'
     ...  Wait Element Visibility And Input Text  css=[data-id='contactPoint'] input[data-id='fullNameEn']  ${tender_data.data.procuringEntity.contactPoint.name_en}
 
     ${modified_phone}=  Привести номер телефону до відповідного формату  ${tender_data.data.procuringEntity.contactPoint.telephone}
@@ -567,13 +574,14 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait Element Visibility And Input Text  css=input[data-id='email']  ${USERS.users['${username}'].email}
     Wait Element Visibility And Input Text  css=input[data-id='url']  ${tender_data.data.procuringEntity.contactPoint.url}
 
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco'
+    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'
     ...  Run Keywords
     ...  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='fullNameUa']  ${tender_data.data.procuringEntity.contactPoint.name}
     ...  AND  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='fullNameEn']  ${tender_data.data.procuringEntity.contactPoint.name_en}
     ...  AND  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='phone']  ${modified_phone}
     ...  AND  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='email']  ${USERS.users['${username}'].email}
     ...  AND  Wait Element Visibility And Input Text  css=input[data-id='legalNameEn']  ${tender_data.data.procuringEntity.name_en}
+
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
     ${lots_count}=  Get Length  @{lots}
@@ -596,7 +604,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Run Keyword IF
     ...  ${type} == 'aboveThresholdEU'  Додати нецінові показники  ${features}  ${type}
     ...  ELSE IF  ${type} == 'aboveThresholdUA' and ${exist_features}  Додати нецінові показники  ${features}  ${type}
-    ...  ELSE IF  'competitiveDialogue' in ${type}  Додати нецінові показники  ${features}  ${type}
+    ...  ELSE IF  'competitiveDialogue' in ${type} and ${exist_features}  Додати нецінові показники  ${features}  ${type}
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
 #step 4
@@ -769,6 +777,23 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionValue'])[${elem_index}]  ${item_criterion_value}
     \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionTitle'])[${elem_index}]  ${item_enums[${index}].title}
     \  Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${item_enums[${index}].title}
+
+
+Заповнити срок дії рамкової угоди
+    [Arguments]  ${duration}
+    ${matches}=  Get Regexp Matches  ${duration}  \\d+
+    ${year}=  Set Variable If  ${matches[0]} > 0  ${matches[0]}  ${EMPTY}
+    ${month}=  Set Variable If  ${matches[1]} > 0  ${matches[1]}  ${EMPTY}
+    ${day}=  Set Variable If  ${matches[2]} > 0  ${matches[2]}  ${EMPTY}
+    ${hour}=  Set Variable If  ${matches[3]} > 0  ${matches[3]}  ${EMPTY}
+    ${minute}=  Set Variable If  ${matches[4]} > 0  ${matches[4]}  ${EMPTY}
+    ${second}=  Set Variable If  ${matches[5]} > 0  ${matches[5]}  ${EMPTY}
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='agreementDurationY']  ${year}
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='agreementDurationM']  ${month}
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='agreementDurationD']  ${day}
+#    Wait Element Visibility And Input Text  xpath=//input[@data-id='agreementDurationH']  ${hour}
+#    Wait Element Visibility And Input Text  xpath=//input[@data-id='agreementDurationM']  ${minute}
+#    Wait Element Visibility And Input Text  xpath=//input[@data-id='agreementDurationS']  ${second}
 
 
 Обрати додаткові класифікатори для лікарських засобів
@@ -1324,6 +1349,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Run Keyword And Return If  '${field_name}' == 'contracts[0].status' or '${field_name}' == 'contracts[1].status'  Отримати статус договору  ${field_name}
     Run Keyword And Return If  'endDate' in '${field_name}' or 'startDate' in '${field_name}'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'agreementDuration'  Отримати інформацію з ${field_name}  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'maxAwardsCount'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  'fundingKind' in '${field_name}'  Отримати інформацію з fundingKind  ${field_name}
     Run Keyword And Return If  'NBUdiscountRate' in '${field_name}'  Отримати інформацію з NBUdiscountRate  ${field_name}
     Run Keyword And Return If  'yearlyPaymentsPercentageRange' in '${field_name}'  Отримати інформацію з yearlyPaymentsPercentageRange  ${field_name}
@@ -1357,16 +1383,24 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
 Отримати інформацію з agreementDuration
     [Arguments]  ${field_name}
-    ${text}=  Отримати текст елемента  ${tender_data_${field_name}}
-    ${matches}=  Get Regexp Matches  ${text}  \\d+
-    ${year}=  Set Variable If  ${matches[0]} > 0  ${matches[0]}Y  ${EMPTY}
-    ${month}=  Set Variable If  ${matches[1]} > 0  ${matches[1]}M  ${EMPTY}
-    ${day}=  Set Variable If  ${matches[2]} > 0  ${matches[2]}D  ${EMPTY}
-    ${hour}=  Set Variable If  ${matches[3]} > 0  ${matches[3]}H  ${EMPTY}
-    ${minute}=  Set Variable If  ${matches[4]} > 0  ${matches[4]}M  ${EMPTY}
-    ${second}=  Set Variable If  ${matches[5]} > 0  ${matches[5]}S  ${EMPTY}
-    Log Many  ${year}  ${month}  ${day}  ${hour}  ${minute}  ${second}
-    ${result}=  Set Variable  P${year}${month}${day}T${hour}${minute}${second}
+    ${result}=  Get Element Attribute  xpath=//span[@data-id='agreementDuration']@innerHTML
+#    ${text}=  Отримати текст елемента  ${tender_data_${field_name}}
+#    ${matches}=  Get Regexp Matches  ${text}  \\d+
+#    ${year}=  Set Variable If  ${matches[0]} > 0  ${matches[0]}Y  ${EMPTY}
+#    ${month}=  Set Variable If  ${matches[1]} > 0  ${matches[1]}M  ${EMPTY}
+#    ${day}=  Set Variable If  ${matches[2]} > 0  ${matches[2]}D  ${EMPTY}
+#    ${hour}=  Set Variable If  ${matches[3]} > 0  ${matches[3]}H  ${EMPTY}
+#    ${minute}=  Set Variable If  ${matches[4]} > 0  ${matches[4]}M  ${EMPTY}
+#    ${second}=  Set Variable If  ${matches[5]} > 0  ${matches[5]}S  ${EMPTY}
+#    Log Many  ${year}  ${month}  ${day}  ${hour}  ${minute}  ${second}
+#    ${result}=  Set Variable  P${year}${month}${day}T${hour}${minute}${second}
+    [Return]  ${result}
+
+
+Отримати інформацію з maxAwardsCount
+    [Arguments]  ${field_name}
+    ${count}=  Get Element Attribute  xpath=//div[@data-id='maxAwardsCount']@innerHTML
+    ${result}=  Convert To Integer  ${count}
     [Return]  ${result}
 
 
@@ -2316,7 +2350,7 @@ Wait Element Visibility And Input Text
 
 Wait For Tender
     [Arguments]  ${tender_id}  ${education_type}  ${type}=tender
-    Wait Until Keyword Succeeds  10min  5s  Try Search Tender  ${tender_id}  ${education_type}  ${type}
+    Wait Until Keyword Succeeds  25min  5s  Try Search Tender  ${tender_id}  ${education_type}  ${type}
 
 
 Try Search Tender
