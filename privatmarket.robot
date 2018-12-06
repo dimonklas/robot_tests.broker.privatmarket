@@ -476,6 +476,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 #go to form
     Wait For Ajax
     Wait Visibility And Click Element  ${locator_tenderSearch.addTender}
+
     ${status}  ${type}=  Run Keyword And Ignore Error  Set Variable  '${tender_data.data.procurementMethodType}'
     ${type}=  Run Keyword If
     ...  '${status}' == 'PASS'  Set Variable  ${type}
@@ -495,6 +496,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ...  ELSE IF  ${type} == 'competitiveDialogueUA'  Wait Visibility And Click Element  css=a[data-id='choosedPrzCompetitiveDialogueUA']
     ...  ELSE IF  ${type} == 'reporting'  Wait Visibility And Click Element  css=a[data-id='choosedPrzReporting']
     ...  ELSE IF  ${type} == 'esco'  Wait Visibility And Click Element  css=a[data-id='choosedPrzEsco']
+    ...  ELSE IF  ${type} == 'closeFrameworkAgreementUA'  Wait Visibility And Click Element  css=a[data-id='choosedPrzCloseFrameworkAgreementUA']
     ...  ELSE  Wait Visibility And Click Element  css=a[data-id='choosedPrzBelowThreshold']
 
     Wait For Ajax
@@ -511,7 +513,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait For Ajax
     Wait Element Visibility And Input Text  css=input[data-id='procurementName']  ${tender_data.data.title}
     Wait Element Visibility And Input Text  css=textarea[data-id='procurementDescription']  ${tender_data.data.description}
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco'
+    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'
     ...  Run Keywords
     ...  Wait Element Visibility And Input Text  css=input[data-id='procurementNameEn']  ${tender_data.data.title_en}
     ...  AND  Wait Element Visibility And Input Text  css=textarea[data-id='procurementDescriptionEn']  ${tender_data.data.description_en}
@@ -527,6 +529,11 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait Visibility And Click Element  css=button[data-id='actConfirm']
 #    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
 
+    Run Keyword If  ${type} == 'closeFrameworkAgreementUA'
+    ...  Run Keywords
+    ...  Wait Element Visibility And Input Text  xpath=//input[@data-id='maxAwardsCount']  ${tender_data.data.maxAwardsCount}
+    ...  AND  Заповнити срок дії рамкової угоди  ${tender_data.data.agreementDuration}
+
     Run Keyword If  ${type} == 'esco'  Wait Visibility And Click Element  xpath=//input[@value='${tender_data.data.fundingKind}']
 
     ${value_amount}=  Set Variable If  ${type} != 'esco'  ${tender_data.data.value.amount}  ''
@@ -537,7 +544,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
     #date
     Wait For Ajax
-    Run Keyword Unless  ${type} == 'aboveThresholdEU' or ${type} == 'aboveThresholdUA' or ${type} == 'negotiation' or ${type} == 'competitiveDialogueEU' or ${type} == 'competitiveDialogueUA' or ${type} == 'reporting' or ${type} == 'esco'  Set Enquiry Period  ${tender_data.data.enquiryPeriod.startDate}  ${tender_data.data.enquiryPeriod.endDate}
+    Run Keyword Unless  ${type} == 'aboveThresholdEU' or ${type} == 'aboveThresholdUA' or ${type} == 'negotiation' or ${type} == 'competitiveDialogueEU' or ${type} == 'competitiveDialogueUA' or ${type} == 'reporting' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'  Set Enquiry Period  ${tender_data.data.enquiryPeriod.startDate}  ${tender_data.data.enquiryPeriod.endDate}
     Run Keyword If  ${type} == ''  Set Start Tender Period  ${tender_data.data.tenderPeriod.startDate}
     Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'reporting'  Set End Tender Period  ${tender_data.data.tenderPeriod.endDate}
 
@@ -559,7 +566,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
     #contactPoint
     Wait Element Visibility And Input Text  css=[data-id='contactPoint'] input[data-id='fullNameUa']  ${tender_data.data.procuringEntity.contactPoint.name}
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco'
+    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'
     ...  Wait Element Visibility And Input Text  css=[data-id='contactPoint'] input[data-id='fullNameEn']  ${tender_data.data.procuringEntity.contactPoint.name_en}
 
     ${modified_phone}=  Привести номер телефону до відповідного формату  ${tender_data.data.procuringEntity.contactPoint.telephone}
@@ -567,13 +574,14 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait Element Visibility And Input Text  css=input[data-id='email']  ${USERS.users['${username}'].email}
     Wait Element Visibility And Input Text  css=input[data-id='url']  ${tender_data.data.procuringEntity.contactPoint.url}
 
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco'
+    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'
     ...  Run Keywords
     ...  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='fullNameUa']  ${tender_data.data.procuringEntity.contactPoint.name}
     ...  AND  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='fullNameEn']  ${tender_data.data.procuringEntity.contactPoint.name_en}
     ...  AND  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='phone']  ${modified_phone}
     ...  AND  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='email']  ${USERS.users['${username}'].email}
     ...  AND  Wait Element Visibility And Input Text  css=input[data-id='legalNameEn']  ${tender_data.data.procuringEntity.name_en}
+
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
     ${lots_count}=  Get Length  @{lots}
@@ -585,6 +593,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
 #step 1
     Run Keyword Unless  ${type} == 'reporting'  Додати lots  ${lots}  ${items}  ${type}
+
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
     Run Keyword If  ${type} == 'negotiation'  Wait Until Element Is Visible  css=label[for='documentation_tender_yes']  ${COMMONWAIT}
     ...  ELSE IF  ${type} == 'reporting'  Wait Until Element Is Visible  css=section[data-id='step4']  ${COMMONWAIT}
@@ -593,10 +602,13 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 #step 3
     Wait For Ajax
     ${exist_features}=  Run Keyword And Return Status  Should not be empty  ${features}
+
     Run Keyword IF
     ...  ${type} == 'aboveThresholdEU'  Додати нецінові показники  ${features}  ${type}
     ...  ELSE IF  ${type} == 'aboveThresholdUA' and ${exist_features}  Додати нецінові показники  ${features}  ${type}
     ...  ELSE IF  'competitiveDialogue' in ${type} and ${exist_features}  Додати нецінові показники  ${features}  ${type}
+    ...  ELSE IF  'closeFrameworkAgreementUA' in ${type} and ${exist_features}  Додати нецінові показники  ${features}  ${type}
+
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
 #step 4
@@ -616,6 +628,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Run Keyword IF
     ...  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait For Element With Reload  css=[data-tender-status='active.tendering']  1
     ...  ELSE IF  ${type} == 'aboveThresholdUA' or ${type} == 'competitiveDialogueUA'  Wait For Element With Reload  css=[data-tender-status='active.tendering']  1
+    ...  ELSE IF  ${type} == 'closeFrameworkAgreementUA'  Wait For Element With Reload  css=[data-tender-status='active.tendering']  1
     ...  ELSE IF  ${type} == 'negotiation' or ${type} == 'reporting'  Wait For Element With Reload  css=[data-tender-status='active']  1
     ...  ELSE  Wait For Element With Reload  css=[data-tender-status='active.enquiries']  1
     ${tender_id}=  Get Text  ${tender_data_tenderID}
@@ -704,21 +717,28 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ${abs_item_index}=  privatmarket_service.get_abs_item_index  ${lot_index}  ${index}  ${items_count}
     Set Date In Item  ${abs_item_index}  deliveryDate  startDate  ${items[${index}].deliveryDate.startDate}
     Set Date In Item  ${abs_item_index}  deliveryDate  endDate  ${items[${index}].deliveryDate.endDate}
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//input[@data-id='descriptionEn']  ${items[${index}].description_en}
+    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'  Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//input[@data-id='descriptionEn']  ${items[${index}].description_en}
 
 
 Додати нецінові показники
     [Arguments]  ${features}  ${type}
+    ${features_length}=   Get Length   ${features}
+    :FOR   ${index}   IN RANGE  0  ${features_length}
+    \  Run Keyword If  '${features[${index}].featureOf}' == 'tenderer'  Заповнити нецінові показники по закупівлі  ${features[${index}]}  ${type}
+    \  Run Keyword If  '${features[${index}].featureOf}' == 'item'  Заповнити нецінові показники по предмету  ${features[${index}]}  ${type}
+    \  Run Keyword If  '${features[${index}].featureOf}' == 'lot'  Заповнити нецінові показники по лоту  ${features[${index}]}  ${type}
+
+
+Заповнити нецінові показники по закупівлі
+    [Arguments]  ${features}  ${type}
     Wait For Ajax
-
-    #add tender feature
     Wait Visibility And Click Element  css=label[for='features_tender_yes']
-    Wait Element Visibility And Input Text  css=[data-id='ptrFeatures'] [data-id='title']  ${features[1].title}
-    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  css=[data-id='ptrFeatures'] [data-id='titleEn']  ${features[1].title_en}
-    Wait Element Visibility And Input Text  css=textarea[data-id='description']  ${features[1].description}
-    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  css=[data-id='ptrFeatures'] textarea[data-id='descriptionEn']  ${features[1].description}
+    Wait Element Visibility And Input Text  css=[data-id='ptrFeatures'] [data-id='title']  ${features.title}
+    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'  Wait Element Visibility And Input Text  css=[data-id='ptrFeatures'] [data-id='titleEn']  ${features.title_en}
+    Wait Element Visibility And Input Text  css=textarea[data-id='description']  ${features.description}
+    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'  Wait Element Visibility And Input Text  css=[data-id='ptrFeatures'] textarea[data-id='descriptionEn']  ${features.description}
 
-    @{tender_enums}=  Get From Dictionary  ${features[1]}  enum
+    @{tender_enums}=  Get From Dictionary  ${features}  enum
     ${tender_criterion_count}=  Get Length  ${tender_enums}
 
     : FOR  ${index}  IN RANGE  0  ${tender_criterion_count}
@@ -728,37 +748,21 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     \  ${elem_index}=  privatmarket_service.sum_of_numbers  ${index}  1
     \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='criterionValue'])[${elem_index}]  ${tender_criterion_value}
     \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='criterionTitle'])[${elem_index}]  ${tender_enums[${index}].title}
+    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='criterionTitleEn'])[${elem_index}]  ${tender_enums[${index}].title}
     \  Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  xpath=(//section[@data-id='ptrFeatures']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${tender_enums[${index}].title}
 
-    #add lot feature
-    Wait Visibility And Click Element  css=label[for='features_lots_yes']
-    Wait Visibility And Click Element  css=[data-id='lot'] button[data-id='actAdd']
-    Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='title']  ${features[0].title}
-    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='titleEn']  ${features[0].title_en}
-    Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='description']  ${features[0].description}
-    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='descriptionEn']  ${features[0].description}
 
-    @{lot_enums}=  Get From Dictionary  ${features[0]}  enum
-    ${lot_criterion_count}=  Get Length  ${lot_enums}
-
-    : FOR  ${index}  IN RANGE  0  ${lot_criterion_count}
-    \  Run Keyword Unless  '${index}' == '0'  Wait Visibility And Click Element  css=[data-id='lot'] [data-id='criteria'] button[data-id='actAdd']
-    \  ${lot_criterion_value}=  privatmarket_service.get_percent  ${lot_enums[${index}].value}
-    \  ${lot_criterion_value}=  Convert to String   ${lot_criterion_value}
-    \  ${elem_index}=  privatmarket_service.sum_of_numbers  ${index}  1
-    \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionValue'])[${elem_index}]  ${lot_criterion_value}
-    \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionTitle'])[${elem_index}]  ${lot_enums[${index}].title}
-    \  Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${lot_enums[${index}].title}
-
-    #add item feature
+Заповнити нецінові показники по предмету
+    [Arguments]  ${features}  ${type}
+    Wait For Ajax
     Wait Visibility And Click Element  css=label[for='features_items_yes']
     Wait Visibility And Click Element  css=[data-id='item'] button[data-id='actAdd']
-    Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='title']  ${features[2].title}
-    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='titleEn']  ${features[2].title_en}
-    Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='description']  ${features[2].description}
-    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='descriptionEn']  ${features[2].description}
+    Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='title']  ${features.title}
+    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'  Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='titleEn']  ${features.title_en}
+    Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='description']  ${features.description}
+    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'  Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='descriptionEn']  ${features.description}
 
-    @{item_enums}=  Get From Dictionary  ${features[2]}  enum
+    @{item_enums}=  Get From Dictionary  ${features}  enum
     ${item_criterion_count}=  Get Length  ${item_enums}
 
     : FOR  ${index}  IN RANGE  0  ${item_criterion_count}
@@ -768,7 +772,112 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     \  ${elem_index}=  privatmarket_service.sum_of_numbers  ${index}  1
     \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionValue'])[${elem_index}]  ${item_criterion_value}
     \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionTitle'])[${elem_index}]  ${item_enums[${index}].title}
+    \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${item_enums[${index}].title}
     \  Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${item_enums[${index}].title}
+
+
+Заповнити нецінові показники по лоту
+    [Arguments]  ${features}  ${type}
+    Wait For Ajax
+    Wait Visibility And Click Element  css=label[for='features_lots_yes']
+    Wait Visibility And Click Element  css=[data-id='lot'] button[data-id='actAdd']
+    Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='title']  ${features.title}
+    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'  Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='titleEn']  ${features.title_en}
+    Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='description']  ${features.description}
+    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'  Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='descriptionEn']  ${features.description}
+
+    @{lot_enums}=  Get From Dictionary  ${features}  enum
+    ${lot_criterion_count}=  Get Length  ${lot_enums}
+
+    : FOR  ${index}  IN RANGE  0  ${lot_criterion_count}
+    \  Run Keyword Unless  '${index}' == '0'  Wait Visibility And Click Element  css=[data-id='lot'] [data-id='criteria'] button[data-id='actAdd']
+    \  ${lot_criterion_value}=  privatmarket_service.get_percent  ${lot_enums[${index}].value}
+    \  ${lot_criterion_value}=  Convert to String   ${lot_criterion_value}
+    \  ${elem_index}=  privatmarket_service.sum_of_numbers  ${index}  1
+    \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionValue'])[${elem_index}]  ${lot_criterion_value}
+    \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionTitle'])[${elem_index}]  ${lot_enums[${index}].title}
+    \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${lot_enums[${index}].title}
+    \  Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${lot_enums[${index}].title}
+
+
+#Додати нецінові показники
+#    [Arguments]  ${features}  ${type}
+#    Wait For Ajax
+#    #add tender feature
+#    Wait Visibility And Click Element  css=label[for='features_tender_yes']
+#    Wait Element Visibility And Input Text  css=[data-id='ptrFeatures'] [data-id='title']  ${features[1].title}
+#    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'  Wait Element Visibility And Input Text  css=[data-id='ptrFeatures'] [data-id='titleEn']  ${features[1].title_en}
+#    Wait Element Visibility And Input Text  css=textarea[data-id='description']  ${features[1].description}
+#    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'  Wait Element Visibility And Input Text  css=[data-id='ptrFeatures'] textarea[data-id='descriptionEn']  ${features[1].description}
+#
+#    @{tender_enums}=  Get From Dictionary  ${features[1]}  enum
+#    ${tender_criterion_count}=  Get Length  ${tender_enums}
+#
+#    : FOR  ${index}  IN RANGE  0  ${tender_criterion_count}
+#    \  Run Keyword Unless  '${index}' == '0'  Wait Visibility And Click Element  css=[data-id='criteria'] button[data-id='actAdd']
+#    \  ${tender_criterion_value}=  privatmarket_service.get_percent  ${tender_enums[${index}].value}
+#    \  ${tender_criterion_value}=  Convert to String  ${tender_criterion_value}
+#    \  ${elem_index}=  privatmarket_service.sum_of_numbers  ${index}  1
+#    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='criterionValue'])[${elem_index}]  ${tender_criterion_value}
+#    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='criterionTitle'])[${elem_index}]  ${tender_enums[${index}].title}
+#    \  Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  xpath=(//section[@data-id='ptrFeatures']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${tender_enums[${index}].title}
+#
+#    #add lot feature
+#    Wait Visibility And Click Element  css=label[for='features_lots_yes']
+#    Wait Visibility And Click Element  css=[data-id='lot'] button[data-id='actAdd']
+#    Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='title']  ${features[0].title}
+#    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='titleEn']  ${features[0].title_en}
+#    Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='description']  ${features[0].description}
+#    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='descriptionEn']  ${features[0].description}
+#
+#    @{lot_enums}=  Get From Dictionary  ${features[0]}  enum
+#    ${lot_criterion_count}=  Get Length  ${lot_enums}
+#
+#    : FOR  ${index}  IN RANGE  0  ${lot_criterion_count}
+#    \  Run Keyword Unless  '${index}' == '0'  Wait Visibility And Click Element  css=[data-id='lot'] [data-id='criteria'] button[data-id='actAdd']
+#    \  ${lot_criterion_value}=  privatmarket_service.get_percent  ${lot_enums[${index}].value}
+#    \  ${lot_criterion_value}=  Convert to String   ${lot_criterion_value}
+#    \  ${elem_index}=  privatmarket_service.sum_of_numbers  ${index}  1
+#    \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionValue'])[${elem_index}]  ${lot_criterion_value}
+#    \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionTitle'])[${elem_index}]  ${lot_enums[${index}].title}
+#    \  Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${lot_enums[${index}].title}
+#
+#    #add item feature
+#    Wait Visibility And Click Element  css=label[for='features_items_yes']
+#    Wait Visibility And Click Element  css=[data-id='item'] button[data-id='actAdd']
+#    Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='title']  ${features[2].title}
+#    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='titleEn']  ${features[2].title_en}
+#    Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='description']  ${features[2].description}
+#    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='descriptionEn']  ${features[2].description}
+#
+#    @{item_enums}=  Get From Dictionary  ${features[2]}  enum
+#    ${item_criterion_count}=  Get Length  ${item_enums}
+#
+#    : FOR  ${index}  IN RANGE  0  ${item_criterion_count}
+#    \  Run Keyword Unless  '${index}' == '0'  Wait Visibility And Click Element  css=[data-id='item'] [data-id='criteria'] button[data-id='actAdd']
+#    \  ${item_criterion_value}=  privatmarket_service.get_percent  ${item_enums[${index}].value}
+#    \  ${item_criterion_value}=  Convert to String   ${item_criterion_value}
+#    \  ${elem_index}=  privatmarket_service.sum_of_numbers  ${index}  1
+#    \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionValue'])[${elem_index}]  ${item_criterion_value}
+#    \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionTitle'])[${elem_index}]  ${item_enums[${index}].title}
+#    \  Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${item_enums[${index}].title}
+#
+
+Заповнити срок дії рамкової угоди
+    [Arguments]  ${duration}
+    ${matches}=  Get Regexp Matches  ${duration}  \\d+
+    ${year}=  Set Variable If  ${matches[0]} > 0  ${matches[0]}  ${EMPTY}
+    ${month}=  Set Variable If  ${matches[1]} > 0  ${matches[1]}  ${EMPTY}
+    ${day}=  Set Variable If  ${matches[2]} > 0  ${matches[2]}  ${EMPTY}
+    ${hour}=  Set Variable If  ${matches[3]} > 0  ${matches[3]}  ${EMPTY}
+    ${minute}=  Set Variable If  ${matches[4]} > 0  ${matches[4]}  ${EMPTY}
+    ${second}=  Set Variable If  ${matches[5]} > 0  ${matches[5]}  ${EMPTY}
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='agreementDurationY']  ${year}
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='agreementDurationM']  ${month}
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='agreementDurationD']  ${day}
+#    Wait Element Visibility And Input Text  xpath=//input[@data-id='agreementDurationH']  ${hour}
+#    Wait Element Visibility And Input Text  xpath=//input[@data-id='agreementDurationM']  ${minute}
+#    Wait Element Visibility And Input Text  xpath=//input[@data-id='agreementDurationS']  ${second}
 
 
 Обрати додаткові класифікатори для лікарських засобів
@@ -824,10 +933,13 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     [Arguments]  ${user_name}  ${tenderId}  ${parameter}  ${value}
     Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
+
+    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
     Run Keyword If  '${parameter}' == 'tenderPeriod.endDate'  Set Date  tenderPeriod  endDate  ${value}
     Run Keyword If  '${parameter}' == 'description'  Wait Element Visibility And Input Text  css=textarea[data-id='procurementDescription']  ${value}
+    Run Keyword If  '${parameter}' == 'maxAwardsCount'  Wait Element Visibility And Input Text  css=input[data-id='maxAwardsCount']  ${value}
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
     Wait Until Element Is Visible  css=section[data-id='step2']  ${COMMONWAIT}
     Wait Visibility And Click Element  css=#tab_4 a
@@ -841,9 +953,9 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     [Arguments]  ${user_name}  ${tenderId}  ${lot_id}  ${field}  ${value}
     Run Keyword And Return If  'value.amount' == '${field}'  Змінити ${field} лоту  ${value}
     Run Keyword And Return If  'minimalStep.amount' == '${field}'  Змінити ${field} лоту  ${value}
-
     Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
+    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
@@ -861,6 +973,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
     Wait For Ajax
+    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
     Wait Visibility And Click Element  css=#tab_1 a
     ${value_amount}=  privatmarket_service.convert_float_to_string  ${value}
     Wait Element Visibility And Input Text  css=input[data-id='valueAmount']  ${value_amount}
@@ -877,6 +990,42 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait For Ajax
     Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
     Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
+
+
+Додати неціновий показник на тендер
+    [Arguments]  ${user_name}  ${tenderId}  ${feature}
+    Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
+    Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
+    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
+    Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
+    Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
+    Wait Visibility And Click Element  css=#tab_2 a
+    Sleep  2s
+    Wait Visibility And Click Element  xpath=//*[@data-id='ptrFeatures']//button[contains(., 'Додати показник')]
+    Wait Element Visibility And Input Text  xpath=(//*[@data-id='ptrFeatures']//input[@data-id='title'])[last()]  ${feature.title}
+    Wait Element Visibility And Input Text  xpath=(//*[@data-id='ptrFeatures']//input[@data-id='titleEn'])[last()]  ${feature.title_en}
+    Wait Element Visibility And Input Text  xpath=(//*[@data-id='ptrFeatures']//textarea[@data-id='description'])[last()]  ${feature.description}
+    Wait Element Visibility And Input Text  xpath=(//*[@data-id='ptrFeatures']//textarea[@data-id='descriptionEn'])[last()]  ${feature.description}
+
+    @{tender_enums}=  Get From Dictionary  ${feature}  enum
+    ${tender_criterion_count}=  Get Length  ${tender_enums}
+
+    : FOR  ${index}  IN RANGE  0  ${tender_criterion_count}
+    \  Run Keyword Unless  '${index}' == '0'  Wait Visibility And Click Element  xpath=(//*[@data-id='ptrFeatures']//section[@data-id='criteria']//button)[last()]
+    \  ${tender_criterion_value}=  privatmarket_service.get_percent  ${tender_enums[${index}].value}
+    \  ${tender_criterion_value}=  Convert to String   ${tender_criterion_value}
+    \  ${elem_index}=  privatmarket_service.sum_of_numbers  ${index}  1
+    \  Wait Element Visibility And Input Text  xpath=(//*[@data-id='ptrFeatures']//input[@data-id='criterionValue'])[last()]  ${tender_criterion_value}
+    \  Wait Element Visibility And Input Text  xpath=(//*[@data-id='ptrFeatures']//input[@data-id='criterionTitle'])[last()]  ${tender_enums[${index}].title}
+    \  Wait Element Visibility And Input Text  xpath=(//*[@data-id='ptrFeatures']//input[@data-id='criterionTitleEn'])[last()]  ${tender_enums[${index}].title}
+
+    Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
+    Wait For Ajax
+    Wait Visibility And Click Element  css=#tab_4 a
+    Wait For Ajax
+    Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
+    Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
+    Sleep  120s
 
 
 Додати неціновий показник на лот
@@ -951,10 +1100,14 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
     Wait For Ajax
+    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
     Wait Visibility And Click Element  css=#tab_2 a
-    Wait Visibility And Click Element  xpath=(//div[@data-id='lot']//button[@data-id='actRemove'])[last()]
+    Run Keyword If
+    ...  'на тендер' in '${TEST_NAME}'  Wait Visibility And Click Element  xpath=(//*[@data-id='ptrFeatures']//button[@data-id='actRemove'])[last()]
+    ...  ELSE IF  'на лот' in '${TEST_NAME}'  Wait Visibility And Click Element  xpath=(//div[@data-id='lot']//button[@data-id='actRemove'])[last()]
+    ...  ELSE IF  'на предмет' in '${TEST_NAME}'  Wait Visibility And Click Element  (//*[@data-id='item']//button[@data-id='actRemove'])[last()]
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
     Wait For Ajax
     Wait Visibility And Click Element  css=#tab_4 a
@@ -1005,6 +1158,8 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ...  ELSE  Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
 
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
+
+    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
     Sleep  2s
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
@@ -1041,6 +1196,8 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ...  ELSE  Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
 
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
+
+    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
     Sleep  2s
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
@@ -1324,6 +1481,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Run Keyword And Return If  '${field_name}' == 'contracts[0].status' or '${field_name}' == 'contracts[1].status'  Отримати статус договору  ${field_name}
     Run Keyword And Return If  'endDate' in '${field_name}' or 'startDate' in '${field_name}'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'agreementDuration'  Отримати інформацію з ${field_name}  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'maxAwardsCount'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  'fundingKind' in '${field_name}'  Отримати інформацію з fundingKind  ${field_name}
     Run Keyword And Return If  'NBUdiscountRate' in '${field_name}'  Отримати інформацію з NBUdiscountRate  ${field_name}
     Run Keyword And Return If  'yearlyPaymentsPercentageRange' in '${field_name}'  Отримати інформацію з yearlyPaymentsPercentageRange  ${field_name}
@@ -1357,16 +1515,24 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
 Отримати інформацію з agreementDuration
     [Arguments]  ${field_name}
-    ${text}=  Отримати текст елемента  ${tender_data_${field_name}}
-    ${matches}=  Get Regexp Matches  ${text}  \\d+
-    ${year}=  Set Variable If  ${matches[0]} > 0  ${matches[0]}Y  ${EMPTY}
-    ${month}=  Set Variable If  ${matches[1]} > 0  ${matches[1]}M  ${EMPTY}
-    ${day}=  Set Variable If  ${matches[2]} > 0  ${matches[2]}D  ${EMPTY}
-    ${hour}=  Set Variable If  ${matches[3]} > 0  ${matches[3]}H  ${EMPTY}
-    ${minute}=  Set Variable If  ${matches[4]} > 0  ${matches[4]}M  ${EMPTY}
-    ${second}=  Set Variable If  ${matches[5]} > 0  ${matches[5]}S  ${EMPTY}
-    Log Many  ${year}  ${month}  ${day}  ${hour}  ${minute}  ${second}
-    ${result}=  Set Variable  P${year}${month}${day}T${hour}${minute}${second}
+    ${result}=  Get Element Attribute  xpath=//span[@data-id='agreementDuration']@innerHTML
+#    ${text}=  Отримати текст елемента  ${tender_data_${field_name}}
+#    ${matches}=  Get Regexp Matches  ${text}  \\d+
+#    ${year}=  Set Variable If  ${matches[0]} > 0  ${matches[0]}Y  ${EMPTY}
+#    ${month}=  Set Variable If  ${matches[1]} > 0  ${matches[1]}M  ${EMPTY}
+#    ${day}=  Set Variable If  ${matches[2]} > 0  ${matches[2]}D  ${EMPTY}
+#    ${hour}=  Set Variable If  ${matches[3]} > 0  ${matches[3]}H  ${EMPTY}
+#    ${minute}=  Set Variable If  ${matches[4]} > 0  ${matches[4]}M  ${EMPTY}
+#    ${second}=  Set Variable If  ${matches[5]} > 0  ${matches[5]}S  ${EMPTY}
+#    Log Many  ${year}  ${month}  ${day}  ${hour}  ${minute}  ${second}
+#    ${result}=  Set Variable  P${year}${month}${day}T${hour}${minute}${second}
+    [Return]  ${result}
+
+
+Отримати інформацію з maxAwardsCount
+    [Arguments]  ${field_name}
+    ${count}=  Get Element Attribute  xpath=//div[@data-id='maxAwardsCount']@innerHTML
+    ${result}=  Convert To Integer  ${count}
     [Return]  ${result}
 
 
@@ -1398,6 +1564,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ${rate}=  Remove String Using Regexp  ${text}  \\s%$
     ${rate}=  Convert To Number  ${rate}  3
     ${result}=  Evaluate  ${rate}/${100}
+    ${result}=  Convert To String  ${result}
     [Return]  ${result}
 
 
