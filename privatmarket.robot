@@ -210,7 +210,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
 
 Пошук тендера по ідентифікатору
-    [Arguments]  ${username}  ${tenderId}
+    [Arguments]  ${username}  ${tenderId}  ${second_stage_data}=${Empty}
     Go To  ${USERS.users['${username}'].homepage}
     Wait Until Element Is Visible  ${locator_tenderSearch.searchInput}  timeout=${COMMONWAIT}
 
@@ -1513,7 +1513,9 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 Отримати та привести дату до заданого формату
     [Arguments]  ${locator}
     ${date}=  Отримати текст з item  ${locator}
-    ${result}=  get_time_with_offset_formatted  ${date}  %d.%m.%Y
+    ${result_date} =  Get Regexp Matches  ${date}  ^(\\d{2}\.\\d{2}\.\\d{4})  1
+    ${result_date} =  Convert To String  ${result_date[0]}
+    ${result}=  get_time_with_offset_formatted  ${result_date}  %d.%m.%Y
     [Return]  ${result}
 
 
@@ -1528,11 +1530,19 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Run Keyword if  ${count} != 0  Відкрити itemObject  ${count}
 
 
+#Відкрити itemObject
+#    [Arguments]  ${count}
+#    @{list}=  Get Webelements  xpath=//section//div[@class='description']/a
+#    :FOR  ${i}  IN  @{list}
+#     \  Click Element  ${i}
+
+
 Відкрити itemObject
     [Arguments]  ${count}
-    @{list}=  Get Webelements  xpath=//section//div[@class='description']/a
-    :FOR  ${i}  IN  @{list}
-     \  Click Element  ${i}
+    ${iterator}=  privatmarket_service.sum_of_numbers  ${count}  1
+    :FOR  ${i}  In Range  1  ${iterator}
+    \  ${class}=  Get Element Attribute  xpath=(//section//div[@class='description']/a)[${i}]@class
+    \  Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=(//section//div[@class='description']/a)[${i}]
 
 
 Отримати інформацію про постачальника
@@ -2315,7 +2325,7 @@ Wait Element Visibility And Input Text
 
 Wait For Tender
     [Arguments]  ${tender_id}  ${education_type}  ${type}=tender
-    Wait Until Keyword Succeeds  10min  5s  Try Search Tender  ${tender_id}  ${education_type}  ${type}
+    Wait Until Keyword Succeeds  25min  5s  Try Search Tender  ${tender_id}  ${education_type}  ${type}
 
 
 Try Search Tender
