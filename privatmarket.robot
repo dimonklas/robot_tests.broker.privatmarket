@@ -2662,7 +2662,7 @@ Try Search Tender
     Check Current Mode New Realisation
 
     #выберем поиск по планам закупок
-    Run Keyword If  ${type} == 'plan'  Wait Visibility And Click Element  css=[data-id='ttype-plans-label']
+    Run Keyword If  '${type}' == 'plan'  Wait Visibility And Click Element  css=[data-id='ttype-plans-label']
 
     #заполним поле поиска
     Clear Element Text  ${locator_tenderSearch.searchInput}
