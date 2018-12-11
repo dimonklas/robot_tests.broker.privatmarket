@@ -407,6 +407,85 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait Visibility And Click Element  xpath=//button[@data-id='modal-close']
 
 
+Додати предмет закупівлі в лот
+    [Arguments]  ${tender_owner}  ${tender_uaid}  ${lot_id}  ${item}
+    privatmarket.Пошук тендера по ідентифікатору  ${tender_owner}  ${tender_uaid}
+    ${scenarios_name}=  privatmarket_service.get_scenarios_name
+    ${type}=  Отримати інформацію з procurementMethodType
+    Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
+    Sleep  5s
+    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
+    Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
+    Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${tender_owner}
+    Wait Visibility And Click Element  css=#tab_1 a
+
+    Wait Visibility And Click Element  xpath=//div[@data-id='lot']//button[@data-id='actAddItem']
+
+    ${count}=  Get Matching Xpath Count  xpath=//div[@data-id='lot']//div[@data-id='item']
+    Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[last()]//div[@data-id='item'])//input[@data-id='description'])[${count}]  ${item.description}
+    Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[last()]//div[@data-id='item'])//input[@data-id='quantity'])[${count}]  ${item.quantity}
+    Wait Visibility And Click Element  xpath=(((//div[@data-id='lot'])[last()]//div[@data-id='item'])//select[@data-id='unit'])[${count}]/option[text()='${item.unit.name}']
+
+    #CPV
+    Wait Visibility And Click Element  xpath=(((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//a[@data-id='actChoose'])[1]
+    Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
+    Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
+    Search By Query  css=input[data-id='query']  ${item.classification.id}
+    Wait Visibility And Click Element  css=button[data-id='actConfirm']
+
+    Run Keyword If  '336' in '${item.classification.id}'  Обрати додатковий класифікатор для item  ${item}  ${count}
+#    @{additionalClassifications}=  Get From Dictionary  ${item}  additionalClassifications
+#    ${classifications_count}=  Get Length  ${additionalClassifications}
+
+#    : FOR  ${index}  IN RANGE  0  ${classifications_count}
+#    \  ${id}=  Set Variable  ${item.additionalClassifications[${index}].id}
+#    \  ${scheme}=  Set Variable  ${item.additionalClassifications[${index}].scheme}
+#    \  Run Keyword If  '${scheme}' == 'INN'  Wait Visibility And Click Element  xpath=(((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//a[@data-id='actChoose'])[2]
+#    \  ...  ELSE  Wait Visibility And Click Element  xpath=(((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//a[@data-id='actChoose'])[3]
+#    \  Sleep  5s
+#    \  Search By Query  css=input[data-id='query']  ${id}
+#    \  Wait Visibility And Click Element  css=button[data-id='actConfirm']
+#    \  Sleep  1s
+
+    Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//input[@data-id='postalCode']  ${item.deliveryAddress.postalCode}
+    Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//input[@data-id='countryName']  ${item.deliveryAddress.countryName}
+    Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//input[@data-id='region']  ${item.deliveryAddress.region}
+    Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//input[@data-id='locality']  ${item.deliveryAddress.locality}
+    Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//input[@data-id='streetAddress']  ${item.deliveryAddress.streetAddress}
+
+    Wait Until Element Is Visible  xpath=((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//input[@data-id='deliveryDateEnd']  ${COMMONWAIT}
+    ${index}=  Evaluate  ${count}-1
+    Set Date In Item  ${index}  deliveryDate  startDate  ${item.deliveryDate.startDate}
+    Set Date In Item  ${index}  deliveryDate  endDate  ${item.deliveryDate.endDate}
+
+    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'
+    ...  Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//input[@data-id='descriptionEn']  ${item.description_en}
+
+    Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
+    Sleep  5s
+    Wait Visibility And Click Element  css=#tab_4 a
+    Wait For Ajax
+    Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
+    Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
+    Sleep  120s
+
+
+Обрати додатковий класифікатор для item
+    [Arguments]  ${item}  ${item_index}
+    @{additionalClassifications}=  Get From Dictionary  ${item}  additionalClassifications
+    ${classifications_count}=  Get Length  ${additionalClassifications}
+
+    : FOR  ${index}  IN RANGE  0  ${classifications_count}
+    \  ${id}=  Set Variable  ${item.additionalClassifications[${index}].id}
+    \  ${scheme}=  Set Variable  ${item.additionalClassifications[${index}].scheme}
+    \  Run Keyword If  '${scheme}' == 'INN'  Wait Visibility And Click Element  xpath=(((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${item_index}]//a[@data-id='actChoose'])[2]
+    \  ...  ELSE  Wait Visibility And Click Element  xpath=(((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${item_index}]//a[@data-id='actChoose'])[3]
+    \  Sleep  5s
+    \  Search By Query  css=input[data-id='query']  ${id}
+    \  Wait Visibility And Click Element  css=button[data-id='actConfirm']
+    \  Sleep  1s
+
+
 Додати предмет закупівлі в план
     [Arguments]  ${tender_owner}  ${tender_uaid}  ${item}
 
@@ -457,6 +536,19 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ${elements}=  Get Webelements  xpath=(//input[@data-id='description'])
     ${count_delete}=  Get_Length  ${elements}
     Should Be True  ${count_before} > ${count_delete}
+
+
+Видалити предмет закупівлі
+    [Arguments]  ${tender_owner}  ${tender_uaid}  ${item_id}  ${lot_id}
+    Fail  Ключевое слово не реализовано
+#    privatmarket.Пошук тендера по ідентифікатору  ${tender_owner}  ${tender_uaid}
+#    Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
+#    Sleep  5s
+#    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
+#    Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
+#    Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${tender_owner}
+#    Wait Visibility And Click Element  css=#tab_1 a
+
 
 
 Створити тендер
@@ -1295,6 +1387,60 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Підписати ЕЦП  ${index}
 
 
+Відхилити кваліфікацію
+    [Arguments]  ${user_name}  ${tenderId}  ${bid_index}
+    Reload Page
+    Wait Visibility And Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
+    ${bid_index}=  privatmarket_service.abs_number  ${bid_index}
+    ${index}=  privatmarket_service.sum_of_numbers  ${bid_index}  1
+
+    ${elements}=  Get Webelements  //a[@ng-click='act.openQualification(q)']
+    ${count}=  Get_Length  ${elements}
+
+    Run Keyword If  ${count} == 1  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])
+    Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])[${index}]
+
+    ${file_path}  ${file_name}  ${file_content}=  create_fake_doc
+
+    Wait Visibility And Click Element  xpath=//div[@class='files-upload']//select[@class='form-block__select form-block__select_short']//option[2]
+    Sleep  1s
+    Wait Visibility And Click Element  xpath=//div[@class='files-upload']//select[@class='form-block__select ng-scope form-block__select_short']//option[2]
+    Sleep  1s
+    Run Keyword And Ignore Error  Execute Javascript  document.querySelector(".files-upload input[type='file']").class = ''
+    Sleep  1s
+    Choose File  xpath=//div[@class='files-upload']//input[@type='file']  ${file_path}
+    Sleep  5s
+    Wait Visibility And Click Element  xpath=//button[@data-id='setQualStatusUnsuccessful']
+    ${comment}=  create_fake_sentence
+    Wait Visibility And Click Element  xpath=//label[@for='chk-dr0']
+    Wait Element Visibility And Input Text  xpath=//textarea[@data-id='decline-description']  ${comment}
+    Wait Visibility And Click Element  xpath=//button[@data-id='btn-ok']
+    Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]  ${COMMONWAIT}
+    Wait Visibility And Click Element  xpath=//button[@data-id='btn-close']
+    Sleep  5s
+    Підписати ЕЦП  ${bid_index}
+
+
+Видалити лот
+    [Arguments]  ${user_name}  ${tenderId}  ${lot_id}
+    Reload Page
+    Wait Visibility And Click Element  xpath=(//div[@id='lotStatus']//a[text()='Скасувати лот'])[last()]
+    Wait Visibility And Click Element  xpath=//button[@id='singlebutton' and text()='Так']
+    Wait Until Element Is Visible  xpath=//h3[contains(text(),'Скасування лоту')]  ${COMMONWAIT}
+    Wait Visibility And Click Element  xpath=//select[contains(@ng-model,'cancelleted')]//option[2]
+    ${causes_list_count}=  Get Matching Xpath Count  xpath=//ul[@class='cancelleted-cases-list']//li
+    ${cause}=  Get Text  xpath=//ul[@class='cancelleted-cases-list']//li[1]
+    Wait Element Visibility And Input Text  xpath=//textarea[@id='questionDescription']  ${cause}
+    Wait Visibility And Click Element  xpath=//button[@id='singlebutton' and contains(text(),'Опублікувати')]
+    Wait Visibility And Click Element  xpath=//button[@id='singlebutton' and text()='Ок']
+    Sleep  120s
+
+
+Скасувати кваліфікацію
+    [Arguments]  ${user_name}  ${tenderId}  ${bid_index}
+    Fail  Ключевое слово не реализовано
+
+
 Підписати ЕЦП
     [Arguments]  ${bid_index}
     Reload Page
@@ -1308,13 +1454,15 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Sleep  2s
     Select Window  name=signWin
     Wait Until Element Is Visible  id=CAsServersSelect
-#    Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[8]
-    Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[19]
+    Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[8]
+#    Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[19]
 #    ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/boss.jks
-    ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/Key-6.dat
+#    ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/Key-6.dat
+    ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/11141802_11141802.jks
     Choose File  id=PKeyFileInput  ${path}
 #    Wait Element Visibility And Input Text  id=PKeyPassword  1111111111
-    Wait Element Visibility And Input Text  id=PKeyPassword  12345677
+#    Wait Element Visibility And Input Text  id=PKeyPassword  12345677
+    Wait Element Visibility And Input Text  id=PKeyPassword  1111qqqq
     Wait Visibility And Click Element  id=PKeyReadButton
     Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'Ключ успішно завантажено')]
     Wait Visibility And Click Element  id=SignDataButton
@@ -2028,6 +2176,7 @@ Try To Search Complaint
 Відповісти на запитання
     [Arguments]  ${username}  ${tender_uaid}  ${answer_data}  ${question_id}
     Run Keyword And Return If  'на всі лоти' in '${TEST_NAME}'  Відповісти на запитання на лот  ${answer_data}  ${question_id}
+    Run Keyword And Return If  'на всі предмети' in '${TEST_NAME}'  Відповісти на запитання на лот  ${answer_data}  ${question_id}
 
     Switch To Tab  2
     Wait For Element With Reload  xpath=//button[contains(@ng-click, 'act.answerFaq')]  2
