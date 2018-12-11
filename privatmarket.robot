@@ -210,7 +210,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
 
 Пошук тендера по ідентифікатору
-    [Arguments]  ${username}  ${tenderId}
+    [Arguments]  ${username}  ${tenderId}  ${second_stage_data}=${Empty}
     Go To  ${USERS.users['${username}'].homepage}
     Wait Until Element Is Visible  ${locator_tenderSearch.searchInput}  timeout=${COMMONWAIT}
 
@@ -434,18 +434,6 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait Visibility And Click Element  css=button[data-id='actConfirm']
 
     Run Keyword If  '336' in '${item.classification.id}'  Обрати додатковий класифікатор для item  ${item}  ${count}
-#    @{additionalClassifications}=  Get From Dictionary  ${item}  additionalClassifications
-#    ${classifications_count}=  Get Length  ${additionalClassifications}
-
-#    : FOR  ${index}  IN RANGE  0  ${classifications_count}
-#    \  ${id}=  Set Variable  ${item.additionalClassifications[${index}].id}
-#    \  ${scheme}=  Set Variable  ${item.additionalClassifications[${index}].scheme}
-#    \  Run Keyword If  '${scheme}' == 'INN'  Wait Visibility And Click Element  xpath=(((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//a[@data-id='actChoose'])[2]
-#    \  ...  ELSE  Wait Visibility And Click Element  xpath=(((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//a[@data-id='actChoose'])[3]
-#    \  Sleep  5s
-#    \  Search By Query  css=input[data-id='query']  ${id}
-#    \  Wait Visibility And Click Element  css=button[data-id='actConfirm']
-#    \  Sleep  1s
 
     Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//input[@data-id='postalCode']  ${item.deliveryAddress.postalCode}
     Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//input[@data-id='countryName']  ${item.deliveryAddress.countryName}
@@ -736,6 +724,8 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     : FOR  ${index}  IN RANGE  0  ${lots_count}
     \  ${lot_index}=  privatmarket_service.sum_of_numbers  ${index}  1
     \  Run Keyword Unless  '${lot_index}' == '1'  Wait Visibility And Click Element  css=button[data-id='actAddLot']
+    \  ${lot_count}=  Get Matching Xpath Count  xpath=//input[@data-id='lotTitle']
+    \  ${lot_index}=  Set Variable If  'Можливість створення лоту' in '${TEST_NAME}'  ${lot_count}  ${lot_index}
     \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='lotTitle'])[${lot_index}]  ${lots[${index}].title}
     \  Wait Element Visibility And Input Text  xpath=(//textarea[@data-id='lotDescription'])[${lot_index}]  ${lots[${index}].description}
     \  ${amount}=  Set Variable If  ${type} != 'esco'  ${lots[${index}].value.amount}  ''
@@ -757,7 +747,8 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     \  Run Keyword IF  ${type} == 'esco'  Wait Element Visibility And Input Text  xpath=(//input[contains(@ng-model,'yearlyPaymentsPercentageRange')])[${lot_index}]  ${yearly_payments}
 
     \  ${count}=  Get Length  ${items}
-    \  Run Keyword If  ${count} > 0  Додати items  ${items}  ${lot_index}  ${lots[${index}].id}  ${type}
+    \  Run Keyword If  ${count} > 0 and '${TEST_NAME}' != 'Можливість створення лоту із прив’язаним предметом закупівлі'  Додати items  ${items}  ${lot_index}  ${lots[${index}].id}  ${type}
+    \  Run Keyword If  'Можливість створення лоту' in '${TEST_NAME}'  Додати item до лоту   ${items}  ${count}  ${lot_index}  0  ${type}
 
 
 Додати items
@@ -819,6 +810,27 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     \  Run Keyword If  '${features[${index}].featureOf}' == 'tenderer'  Заповнити нецінові показники по закупівлі  ${features[${index}]}  ${type}
     \  Run Keyword If  '${features[${index}].featureOf}' == 'item'  Заповнити нецінові показники по предмету  ${features[${index}]}  ${type}
     \  Run Keyword If  '${features[${index}].featureOf}' == 'lot'  Заповнити нецінові показники по лоту  ${features[${index}]}  ${type}
+
+
+# Додавання лоту в існуючий тендер
+Створити лот із предметом закупівлі
+    [Arguments]  ${tender_owner}  ${tender_uaid}  ${lot}  ${item}
+    privatmarket.Пошук тендера по ідентифікатору  ${tender_owner}  ${tender_uaid}
+    ${type}=  Отримати інформацію з procurementMethodType
+    @{lots}=    Create List    ${lot.data}
+    @{items}=    Create List    ${item}
+
+    Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
+    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
+    Wait Visibility And Click Element  css=#tab_1 a
+    Wait Visibility And Click Element  css=button[data-id='actAddLot']
+
+    Додати lots  ${lots}  ${items}  ${type}
+    Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
+    Wait Visibility And Click Element  css=#tab_4 a
+    Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
+
+    Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
 
 
 Заповнити нецінові показники по закупівлі
@@ -1828,7 +1840,9 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 Отримати та привести дату до заданого формату
     [Arguments]  ${locator}
     ${date}=  Отримати текст з item  ${locator}
-    ${result}=  get_time_with_offset_formatted  ${date}  %d.%m.%Y
+    ${result_date} =  Get Regexp Matches  ${date}  ^(\\d{2}\.\\d{2}\.\\d{4})  1
+    ${result_date} =  Convert To String  ${result_date[0]}
+    ${result}=  get_time_with_offset_formatted  ${result_date}  %d.%m.%Y
     [Return]  ${result}
 
 
@@ -1843,11 +1857,19 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Run Keyword if  ${count} != 0  Відкрити itemObject  ${count}
 
 
+#Відкрити itemObject
+#    [Arguments]  ${count}
+#    @{list}=  Get Webelements  xpath=//section//div[@class='description']/a
+#    :FOR  ${i}  IN  @{list}
+#     \  Click Element  ${i}
+
+
 Відкрити itemObject
     [Arguments]  ${count}
-    @{list}=  Get Webelements  xpath=//section//div[@class='description']/a
-    :FOR  ${i}  IN  @{list}
-     \  Click Element  ${i}
+    ${iterator}=  privatmarket_service.sum_of_numbers  ${count}  1
+    :FOR  ${i}  In Range  1  ${iterator}
+    \  ${class}=  Get Element Attribute  xpath=(//section//div[@class='description']/a)[${i}]@class
+    \  Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=(//section//div[@class='description']/a)[${i}]
 
 
 Отримати інформацію про постачальника
@@ -2365,6 +2387,7 @@ Try To Search Complaint
 #    [Arguments]  ${element}
     ${type}=  Отримати текст елемента  xpath=//*[@data-id='tender-type']
     ${type}=  get_procurementMethod_Type  ${type}
+    ${type}=  Set Variable  '${type}'
     [Return]  ${type}
 
 
