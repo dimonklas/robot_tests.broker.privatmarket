@@ -434,18 +434,6 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait Visibility And Click Element  css=button[data-id='actConfirm']
 
     Run Keyword If  '336' in '${item.classification.id}'  Обрати додатковий класифікатор для item  ${item}  ${count}
-#    @{additionalClassifications}=  Get From Dictionary  ${item}  additionalClassifications
-#    ${classifications_count}=  Get Length  ${additionalClassifications}
-
-#    : FOR  ${index}  IN RANGE  0  ${classifications_count}
-#    \  ${id}=  Set Variable  ${item.additionalClassifications[${index}].id}
-#    \  ${scheme}=  Set Variable  ${item.additionalClassifications[${index}].scheme}
-#    \  Run Keyword If  '${scheme}' == 'INN'  Wait Visibility And Click Element  xpath=(((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//a[@data-id='actChoose'])[2]
-#    \  ...  ELSE  Wait Visibility And Click Element  xpath=(((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//a[@data-id='actChoose'])[3]
-#    \  Sleep  5s
-#    \  Search By Query  css=input[data-id='query']  ${id}
-#    \  Wait Visibility And Click Element  css=button[data-id='actConfirm']
-#    \  Sleep  1s
 
     Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//input[@data-id='postalCode']  ${item.deliveryAddress.postalCode}
     Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//input[@data-id='countryName']  ${item.deliveryAddress.countryName}
