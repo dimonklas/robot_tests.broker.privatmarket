@@ -644,6 +644,8 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     : FOR  ${index}  IN RANGE  0  ${lots_count}
     \  ${lot_index}=  privatmarket_service.sum_of_numbers  ${index}  1
     \  Run Keyword Unless  '${lot_index}' == '1'  Wait Visibility And Click Element  css=button[data-id='actAddLot']
+    \  ${lot_count}=  Get Matching Xpath Count  xpath=//input[@data-id='lotTitle']
+    \  ${lot_index}=  Set Variable If  'Можливість створення лоту' in '${TEST_NAME}'  ${lot_count}  ${lot_index}
     \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='lotTitle'])[${lot_index}]  ${lots[${index}].title}
     \  Wait Element Visibility And Input Text  xpath=(//textarea[@data-id='lotDescription'])[${lot_index}]  ${lots[${index}].description}
     \  ${amount}=  Set Variable If  ${type} != 'esco'  ${lots[${index}].value.amount}  ''
@@ -665,7 +667,8 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     \  Run Keyword IF  ${type} == 'esco'  Wait Element Visibility And Input Text  xpath=(//input[contains(@ng-model,'yearlyPaymentsPercentageRange')])[${lot_index}]  ${yearly_payments}
 
     \  ${count}=  Get Length  ${items}
-    \  Run Keyword If  ${count} > 0  Додати items  ${items}  ${lot_index}  ${lots[${index}].id}  ${type}
+    \  Run Keyword If  ${count} > 0 and '${TEST_NAME}' != 'Можливість створення лоту із прив’язаним предметом закупівлі'  Додати items  ${items}  ${lot_index}  ${lots[${index}].id}  ${type}
+    \  Run Keyword If  'Можливість створення лоту' in '${TEST_NAME}'  Додати item до лоту   ${items}  ${count}  ${lot_index}  0  ${type}
 
 
 Додати items
@@ -727,6 +730,27 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     \  Run Keyword If  '${features[${index}].featureOf}' == 'tenderer'  Заповнити нецінові показники по закупівлі  ${features[${index}]}  ${type}
     \  Run Keyword If  '${features[${index}].featureOf}' == 'item'  Заповнити нецінові показники по предмету  ${features[${index}]}  ${type}
     \  Run Keyword If  '${features[${index}].featureOf}' == 'lot'  Заповнити нецінові показники по лоту  ${features[${index}]}  ${type}
+
+
+# Додавання лоту в існуючий тендер
+Створити лот із предметом закупівлі
+    [Arguments]  ${tender_owner}  ${tender_uaid}  ${lot}  ${item}
+    privatmarket.Пошук тендера по ідентифікатору  ${tender_owner}  ${tender_uaid}
+    ${type}=  Отримати інформацію з procurementMethodType
+    @{lots}=    Create List    ${lot.data}
+    @{items}=    Create List    ${item}
+
+    Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
+    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
+    Wait Visibility And Click Element  css=#tab_1 a
+    Wait Visibility And Click Element  css=button[data-id='actAddLot']
+
+    Додати lots  ${lots}  ${items}  ${type}
+    Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
+    Wait Visibility And Click Element  css=#tab_4 a
+    Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
+
+    Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
 
 
 Заповнити нецінові показники по закупівлі
@@ -2226,6 +2250,7 @@ Try To Search Complaint
 #    [Arguments]  ${element}
     ${type}=  Отримати текст елемента  xpath=//*[@data-id='tender-type']
     ${type}=  get_procurementMethod_Type  ${type}
+    ${type}=  Set Variable  '${type}'
     [Return]  ${type}
 
 
@@ -2500,7 +2525,7 @@ Try Search Tender
     Check Current Mode New Realisation
 
     #выберем поиск по планам закупок
-    Run Keyword If  '${type}' == 'plan'  Wait Visibility And Click Element  css=[data-id='ttype-plans-label']
+    Run Keyword If  ${type} == 'plan'  Wait Visibility And Click Element  css=[data-id='ttype-plans-label']
 
     #заполним поле поиска
     Clear Element Text  ${locator_tenderSearch.searchInput}

@@ -279,7 +279,7 @@ def abs_number(number):
 
 
 def get_abs_item_index(lot_index, item_index, items_count):
-    abs_index = ((int(lot_index)-1) * int(items_count)) + item_index
+    abs_index = ((int(lot_index)-1) * int(items_count)) + int(item_index)
     return abs_index
 
 
