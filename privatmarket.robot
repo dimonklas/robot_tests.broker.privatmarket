@@ -409,7 +409,9 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
 Додати предмет закупівлі в лот
     [Arguments]  ${tender_owner}  ${tender_uaid}  ${lot_id}  ${item}
-    privatmarket.Пошук тендера по ідентифікатору  ${tender_owner}  ${tender_uaid}
+    ${status}=  Run Keyword And Return Status  Wait Until Element Is Visible  ${tender_data_title}  5s
+    Run Keyword If  '${status}' == 'False'  privatmarket.Пошук тендера по ідентифікатору  ${tender_owner}  ${tender_uaid}
+
     ${scenarios_name}=  privatmarket_service.get_scenarios_name
     ${type}=  Отримати інформацію з procurementMethodType
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
@@ -418,10 +420,11 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${tender_owner}
     Wait Visibility And Click Element  css=#tab_1 a
+    ${lot_count}=  Get Matching Xpath Count  xpath=//div[@data-id='lot']/div/a
+    Run Keyword If  ${lot_count}>1  Wait Visibility And Click Element  xpath=(//div[@data-id='lot']/div/a)[last()]
+    Wait Visibility And Click Element  xpath=(//div[@data-id='lot'])[last()]//button[@data-id='actAddItem']
 
-    Wait Visibility And Click Element  xpath=//div[@data-id='lot']//button[@data-id='actAddItem']
-
-    ${count}=  Get Matching Xpath Count  xpath=//div[@data-id='lot']//div[@data-id='item']
+    ${count}=  Get Matching Xpath Count  xpath=(//div[@data-id='lot'])[last()]//div[@data-id='item']
     Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[last()]//div[@data-id='item'])//input[@data-id='description'])[${count}]  ${item.description}
     Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[last()]//div[@data-id='item'])//input[@data-id='quantity'])[${count}]  ${item.quantity}
     Wait Visibility And Click Element  xpath=(((//div[@data-id='lot'])[last()]//div[@data-id='item'])//select[@data-id='unit'])[${count}]/option[text()='${item.unit.name}']
@@ -442,9 +445,9 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//input[@data-id='streetAddress']  ${item.deliveryAddress.streetAddress}
 
     Wait Until Element Is Visible  xpath=((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//input[@data-id='deliveryDateEnd']  ${COMMONWAIT}
-    ${index}=  Evaluate  ${count}-1
-    Set Date In Item  ${index}  deliveryDate  startDate  ${item.deliveryDate.startDate}
-    Set Date In Item  ${index}  deliveryDate  endDate  ${item.deliveryDate.endDate}
+
+    Set Date In Item  ${count}  deliveryDate  startDate  ${item.deliveryDate.startDate}
+    Set Date In Item  ${count}  deliveryDate  endDate  ${item.deliveryDate.endDate}
 
     Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'
     ...  Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[last()]//div[@data-id='item'])[${count}]//input[@data-id='descriptionEn']  ${item.description_en}
@@ -815,7 +818,9 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 # Додавання лоту в існуючий тендер
 Створити лот із предметом закупівлі
     [Arguments]  ${tender_owner}  ${tender_uaid}  ${lot}  ${item}
-    privatmarket.Пошук тендера по ідентифікатору  ${tender_owner}  ${tender_uaid}
+    ${status}=  Run Keyword And Return Status  Wait Until Element Is Visible  ${tender_data_title}  5s
+    Run Keyword If  '${status}' == 'False'  privatmarket.Пошук тендера по ідентифікатору  ${tender_owner}  ${tender_uaid}
+
     ${type}=  Отримати інформацію з procurementMethodType
     @{lots}=    Create List    ${lot.data}
     @{items}=    Create List    ${item}
@@ -827,6 +832,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
     Додати lots  ${lots}  ${items}  ${type}
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
+    Sleep  5s
     Wait Visibility And Click Element  css=#tab_4 a
     Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
 
@@ -852,7 +858,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     \  ${elem_index}=  privatmarket_service.sum_of_numbers  ${index}  1
     \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='criterionValue'])[${elem_index}]  ${tender_criterion_value}
     \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='criterionTitle'])[${elem_index}]  ${tender_enums[${index}].title}
-    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='criterionTitleEn'])[${elem_index}]  ${tender_enums[${index}].title}
+#    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='criterionTitleEn'])[${elem_index}]  ${tender_enums[${index}].title}
     \  Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  xpath=(//section[@data-id='ptrFeatures']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${tender_enums[${index}].title}
 
 
@@ -876,7 +882,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     \  ${elem_index}=  privatmarket_service.sum_of_numbers  ${index}  1
     \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionValue'])[${elem_index}]  ${item_criterion_value}
     \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionTitle'])[${elem_index}]  ${item_enums[${index}].title}
-    \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${item_enums[${index}].title}
+#    \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${item_enums[${index}].title}
     \  Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${item_enums[${index}].title}
 
 
@@ -900,7 +906,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     \  ${elem_index}=  privatmarket_service.sum_of_numbers  ${index}  1
     \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionValue'])[${elem_index}]  ${lot_criterion_value}
     \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionTitle'])[${elem_index}]  ${lot_enums[${index}].title}
-    \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${lot_enums[${index}].title}
+#    \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${lot_enums[${index}].title}
     \  Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${lot_enums[${index}].title}
 
 
