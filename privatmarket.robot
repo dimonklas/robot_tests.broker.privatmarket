@@ -578,6 +578,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Run Keyword IF
     ...  ${type} == 'aboveThresholdEU'  Wait Visibility And Click Element  css=a[data-id='choosedPrzAboveThresholdEU']
     ...  ELSE IF  ${type} == 'aboveThresholdUA'  Wait Visibility And Click Element  css=a[data-id='choosedPrzAboveThresholdUA']
+    ...  ELSE IF  ${type} == 'aboveThresholdUA.defense'  Wait Visibility And Click Element  css=a[data-id='choosedPrzAboveThresholdUADefense']
     ...  ELSE IF  ${type} == 'negotiation'  Wait Visibility And Click Element  css=a[data-id='choosedPrzNegotiation']
     ...  ELSE IF  ${type} == 'competitiveDialogueEU'  Wait Visibility And Click Element  css=a[data-id='choosedPrzCompetitiveDialogueEU']
     ...  ELSE IF  ${type} == 'competitiveDialogueUA'  Wait Visibility And Click Element  css=a[data-id='choosedPrzCompetitiveDialogueUA']
@@ -631,7 +632,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
     #date
     Wait For Ajax
-    Run Keyword Unless  ${type} == 'aboveThresholdEU' or ${type} == 'aboveThresholdUA' or ${type} == 'negotiation' or ${type} == 'competitiveDialogueEU' or ${type} == 'competitiveDialogueUA' or ${type} == 'reporting' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'  Set Enquiry Period  ${tender_data.data.enquiryPeriod.startDate}  ${tender_data.data.enquiryPeriod.endDate}
+    Run Keyword Unless  ${type} == 'aboveThresholdEU' or ${type} == 'aboveThresholdUA' or ${type} == 'aboveThresholdUA.defense'  or ${type} == 'negotiation' or ${type} == 'competitiveDialogueEU' or ${type} == 'competitiveDialogueUA' or ${type} == 'reporting' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'  Set Enquiry Period  ${tender_data.data.enquiryPeriod.startDate}  ${tender_data.data.enquiryPeriod.endDate}
     Run Keyword If  ${type} == ''  Set Start Tender Period  ${tender_data.data.tenderPeriod.startDate}
     Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'reporting'  Set End Tender Period  ${tender_data.data.tenderPeriod.endDate}
 
@@ -693,6 +694,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Run Keyword IF
     ...  ${type} == 'aboveThresholdEU'  Додати нецінові показники  ${features}  ${type}
     ...  ELSE IF  ${type} == 'aboveThresholdUA' and ${exist_features}  Додати нецінові показники  ${features}  ${type}
+    ...  ELSE IF  ${type} == 'aboveThresholdUA.defense' and ${exist_features}  Додати нецінові показники  ${features}  ${type}
     ...  ELSE IF  'competitiveDialogue' in ${type} and ${exist_features}  Додати нецінові показники  ${features}  ${type}
     ...  ELSE IF  'closeFrameworkAgreementUA' in ${type} and ${exist_features}  Додати нецінові показники  ${features}  ${type}
 
@@ -715,6 +717,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Run Keyword IF
     ...  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  Wait For Element With Reload  css=[data-tender-status='active.tendering']  1
     ...  ELSE IF  ${type} == 'aboveThresholdUA' or ${type} == 'competitiveDialogueUA'  Wait For Element With Reload  css=[data-tender-status='active.tendering']  1
+    ...  ELSE IF  ${type} == 'aboveThresholdUA.defense' or ${type} == 'competitiveDialogueUA'  Wait For Element With Reload  css=[data-tender-status='active.tendering']  1
     ...  ELSE IF  ${type} == 'closeFrameworkAgreementUA'  Wait For Element With Reload  css=[data-tender-status='active.tendering']  1
     ...  ELSE IF  ${type} == 'negotiation' or ${type} == 'reporting'  Wait For Element With Reload  css=[data-tender-status='active']  1
     ...  ELSE  Wait For Element With Reload  css=[data-tender-status='active.enquiries']  1
