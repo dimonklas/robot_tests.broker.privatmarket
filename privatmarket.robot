@@ -1754,6 +1754,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
 Отримати інформацію з maxAwardsCount
     [Arguments]  ${field_name}
+    Wait For Ajax
     ${count}=  Get Element Attribute  xpath=//div[@data-id='maxAwardsCount']@innerHTML
     ${result}=  Convert To Integer  ${count}
     [Return]  ${result}
@@ -1794,7 +1795,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ${rate}=  Remove String Using Regexp  ${text}  \\s%$
     ${rate}=  Convert To Number  ${rate}  3
     ${result}=  Evaluate  ${rate}/${100}
-#    ${result}=  Convert To String  ${result}
+    ${result}=  Convert To Number  ${result}  5
     [Return]  ${result}
 
 
@@ -2222,8 +2223,10 @@ Try To Search Complaint
 
 Отримати посилання на аукціон для глядача
     [Arguments]  ${user}  ${tenderId}  ${object_id}=${Empty}
-    Wait For Element With Reload  xpath=//a[contains(@href, 'https://auction-sandbox.prozorro.gov.ua/tenders/')]  1  30
-    ${result}=  Get Element Attribute  xpath=//a[contains(@href, 'https://auction-sandbox.prozorro.gov.ua/tenders/')]@href
+#    Wait For Element With Reload  xpath=//a[contains(@href, 'https://auction-sandbox.prozorro.gov.ua/tenders/')]  1  30
+    Wait For Element With Reload  xpath=//a[contains(@href, 'https://auction-sandbox.prozorro.gov.ua/')]  1  30
+#    ${result}=  Get Element Attribute  xpath=//a[contains(@href, 'https://auction-sandbox.prozorro.gov.ua/tenders/')]@href
+    ${result}=  Get Element Attribute  xpath=//a[contains(@href, 'https://auction-sandbox.prozorro.gov.ua/')]@href
     [Return]  ${result}
 
 
@@ -2724,7 +2727,7 @@ Wait Element Visibility And Input Text
 
 Wait For Tender
     [Arguments]  ${tender_id}  ${education_type}  ${type}=tender
-    Wait Until Keyword Succeeds  25min  5s  Try Search Tender  ${tender_id}  ${education_type}  ${type}
+    Wait Until Keyword Succeeds  10min  5s  Try Search Tender  ${tender_id}  ${education_type}  ${type}
 
 
 Try Search Tender
@@ -3473,8 +3476,10 @@ Get Item Number
 
 Отримати посилання на аукціон для учасника
     [Arguments]  ${username}  ${tender_uaid}
-    Wait For Element With Reload  xpath=//a[contains(@href, 'https://auction-sandbox.prozorro.gov.ua/tenders/')]  1  30
-    ${result}=  Get Element Attribute  xpath=//a[contains(@href, 'https://auction-sandbox.prozorro.gov.ua/tenders/')]@href
+#    Wait For Element With Reload  xpath=//a[contains(@href, 'https://auction-sandbox.prozorro.gov.ua/tenders/')]  1  30
+    Wait For Element With Reload  xpath=//a[contains(@href, 'https://auction-sandbox.prozorro.gov.ua/')]  1  30
+#    ${result}=  Get Element Attribute  xpath=//a[contains(@href, 'https://auction-sandbox.prozorro.gov.ua/tenders/')]@href
+    ${result}=  Get Element Attribute  xpath=//a[contains(@href, 'https://auction-sandbox.prozorro.gov.ua/')]@href
     [Return]  ${result}
 
 
