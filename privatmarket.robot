@@ -1419,11 +1419,13 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ${bid_index}=  privatmarket_service.abs_number  ${bid_index}
     ${index}=  privatmarket_service.sum_of_numbers  ${bid_index}  1
 
-    ${elements}=  Get Webelements  //a[@ng-click='act.openQualification(q)']
+#    ${elements}=  Get Webelements  //a[@ng-click='act.openQualification(q)']
+    ${elements}=  Get Webelements  //table[@class='bids']//tbody//tr
     ${count}=  Get_Length  ${elements}
 
     Run Keyword If  ${count} == 1  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])
-    Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])[${index}]
+#    Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])[${index}]
+    Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//table[@class='bids']//tbody//tr)[${index}]//a[@ng-click='act.openQualification(q)']
 
     ${file_path}  ${file_name}  ${file_content}=  create_fake_doc
 
@@ -1437,8 +1439,8 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Sleep  5s
     Wait Visibility And Click Element  xpath=//button[@data-id='setQualStatusUnsuccessful']
     ${comment}=  create_fake_sentence
-    Wait Visibility And Click Element  xpath=//label[@for='chk-dr0']
     Wait Element Visibility And Input Text  xpath=//textarea[@data-id='decline-description']  ${comment}
+    Wait Visibility And Click Element  xpath=//label[@for='chk-dr0']
     Wait Visibility And Click Element  xpath=//button[@data-id='btn-ok']
     Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]  ${COMMONWAIT}
     Wait Visibility And Click Element  xpath=//button[@data-id='btn-close']
@@ -1463,19 +1465,23 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
 Скасувати кваліфікацію
     [Arguments]  ${user_name}  ${tenderId}  ${bid_index}
+
     Reload Page
     Wait Visibility And Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
     ${bid_index}=  privatmarket_service.abs_number  ${bid_index}
     ${index}=  privatmarket_service.sum_of_numbers  ${bid_index}  1
 
-    ${elements}=  Get Webelements  //a[@ng-click='act.openQualification(q)']
+    ${elements}=  Get Webelements  //span[@ng-click='act.openCancelQualificationWindow(q.id)']
     ${count}=  Get_Length  ${elements}
 
-    Run Keyword If  ${count} == 1  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])
+    Run Keyword If  ${count} == 1  Wait Visibility And Click Element  xpath=(//span[@ng-click='act.openCancelQualificationWindow(q.id)'])
     Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//span[@ng-click='act.openCancelQualificationWindow(q.id)'])[${index}]
     Wait Visibility And Click Element  xpath=//button[@data-id='btn-cancel-qualification-or-award']
 
+    Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]  ${COMMONWAIT}
 
+    Wait Visibility And Click Element  xpath=(//button[@data-id='btn-close'])[last()]
+    Sleep  30s
 
 
 Підписати ЕЦП
