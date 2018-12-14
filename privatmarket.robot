@@ -1795,7 +1795,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ${rate}=  Remove String Using Regexp  ${text}  \\s%$
     ${rate}=  Convert To Number  ${rate}  3
     ${result}=  Evaluate  ${rate}/${100}
-    ${result}=  Convert To Number  ${result}  3
+    ${result}=  Convert To Number  ${result}  5
     [Return]  ${result}
 
 
@@ -2727,7 +2727,7 @@ Wait Element Visibility And Input Text
 
 Wait For Tender
     [Arguments]  ${tender_id}  ${education_type}  ${type}=tender
-    Wait Until Keyword Succeeds  25min  5s  Try Search Tender  ${tender_id}  ${education_type}  ${type}
+    Wait Until Keyword Succeeds  10min  5s  Try Search Tender  ${tender_id}  ${education_type}  ${type}
 
 
 Try Search Tender
