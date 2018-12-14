@@ -632,7 +632,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
     #date
     Wait For Ajax
-    Run Keyword Unless  ${type} == 'aboveThresholdEU' or ${type} == 'aboveThresholdUA' or ${type} == 'aboveThresholdUA.defense'  or ${type} == 'negotiation' or ${type} == 'competitiveDialogueEU' or ${type} == 'competitiveDialogueUA' or ${type} == 'reporting' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'  Set Enquiry Period  ${tender_data.data.enquiryPeriod.startDate}  ${tender_data.data.enquiryPeriod.endDate}
+    Run Keyword Unless  ${type} == 'aboveThresholdEU' or ${type} == 'aboveThresholdUA' or ${type} == 'aboveThresholdUA.defense' or ${type} == 'negotiation' or ${type} == 'competitiveDialogueEU' or ${type} == 'competitiveDialogueUA' or ${type} == 'reporting' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'  Set Enquiry Period  ${tender_data.data.enquiryPeriod.startDate}  ${tender_data.data.enquiryPeriod.endDate}
     Run Keyword If  ${type} == ''  Set Start Tender Period  ${tender_data.data.tenderPeriod.startDate}
     Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'reporting'  Set End Tender Period  ${tender_data.data.tenderPeriod.endDate}
 
@@ -1388,11 +1388,13 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ${bid_index}=  privatmarket_service.abs_number  ${bid_index}
     ${index}=  privatmarket_service.sum_of_numbers  ${bid_index}  1
 
-    ${elements}=  Get Webelements  //a[@ng-click='act.openQualification(q)']
+#    ${elements}=  Get Webelements  //a[@ng-click='act.openQualification(q)']
+    ${elements}=  Get Webelements  //table[@class='bids']//tbody//tr
     ${count}=  Get_Length  ${elements}
 
     Run Keyword If  ${count} == 1  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])
-    Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])[${index}]
+#    Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])[${index}]
+    Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//table[@class='bids']//tbody//tr)[${index}]//a[@ng-click='act.openQualification(q)']
     Wait For Ajax
 
     Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
@@ -1474,11 +1476,13 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ${bid_index}=  privatmarket_service.abs_number  ${bid_index}
     ${index}=  privatmarket_service.sum_of_numbers  ${bid_index}  1
 
-    ${elements}=  Get Webelements  //span[@ng-click='act.openCancelQualificationWindow(q.id)']
+#    ${elements}=  Get Webelements  //span[@ng-click='act.openCancelQualificationWindow(q.id)']
+    ${elements}=  Get Webelements  //table[@class='bids']//tbody//tr
     ${count}=  Get_Length  ${elements}
 
     Run Keyword If  ${count} == 1  Wait Visibility And Click Element  xpath=(//span[@ng-click='act.openCancelQualificationWindow(q.id)'])
-    Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//span[@ng-click='act.openCancelQualificationWindow(q.id)'])[${index}]
+#    Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//span[@ng-click='act.openCancelQualificationWindow(q.id)'])[${index}]
+    Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//table[@class='bids']//tbody//tr)[${index}]//span[@ng-click='act.openCancelQualificationWindow(q.id)']
     Wait Visibility And Click Element  xpath=//button[@data-id='btn-cancel-qualification-or-award']
 
     Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]  ${COMMONWAIT}
@@ -1702,6 +1706,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Run Keyword And Return If  '${field_name}' == 'maxAwardsCount'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  'fundingKind' in '${field_name}'  Отримати інформацію з fundingKind  ${field_name}
     Run Keyword And Return If  'NBUdiscountRate' in '${field_name}'  Отримати інформацію з NBUdiscountRate  ${field_name}
+    Run Keyword And Return If  'minimalStepPercentage' in '${field_name}'  Отримати інформацію з minimalStepPercentage  ${field_name}
     Run Keyword And Return If  'yearlyPaymentsPercentageRange' in '${field_name}'  Отримати інформацію з yearlyPaymentsPercentageRange  ${field_name}
 
     Wait Until Element Is Visible  ${tender_data_${field_name}}
@@ -1770,6 +1775,13 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     [Return]  ${result}
 
 
+Отримати інформацію з minimalStepPercentage
+    [Arguments]  ${field_name}
+    ${text}=  Отримати текст елемента  ${tender_data_${field_name}}
+    ${result}=  Привести відсоток до частини від цілого  ${text}
+    [Return]  ${result}
+
+
 Отримати інформацію з yearlyPaymentsPercentageRange
     [Arguments]  ${field_name}
     ${text}=  Отримати текст елемента  ${tender_data_${field_name}}
@@ -1782,7 +1794,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ${rate}=  Remove String Using Regexp  ${text}  \\s%$
     ${rate}=  Convert To Number  ${rate}  3
     ${result}=  Evaluate  ${rate}/${100}
-    ${result}=  Convert To String  ${result}
+#    ${result}=  Convert To String  ${result}
     [Return]  ${result}
 
 
