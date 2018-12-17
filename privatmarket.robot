@@ -3259,6 +3259,8 @@ Get Item Number
     Run Keyword Unless  'Неможливість' in '${TEST_NAME}'  Wait For Element With Reload  xpath=//button[@data-id='createBidBtn']  1
     Click Element  xpath=//button[@data-id='createBidBtn']
 
+    Run Keyword And Return If  '${mode}' == 'open_esco'  Подати цінову пропозицію для ESCO  ${bid}  ${lots_ids}  ${features_ids}
+
     ${bid_value}=  Set Variable If  ${NUMBER_OF_LOTS} == 0  ${bid.data.value.amount}  ${bid.data.lotValues[0].value.amount}
 
     ${value_amount}=  privatmarket_service.convert_float_to_string  ${bid_value}
@@ -3309,6 +3311,54 @@ Get Item Number
     Sleep  1s
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']
     Sleep  60s
+
+
+Подати цінову пропозицію для ESCO
+    [Arguments]  ${bid}  ${lots_ids}  ${features_ids}
+    Wait Element Visibility And Input Text  xpath=//input[@ng-model='lot.esco.userYears']  ${bid.data.lotValues[0].value.contractDuration.years}
+    Wait Element Visibility And Input Text  xpath=//input[@ng-model='lot.esco.userDays']  ${bid.data.lotValues[0].value.contractDuration.days}
+    ${yearlyPaymentsPercentage}=  Привести до відсотків  ${bid.data.lotValues[0].value.yearlyPaymentsPercentage}
+    Wait Element Visibility And Input Text  xpath=//input[@ng-model='lot.esco.userContractDuration']  ${yearlyPaymentsPercentage}
+    ${presence}=  Run Keyword And Return Status  List Should Contain Value  ${bid.data.lotValues[0].value}  annualCostsReduction
+
+    @{value}=  Run Keyword If  ${presence}  Get From Dictionary  ${bid.data.lotValues[0].value}  annualCostsReduction
+    ${cost_length}=  Get Length  ${value}
+    :FOR   ${index}   IN RANGE  0  ${cost_length}
+    \  ${elem_index}=  privatmarket_service.sum_of_numbers  ${index}  1
+    \  ${cost}=  Convert To String  ${value[${index}]}
+    \  Wait Element Visibility And Input Text  xpath=(//input[contains(@ng-model,'lot.esco.userAnnualCost')])[${elem_index}]  ${cost}
+
+    @{params}=  Get From Dictionary  ${bid.data}  parameters
+    ${param_length}=  Get Length  ${params}
+    :FOR   ${index}   IN RANGE  0  ${param_length}
+    \  ${value}=  Привести до відсотків  ${params[${index}]['value']}
+    \  ${meat_value}=  Convert To Number  ${value}  2
+    \  Wait Visibility And Click Element  xpath=//button[contains(@id,'${params[${index}]['code']}')]
+    \  Wait Visibility And Click Element  xpath=//ul[contains(@aria-labelledby,'${params[${index}]['code']}')]/li//span[contains(text(),'${meat_value}')]
+
+    Execute Javascript  document.getElementById('chk0').click()
+#    Wait Visibility And Click Element  xpath=//input[@ng-model='lot.userCheck']
+
+    Wait Visibility And Click Element  xpath=//button[@data-id='save-bid-btn']
+
+    Wait Visibility And Click Element  xpath=//button[@data-id='save-bid-btn']
+    Wait Visibility And Click Element  xpath=//button[@data-id='modalOkBtn']
+
+    Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
+    Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
+
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='postalCode']   ${bid.data.tenderers[0].address.postalCode}
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='countryName']   ${bid.data.tenderers[0].address.countryName}
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='region']   ${bid.data.tenderers[0].address.region}
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='locality']   ${bid.data.tenderers[0].address.locality}
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='streetAddress']   ${bid.data.tenderers[0].address.streetAddress}
+
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='fullNameUa']   ${bid.data.tenderers[0].contactPoint.name}
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='phone']   ${bid.data.tenderers[0].contactPoint.telephone}
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='email']   ${bid.data.tenderers[0].contactPoint.email}
+
+    Wait Visibility And Click Element  xpath=//button[@data-id='save-bid-btn']
+
 
 
 Відмітити лот
