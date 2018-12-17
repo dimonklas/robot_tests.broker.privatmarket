@@ -3316,7 +3316,8 @@ Get Item Number
     [Arguments]  ${bid}  ${lots_ids}  ${features_ids}
     Wait Element Visibility And Input Text  xpath=//input[@ng-model='lot.esco.userYears']  ${bid.data.lotValues[0].value.contractDuration.years}
     Wait Element Visibility And Input Text  xpath=//input[@ng-model='lot.esco.userDays']  ${bid.data.lotValues[0].value.contractDuration.days}
-    ${yearlyPaymentsPercentage}=  Привести до відсотків  ${bid.data.lotValues[0].value.yearlyPaymentsPercentage}
+    ${yearlyPaymentsPercentage}=  Convert To Number  ${bid.data.lotValues[0].value.yearlyPaymentsPercentage}  4
+    ${yearlyPaymentsPercentage}=  Привести до відсотків  ${yearlyPaymentsPercentage}
     Wait Element Visibility And Input Text  xpath=//input[@ng-model='lot.esco.userContractDuration']  ${yearlyPaymentsPercentage}
     ${presence}=  Run Keyword And Return Status  List Should Contain Value  ${bid.data.lotValues[0].value}  annualCostsReduction
 
@@ -3332,11 +3333,14 @@ Get Item Number
     :FOR   ${index}   IN RANGE  0  ${param_length}
     \  ${value}=  Привести до відсотків  ${params[${index}]['value']}
     \  ${meat_value}=  Convert To Number  ${value}  2
+    \  Sleep  1s
+    \  Execute JavaScript    window.scrollTo(${0},${0})
+    \  Sleep  1s
     \  Wait Visibility And Click Element  xpath=//button[contains(@id,'${params[${index}]['code']}')]
+    \  Sleep  1s
     \  Wait Visibility And Click Element  xpath=//ul[contains(@aria-labelledby,'${params[${index}]['code']}')]/li//span[contains(text(),'${meat_value}')]
 
     Execute Javascript  document.getElementById('chk0').click()
-#    Wait Visibility And Click Element  xpath=//input[@ng-model='lot.userCheck']
 
     Wait Visibility And Click Element  xpath=//button[@data-id='save-bid-btn']
 
@@ -3353,11 +3357,15 @@ Get Item Number
     Wait Element Visibility And Input Text  xpath=//input[@data-id='streetAddress']   ${bid.data.tenderers[0].address.streetAddress}
 
     Wait Element Visibility And Input Text  xpath=//input[@data-id='fullNameUa']   ${bid.data.tenderers[0].contactPoint.name}
-    Wait Element Visibility And Input Text  xpath=//input[@data-id='phone']   ${bid.data.tenderers[0].contactPoint.telephone}
+    ${phone}=  Привести номер телефону до відповідного формату  ${bid.data.tenderers[0].contactPoint.telephone}
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='phone']   ${phone}
     Wait Element Visibility And Input Text  xpath=//input[@data-id='email']   ${bid.data.tenderers[0].contactPoint.email}
 
     Wait Visibility And Click Element  xpath=//button[@data-id='save-bid-btn']
-
+    Wait Visibility And Click Element  xpath=//button[@data-id='save-bid-btn']
+    Sleep  1s
+    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']
+    Sleep  60s
 
 
 Відмітити лот
@@ -3461,11 +3469,9 @@ Get Item Number
 
 Змінити документацію в ставці
     [Arguments]  ${username}  ${tender_uaid}  ${doc_data}  ${doc_id}
-    Wait Visibility And Click Element  xpath=//button[@data-id="editBidBtn"]
-#    Sleep  2s
-#    Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
-    Wait For Ajax
     ${tender_type}=  Отримати інформацію з procurementMethodType
+    Wait Visibility And Click Element  xpath=//button[@data-id="editBidBtn"]
+    Wait For Ajax
     Wait Visibility And Click Element  css=label[data-id="confidentiality-toggle"]
 
     Run Keyword If  'aboveThresholdEU' in '${tender_type}'
@@ -3473,9 +3479,7 @@ Get Item Number
     ...  Wait Element Visibility And Input Text  css=textarea[data-if="confidentiality-rationale-text"]  ${doc_data.data.confidentialityRationale}
     ...  AND  Sleep  1s
     ...  AND  Wait Visibility And Click Element  css=button[data-id="save-confidentiality"]
-#    Wait Element Visibility And Input Text  css=textarea[data-if="confidentiality-rationale-text"]  ${doc_data.data.confidentialityRationale}
-#    Sleep  1s
-#    Wait Visibility And Click Element  css=button[data-id="save-confidentiality"]
+
     Sleep  10s
     Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
     Wait For Ajax
@@ -3506,6 +3510,7 @@ Get Item Number
     ${value}=  privatmarket_service.convert_float_to_string  ${value}
 
     ${value_field}=  Set Variable If  ${NUMBER_OF_LOTS} == 0  input[id='price']  input[id^='userprice-lot']
+
     Run Keyword If  'value.amount' in '${field}'  Wait Element Visibility And Input Text  css=${value_field}  ${value}
     Click Button  css=button[data-id='save-bid-btn']
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modalOkBtn']
