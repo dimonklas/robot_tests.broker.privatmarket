@@ -2173,7 +2173,8 @@ Try To Search Complaint
 
 Показати вкладені файли
      [Arguments]  ${element}
-     ${status}=  Run Keyword And Return Status  Wait For Element With Reload  ${element}  3  2
+     ${status}=  Run Keyword And Return Status  Wait For Element With Reload  ${element}  3  3
+     Wait For Ajax
      Run Keyword If  '${status}' == 'True'  Click Element  ${element}
 
 
@@ -3076,10 +3077,10 @@ Get Item Number
     [Arguments]  ${username}  ${tender_uaid}  ${claim}  ${lot_id}  ${document}=${None}
     Switch To Tab  1
     Відкрити детальну інформацію по лотам
+    ${tender_type}=  Отримати інформацію з procurementMethodType
     Wait Visibility And Click Element  css=a[tooltip='Подати вимогу на даний лот']
     ${scenarios_name}=  privatmarket_service.get_scenarios_name
-    Run Keyword Unless  'single_item' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//button[@data-id='btn-send-claim']
-#    Wait Visibility And Click Element  xpath=//button[@data-id='btn-send-claim']
+    Run Keyword Unless  'single_item' in '${scenarios_name}' or 'belowThreshold' in '${tender_type}'  Wait Visibility And Click Element  xpath=//button[@data-id='btn-send-claim']
     Заповнити поля вимоги/скарги  ${claim}  ${document}
     Reload And Switch To Tab  3
     ${result}=  Get Text  xpath=(//span[@data-id='complaint-id'])[1]
