@@ -3468,7 +3468,7 @@ Get Item Number
     [Arguments]  ${username}  ${tender_uaid}  ${path}  ${doc_id}  ${doc_type}=documents
     Wait Visibility And Click Element  xpath=//button[@data-id="editBidBtn"]
     Sleep  2s
-    Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
+    Run Keyword Unless  'openUA' in '${mode}'  Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
     Wait For Ajax
     Run Keyword And Ignore Error  Execute Javascript  var s = angular.element($('[data-id=common-documents]').get(0)).scope(); s.$ctrl.changedDoc=s.$ctrl.docs[0];
     Sleep  1s
@@ -3476,6 +3476,7 @@ Get Item Number
     Sleep  1s
     Run Keyword And Ignore Error  Choose File  css=file-uploader[data-id='common-documents'] input[data-id='input-single-file']  ${filePath}
     Sleep  5s
+    Run Keyword If  'openUA' in '${mode}'  Click Button  css=button[data-id='save-bid-btn']
     Click Button  css=button[data-id='save-bid-btn']
     Wait For Ajax
     Click Button  css=button[data-id='save-bid-btn']
