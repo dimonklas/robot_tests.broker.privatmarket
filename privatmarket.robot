@@ -1569,6 +1569,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ${count}=  Get_Length  ${elements}
     :FOR  ${item}  In Range  0  ${count}
     \  ${item}=  privatmarket_service.sum_of_numbers  ${item}  1
+    \  Scroll To Element  xpath=(//a[@data-id='toggle-file-section'])[${item}]
     \  Click Element  xpath=(//a[@data-id='toggle-file-section'])[${item}]
 
 
