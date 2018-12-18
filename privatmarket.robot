@@ -344,10 +344,24 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 Додати предмети закупівлі в план
     [Arguments]  ${items}  ${type}
     ${items_count}=  Get Length  ${items}
+    Wait For Ajax
 
     : FOR  ${index}  IN RANGE  0  ${items_count}
     \  ${index_xpath}=  privatmarket_service.sum_of_numbers  ${index}  1
     \  Run Keyword If  ${index} > 0  Click Element  xpath=//button[@data-id='actAddItem']
+    \  Wait Visibility And Click Element  xpath=(//div[@data-id='basicClassification'])[${index_xpath}]//a
+    \  Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
+    \  Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
+    \  Search By Query  css=input[data-id='query']  ${items[${index}].classification.id}
+    \  Wait Visibility And Click Element  css=button[data-id='actConfirm']
+    \  ${classif_xpath}=  Set Variable  xpath=(//div[@data-id='mozAtcClassification'])[${index_xpath}]//a[@data-id='actChoose']
+    \  ${classif_id}=  Set Variable If  '336' in '${items[${index}].classification.id}'  ${items[${index}].additionalClassifications[1].id}
+    \  Run Keyword If  '336' in '${items[${index}].classification.id}'
+    \  ...  Run Keywords
+    \  ...  Wait Visibility And Click Element  ${classif_xpath}
+    \  ...  AND  Wait Element Visibility And Input Text  xpath=//input[@data-id='query']  ${classif_id}
+    \  ...  AND  Wait Visibility And Click Element  xpath=//div[@data-id='foundItem']//label[contains(text(),'${classif_id}')]
+    \  ...  AND  Wait Visibility And Click Element  xpath=//button[@data-id='actConfirm']
     \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='description'])[${index_xpath}]  ${items[${index}].description}
     \  Input Text  xpath=(//input[@data-id='quantity'])[${index_xpath}]  ${items[${index}].quantity}
     \  Select From List By Label  xpath=(//select[@data-id='unit'])[${index_xpath}]  ${items[${index}].unit.name}
@@ -359,14 +373,6 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='locality'])[${index_xpath}]  ${items[${index}].deliveryAddress.locality}
     \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='streetAddress'])[${index_xpath}]  ${items[${index}].deliveryAddress.streetAddress}
     \  Set Date In Item  ${index}  deliveryDate  endDate  ${items[${index}].deliveryDate.endDate}
-    \  ${classif_xpath}=  Set Variable  xpath=(//div[@data-id='mozAtcClassification'])[${index_xpath}]//a[@data-id='actChoose']
-    \  ${classif_id}=  Set Variable If  '336' in '${items[${index}].classification.id}'  ${items[${index}].additionalClassifications[1].id}
-    \  Run Keyword If  '336' in '${items[${index}].classification.id}'
-    \  ...  Run Keywords
-    \  ...  Wait Visibility And Click Element  ${classif_xpath}
-    \  ...  AND  Wait Element Visibility And Input Text  xpath=//input[@data-id='query']  ${classif_id}
-    \  ...  AND  Wait Visibility And Click Element  xpath=//div[@data-id='foundItem']//label[contains(text(),'${classif_id}')]
-    \  ...  AND  Wait Visibility And Click Element  xpath=//button[@data-id='actConfirm']
 
 
 Внести зміни в план
@@ -672,7 +678,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
-    ${lots_count}=  Get Length  @{lots}
+    ${lots_count}=  Run Keyword Unless  ${type} == 'reporting'  Get Length  @{lots}
 
     Run Keyword If  ${type} == 'esco' and ${lots_count} > 0  Wait Visibility And Click Element  xpath=//label[@for='lot_choosed']
     ...  ELSE IF  ${type} == 'esco' and ${lots_count} == 0  Wait Visibility And Click Element  xpath=//label[@for='nolot_choosed']
@@ -1654,7 +1660,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Click Element  css=#endDate
     Wait Visibility And Click Element  xpath=//div[@class="datepicker-days"]//tbody//tr[6]//td[4]
     Wait For Ajax
-    Wait Visibility And Click Element  xpath=//label[@for='agree']
+    Run Keyword Unless  '${mode}' == 'reporting'  Wait Visibility And Click Element  xpath=//label[@for='agree']
     Wait Until Element Is Enabled  css=button[ng-click="act.saveContract('active')"]  ${COMMONWAIT}
     Click Button  css=button[ng-click="act.saveContract('active')"]
     Wait Until Element Is Visible  css=.notify  ${COMMONWAIT}
@@ -3015,10 +3021,13 @@ Get Item Number
     Select Window  title=sign worker
     Wait Until Keyword Succeeds  2min  10s  Дочекатися завантаження сторінки підписання ЕЦП
     Wait Until Element Is Visible  css=#CAsServersSelect  ${COMMONWAIT}
-    Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[19]
-    ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/Key-6.dat
+#    Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[19]
+    Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[8]
+#    ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/Key-6.dat
+    ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/11141802_11141802.jks
     Choose File  id=PKeyFileInput  ${path}
-    Wait Element Visibility And Input Text  id=PKeyPassword  12345677
+#    Wait Element Visibility And Input Text  id=PKeyPassword  12345677
+    Wait Element Visibility And Input Text  id=PKeyPassword  1111qqqq
     Wait Visibility And Click Element  id=PKeyReadButton
     Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'Ключ успішно завантажено')]
     Wait Visibility And Click Element  id=SignDataButton
