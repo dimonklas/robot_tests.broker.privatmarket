@@ -2165,6 +2165,8 @@ Try To Search Complaint
     [Arguments]  ${username}  ${tender_uaid}  ${complaintID}  ${doc_id}  ${field}
     ${element} =  Set Variable  xpath=//a[contains(.,'Показати вкладені файли') and not(contains(., '(0)'))]
     Показати вкладені файли  ${element}
+    ${complaint}=  Set Variable  xpath=//span[@data-id='complaint-id' and text()='${complaintID}']
+    Scroll To Element  ${complaint}
     ${element_new}=  Set Variable  xpath=(//div[contains(@title,'${doc_id}')])
     Wait Until Element Is Visible  xpath=(//div[contains(@title,'${doc_id}')])
     ${doc_text} =  Get Text  ${element_new}
@@ -2176,6 +2178,12 @@ Try To Search Complaint
      ${status}=  Run Keyword And Return Status  Wait For Element With Reload  ${element}  3  3
      Wait For Ajax
      Run Keyword If  '${status}' == 'True'  Click Element  ${element}
+
+
+Scroll To Element
+  [Arguments]  ${locator}
+  ${elem_vert_pos}=  Get Vertical Position  ${locator}
+  Execute Javascript  window.scrollTo(0,${elem_vert_pos - 300});
 
 
 Отримати статус пропозиції кваліфікації
@@ -3413,7 +3421,7 @@ Get Item Number
     Reload Page
     Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'lot-parts')]  ${COMMONWAIT}
     Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
-    Element Should Contain  xpath=//tr[contains(@ng-repeat, 'currBids[lot.id] ')]//td[4]  'Недійсна'
+    Element Should Contain  xpath=//tr[contains(@ng-repeat, 'currBids[lot.id] ')]//td[4]  Недійсна
     ${value}=  Отримати текст елемента  xpath=//tr[contains(@ng-repeat, 'currBids[lot.id] ')]//td[4]
     [Return]  ${value}
 
