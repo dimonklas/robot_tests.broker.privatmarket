@@ -421,6 +421,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ${scenarios_name}=  privatmarket_service.get_scenarios_name
     ${type}=  Отримати інформацію з procurementMethodType
     ${type}=  Set Variable  '${type}'
+    Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
     Sleep  5s
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
@@ -1094,6 +1095,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait For Ajax
     Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
     Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
+    Sleep  30s
 
 
 Змінити value.amount лоту
@@ -1118,6 +1120,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait For Ajax
     Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
     Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
+    Sleep  30s
 
 
 Додати неціновий показник на тендер
@@ -1364,15 +1367,23 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
 
 Завантажити документ у кваліфікацію
-    [Arguments]  ${user_name}  ${filepath}  ${tenderId}  ${bid_index}
+    [Arguments]  ${user_name}  ${filePath}  ${tenderId}  ${bid_index}
     Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'lot-parts')]
     ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'lot-parts')]@class
     Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
 
+    ${bid_index}=  privatmarket_service.abs_number  ${bid_index}
     ${index}=  privatmarket_service.sum_of_numbers  ${bid_index}  1
-    Run Keyword If
-    ...  '${index}' == '1'  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])[${index}]
-    ...  ELSE  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])[last()]
+
+    ${elements}=  Get Webelements  //table[@class='bids']//tbody//tr
+    ${count}=  Get_Length  ${elements}
+
+#    Run Keyword If
+#    ...  '${index}' == '1'  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])[${index}]
+#    ...  ELSE  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])[last()]
+
+    Wait Visibility And Click Element  xpath=(//table[@class='bids']//tbody//tr)[${index}]//a[@ng-click='act.openQualification(q)']
+
     Wait For Ajax
     Wait Visibility And Click Element  xpath=//div[@class='files-upload']//select[@class='form-block__select form-block__select_short']//option[2]
     Sleep  1s
@@ -1456,7 +1467,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]  ${COMMONWAIT}
     Wait Visibility And Click Element  xpath=//button[@data-id='btn-close']
     Sleep  5s
-    Підписати ЕЦП  ${bid_index}
+    Підписати ЕЦП  ${index}
 
 
 Видалити лот
@@ -1501,11 +1512,16 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     [Arguments]  ${bid_index}
     Reload Page
     Wait For Element With Reload  xpath=//span[@data-id="status" and contains(text(), 'Очікує ЕЦП')]  1
-    ${elements}=  Get Webelements  //a[@ng-click='act.openQualification(q)']
+#    ${elements}=  Get Webelements  //a[@ng-click='act.openQualification(q)']
+#    ${count}=  Get_Length  ${elements}
+    ${elements}=  Get Webelements  //table[@class='bids']//tbody//tr
     ${count}=  Get_Length  ${elements}
+
     Run Keyword If  ${count} == 1  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])
-    Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])[${bid_index}]
+#    Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])[${bid_index}]
+    Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//table[@class='bids']//tbody//tr)[${bid_index}]//a[@ng-click='act.openQualification(q)']
     Wait For Ajax
+
     Wait Visibility And Click Element  xpath=//button[@data-id='addQualFileEcp']
     Sleep  2s
     Select Window  name=signWin
@@ -3574,7 +3590,17 @@ Get Item Number
 
 Перевести тендер на статус очікування обробки мостом
     [Arguments]  ${username}  ${tender_uaid}
-    Fail  Test not ready
+    privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    Wait Until Keyword Succeeds  15min  15s  Дочекатися зміни статусу тендера на  active.stage2.pending
+
+
+Дочекатися зміни статусу тендера на
+    [Arguments]  ${status}
+    Reload Page
+    Wait Until Element Is Visible  ${tender_data_status}  ${COMMONWAIT}
+    ${current_status}=  Get Element Attribute  ${tender_data_status}@data-tender-status
+    Should Be Equal  active.stage2.pending  ${current_status}  msg=Statuses are not equal
+
 
 Активувати другий етап
     [Arguments]  ${username}  ${tender_uaid}
