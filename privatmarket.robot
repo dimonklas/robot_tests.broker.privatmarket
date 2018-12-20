@@ -1431,7 +1431,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     #Допустити до аукциону
     Wait Visibility And Click Element  xpath=//button[@data-id='setQualStatusActive']
     Sleep  1s
-    Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]
+    Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]  ${COMMONWAIT}
     Підписати ЕЦП  ${index}
 
 
@@ -1537,10 +1537,10 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 #    Wait Element Visibility And Input Text  id=PKeyPassword  12345677
     Wait Element Visibility And Input Text  id=PKeyPassword  1111qqqq
     Wait Visibility And Click Element  id=PKeyReadButton
-    Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'Ключ успішно завантажено')]
+    Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'Ключ успішно завантажено')]  ${COMMONWAIT}
     Wait Visibility And Click Element  id=SignDataButton
 #    Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'ok')]
-    Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'Ок')]
+    Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'Ок')]  ${COMMONWAIT}
     Close Window
     Select Window
 
