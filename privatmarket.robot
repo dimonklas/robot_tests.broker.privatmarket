@@ -3438,7 +3438,9 @@ Get Item Number
 
 Отримати інформацію з пропозиції status
     ${value}=  Отримати текст елемента  xpath=//tr[contains(@ng-repeat, 'currBids[lot.id] ')]//td[4]
-    Run Keyword If  '${value}' != 'Недійсна' and 'після редагування інформації про тендер' in '${TEST_NAME}'  Wait Until Keyword Succeeds  10min  30s  Дочекатися зміни статусу пропозиції
+    ${value}=  Run Keyword If
+    ...  '${value}' != 'Недійсна' and 'після редагування інформації про тендер' in '${TEST_NAME}'  Wait Until Keyword Succeeds  10min  30s  Дочекатися зміни статусу пропозиції
+    ...  ELSE  Set Variable  ${value}
     ${value}=  Set Variable If  '${value}' == 'Недійсна'  invalid  ${value}
     [Return]  ${value}
 
