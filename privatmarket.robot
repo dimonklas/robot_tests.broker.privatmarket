@@ -1410,16 +1410,18 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ${elements}=  Get Webelements  //table[@class='bids']//tbody//tr
     ${count}=  Get_Length  ${elements}
 
-    ${active_bids}=  Get Webelements  //table[@class='bids']//tbody//tr//td[2]//a
+    ${active_bids}=  Get Webelements  //table[@class='bids']//tbody//tr//td[2]//a[@ng-click='act.openQualification(q)']
     ${count_active}=  Get_Length  ${active_bids}
 
     ${diff}=  Evaluate  ${count}-${count_active}
-    ${new_index}=  Evaluate  ${count_active}+${diff}
-    ${index}=  Set Variable If  ${diff}>0  ${new_index}  ${index}
+#    ${new_index}=  Evaluate  ${count_active}+${diff}
+#    ${index}=  Set Variable If  ${diff}>0  ${new_index}  ${index}
 
     Run Keyword If  ${count} == 1  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])
 #    Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])[${index}]
-    Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//table[@class='bids']//tbody//tr)[${index}]//a[@ng-click='act.openQualification(q)']
+    Run Keyword If  ${count} > 1 and ${diff} == 0  Wait Visibility And Click Element  xpath=(//table[@class='bids']//tbody//tr)[${index}]//a[@ng-click='act.openQualification(q)']
+    Run Keyword If  ${count} > 1 and ${diff} > 0 and ${count_active} == 1  Wait Visibility And Click Element  xpath=//a[@ng-click='act.openQualification(q)']
+    Run Keyword If  ${count} > 1 and ${diff} > 0 and ${count_active} > 1  Wait Visibility And Click Element  xpath=(//table[@class='bids']//tbody//tr)[last()]//a[@ng-click='act.openQualification(q)']
     Wait For Ajax
 
     Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
