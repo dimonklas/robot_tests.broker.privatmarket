@@ -1410,6 +1410,13 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ${elements}=  Get Webelements  //table[@class='bids']//tbody//tr
     ${count}=  Get_Length  ${elements}
 
+    ${active_bids}=  Get Webelements  //table[@class='bids']//tbody//tr//td[2]//a
+    ${count_active}=  Get_Length  ${active_bids}
+
+    ${diff}=  Evaluate  ${count}-${count_active}
+    ${new_index}=  Evaluate  ${count_active}+${diff}
+    ${index}=  Set Variable If  ${diff}>0  ${new_index}  ${index}
+
     Run Keyword If  ${count} == 1  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])
 #    Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//a[@ng-click='act.openQualification(q)'])[${index}]
     Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//table[@class='bids']//tbody//tr)[${index}]//a[@ng-click='act.openQualification(q)']
@@ -1469,6 +1476,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait Visibility And Click Element  xpath=//button[@data-id='btn-close']
     Sleep  5s
     Підписати ЕЦП  ${index}
+    Sleep  120s
 
 
 Видалити лот
@@ -1506,7 +1514,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]  ${COMMONWAIT}
 
     Wait Visibility And Click Element  xpath=(//button[@data-id='btn-close'])[last()]
-    Sleep  30s
+    Sleep  120s
 
 
 Підписати ЕЦП
