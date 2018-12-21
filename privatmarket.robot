@@ -3602,8 +3602,9 @@ Get Item Number
 
 Перевести тендер на статус очікування обробки мостом
     [Arguments]  ${username}  ${tender_uaid}
-    privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-    Wait Until Keyword Succeeds  15min  15s  Дочекатися зміни статусу тендера на  active.stage2.pending
+    ${status}=  Run Keyword And Return Status  Wait Until Element Is Visible  ${tender_data_title}  5s
+    Run Keyword If  '${status}' == 'False'  privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    Wait Until Keyword Succeeds  10min  10s  Дочекатися зміни статусу тендера на  active.stage2.waiting
 
 
 Дочекатися зміни статусу тендера на
@@ -3611,7 +3612,7 @@ Get Item Number
     Reload Page
     Wait Until Element Is Visible  ${tender_data_status}  ${COMMONWAIT}
     ${current_status}=  Get Element Attribute  ${tender_data_status}@data-tender-status
-    Should Be Equal  active.stage2.pending  ${current_status}  msg=Statuses are not equal
+    Should Be Equal  ${status}  ${current_status}  msg=Statuses are not equal
 
 
 Активувати другий етап
