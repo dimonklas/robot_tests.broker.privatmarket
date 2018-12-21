@@ -1440,7 +1440,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Sleep  1s
     Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]  ${COMMONWAIT}
     Підписати ЕЦП  ${index}
-    Sleep  120s
+    Sleep  60s
 
 
 Відхилити кваліфікацію
