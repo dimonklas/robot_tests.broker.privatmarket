@@ -1537,6 +1537,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Wait Visibility And Click Element  xpath=//button[@data-id='addQualFileEcp']
     Sleep  2s
     Select Window  name=signWin
+    Wait Until Keyword Succeeds  2min  10s  Дочекатися завантаження сторінки підписання ЕЦП
     Wait Until Element Is Visible  id=CAsServersSelect
     Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[8]
 #    Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[19]
@@ -2971,7 +2972,7 @@ Get Item Number
     Wait Visibility And Click Element  xpath=//select[@id='resolutionType']/option[@value='string:${answer_data.data.resolutionType}']
     Wait Element Visibility And Input Text  css=textarea[data-id='user-resolution']  ${answer_data.data.resolution}
     Wait Visibility And Click Element  xpath=//button[@data-id='btn-send-complaint-resolution']
-    Sleep  120s
+    Sleep  30s
 
 
 Відповісти на вимогу про виправлення умов лоту
@@ -3025,7 +3026,7 @@ Get Item Number
     ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'lot-parts')]@class
     Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
 
-    Run Keyword If  'openua_award_complaint' in '${scenarios_name}'
+    Run Keyword If  'openua_award_complaint' in '${scenarios_name}' or '${mode}' == 'openua'
     ...  Run Keywords
     ...  Wait Until Keyword Succeeds  10min  10s  Дочекатися можливості завантажити ЕЦП
     ...  AND  Завантажити ЕЦП
@@ -3034,6 +3035,20 @@ Get Item Number
 #    ...  AND  Завантажити ЕЦП
     Reload Page
     Sleep  180s
+
+
+Скасування рішення кваліфікаційної комісії
+    [Arguments]  ${username}  ${tender_uaid}  ${award_num}
+    Reload Page
+    Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'lot-parts')]  ${COMMONWAIT}
+    ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'lot-parts')]@class
+    Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
+    Wait Visibility And Click Element  xpath=//span[contains(@ng-if,'CancelAwardDecision')]
+#    Wait Element Visibility And Input Text  xpath=//textarea[@data-id='decline-description']  ${comment}
+    Wait Visibility And Click Element  xpath=//button[@data-id='btn-cancel-qualification-or-award']
+    Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]  ${COMMONWAIT}
+    Click Element  xpath=//button[@data-id='btn-close']
+    Sleep  120s
 
 
 Дочекатися можливості завантажити ЕЦП
