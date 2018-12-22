@@ -1393,7 +1393,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Run Keyword And Ignore Error  Execute Javascript  document.querySelector(".files-upload input[type='file']").class = ''
     Sleep  1s
     Choose File  xpath=//div[@class='files-upload']//input[@type='file']  ${filePath}
-    Sleep  5s
+    Sleep  120s
 
 
 Підтвердити кваліфікацію
@@ -1700,6 +1700,26 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Sleep  1s
     Run Keyword  Завантажити ЕЦП
     Sleep  3min
+
+
+Редагувати угоду
+    [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${field_name}  ${value}
+    Fail  Ключевое слово не реализовано
+
+
+Встановити дату підписання угоди
+    [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${dateSigned}
+    Fail  Ключевое слово не реализовано
+
+
+Вказати період дії угоди
+    [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${startDate}  ${endDate}
+    Fail  Ключевое слово не реализовано
+
+
+Завантажити документ в угоду
+    [Arguments]  ${username}  ${file_path}  ${tender_uaid}  ${contract_num}
+    Fail  Ключевое слово не реализовано
 
 
 Отримати інформацію зі сторінки
