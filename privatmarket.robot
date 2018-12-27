@@ -1393,7 +1393,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Run Keyword And Ignore Error  Execute Javascript  document.querySelector(".files-upload input[type='file']").class = ''
     Sleep  1s
     Choose File  xpath=//div[@class='files-upload']//input[@type='file']  ${filePath}
-    Sleep  120s
+    Sleep  180s
 
 
 Підтвердити кваліфікацію
