@@ -92,6 +92,7 @@ ${tender_data_lot_question.answer}  //div[@data-id='lot-question-answer']//div[@
 ${tender_data_lot_question.questions[0].title}  //span[contains(@class, 'question-title')]
 ${tender_data_lot_question.questions[0].description}  (//div[@class='question-div']/div[1])[1]
 ${tender_data_lot_question.questions[0].answer}  (//div[@class='question-div']/div[1])[2]
+${tender_data_lot_question.questions[2].answer}  //div[@data-id='lot-question-answer']//div[@class='question-div']/div[1]
 
 ${tender_data_feature.featureOf}  /../../../*[1]
 
@@ -1761,7 +1762,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 #    Run Keyword And Return If  '${field_name}' == 'lots[0].auctionPeriod.startDate'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'questions[0].title'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'questions[0].description'  Отримати інформацію з ${field_name}  ${field_name}
-    Run Keyword And Return If  '${field_name}' == 'questions[0].answer'  Отримати інформацію з ${field_name}  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'questions[0].answer' or '${field_name}' == 'questions[2].answer'  Отримати інформацію з questions.answer  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'contracts[0].status' or '${field_name}' == 'contracts[1].status'  Отримати статус договору  ${field_name}
     Run Keyword And Return If  'endDate' in '${field_name}' or 'startDate' in '${field_name}'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'agreementDuration'  Отримати інформацію з ${field_name}  ${field_name}
@@ -1791,10 +1792,10 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     [Return]  ${result}
 
 
-Отримати інформацію з questions[0].answer
+Отримати інформацію з questions.answer
     [Arguments]  ${field_name}
     Wait For Element With Reload  ${tender_data_lot_question.${field_name}}  1
-    ${result}=  Отримати текст елемента  ${element_name}
+    ${result}=  Отримати текст елемента  ${tender_data_lot_question.${field_name}}
     [Return]  ${result}
 
 
