@@ -3053,7 +3053,7 @@ Get Item Number
     ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'lot-parts')]@class
     Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
 
-    Run Keyword If  'openua_award_complaint' in '${scenarios_name}' or '${mode}' == 'openua' or '${mode}' == 'openeu'
+    Run Keyword If  'openua_award_complaint' in '${scenarios_name}' or '${mode}' == 'openua' or '${mode}' == 'openeu' or '${mode}' == 'open_framework'
     ...  Run Keywords
     ...  Wait Until Keyword Succeeds  10min  10s  Дочекатися можливості завантажити ЕЦП
     ...  AND  Завантажити ЕЦП
