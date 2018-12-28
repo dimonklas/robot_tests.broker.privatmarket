@@ -1545,7 +1545,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Sleep  2s
     Select Window  name=signWin
     Wait Until Keyword Succeeds  2min  10s  Дочекатися завантаження сторінки підписання ЕЦП
-    Wait Until Element Is Visible  id=CAsServersSelect
+    Wait Until Element Is Visible  id=CAsServersSelect  ${COMMONWAIT}
     Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[8]
 #    Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[19]
 #    ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/boss.jks
