@@ -3088,6 +3088,7 @@ Get Item Number
 
 
 Завантажити ЕЦП
+    Sleep  10s
     Select Window  title=sign worker
     Wait Until Keyword Succeeds  2min  10s  Дочекатися завантаження сторінки підписання ЕЦП
     Wait Until Element Is Visible  css=#CAsServersSelect  ${COMMONWAIT}
