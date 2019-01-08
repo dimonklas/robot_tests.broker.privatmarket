@@ -322,9 +322,10 @@ ${contracting_data_milestones[2].status}  xpath=//div[@data-type='reporting']//d
 Пошук об’єкта МП по ідентифікатору
   [Arguments]  ${user_name}  ${tender_id}
   ${changed_id}=  Get Regexp Matches  ${tender_id}  (.+)-\\d+$  1
-  ${tender_id}=  Set Variable If  'Відображення опису активу' in '${TEST_NAME}'  ${changed_id[0]}
-    ...  'активувати договір' in '${TEST_NAME}' and 'Owner' in '${user_name}'  ${changed_id[0]}
-    ...  ${tender_id}
+  ${tender_id}=  Set Variable If
+  ...  "Відображення опису активу" in "${TEST_NAME}"  ${changed_id[0]}
+  ...  "активувати договір" in "${TEST_NAME}" and "Owner" in "${user_name}"  ${changed_id[0]}
+  ...  ${tender_id}
   Wait For Auction  ${tender_id}
   Wait For Ajax
   Wait Enable And Click Element  css=div[tid='${tender_id}']
@@ -579,6 +580,7 @@ Check If Question Is Uploaded
   ${os}=  Evaluate  platform.system()  platform
   Run Keyword If  'без кваліфікації' in '${TEST NAME}'  Fail  Is not implemented yet
   #дождаться появления поля ввода ссуммы только в случае выполнения первого позитивного теста
+  Wait For Element With Reload  css=button[tid='createBid']
   Run Keyword Unless  'Неможливість подати цінову' in '${TEST NAME}' or 'подати повторно цінову' in '${TEST NAME}'
   ...  Wait Until Element Is Enabled  css=button[tid='createBid']  ${COMMONWAIT}
   Click Button  css=button[tid='createBid']
