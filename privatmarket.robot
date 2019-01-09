@@ -3276,7 +3276,7 @@ Get Item Number
     ...  ELSE  Wait Visibility And Click Element  xpath=//span[contains(@data-id, 'complaint-id') and contains(., '${complaintID}')]/../../..//button[@data-id='complaint-not-satisfied']
     Sleep  1s
     Wait Visibility And Click Element  css=button[data-id='btn-ok']
-    Sleep  180s
+    Sleep  360s
 
 
 Підтвердити вирішення вимоги про виправлення умов лоту
