@@ -4,9 +4,12 @@ Library  Selenium2Library
 Library  privatmarket_service.py
 Library  Collections
 Library  BuiltIn
+Library  DebugLibrary
 
 *** Variables ***
 ${COMMONWAIT}  12
+
+${progress_bar}  xpath=//div[contains(@class,'progress-bar')]
 
 ${tender_data_assetID}  xpath=//div[@tid='assetID']
 ${tender_data_title}  xpath=//div[@tid='data.title']
@@ -25,13 +28,12 @@ ${lot_data_description}  xpath=//div[@tid='description']
 
 ${lot_data_decisions[0].decisionID}  xpath=//div[@tid='decision.0.decisionID']
 ${lot_data_decisions[0].decisionDate}  xpath=//div[@tid='decision.0.decisionDate']
-${lot_data_decisions[1].title}  xpath=//div[@tid='decision.1.title']
-${lot_data_decisions[1].decisionDate}  xpath=//div[@tid='decision.1.decisionDate']
-${lot_data_decisions[1].decisionID}  xpath=//div[@tid='decision.1.decisionID']
+${lot_data_decisions[1].title}  xpath=(//div[@tid='decision.0.title'])[2]                   # //div[@tid='decision.1.title']
+${lot_data_decisions[1].decisionDate}  xpath=(//div[@tid='decision.0.decisionDate'])[2]     # //div[@tid='decision.1.decisionDate']
+${lot_data_decisions[1].decisionID}  xpath=(//div[@tid='decision.0.decisionID'])[2]         # //div[@tid='decision.1.decisionID']
 
 ${lot_data_assets}  xpath=//div[@tid='asset']
-
-
+${lot_data_relatedProcesses[0].relatedProcessID}  xpath=//div[@tid='asset']
 
 ${lot_data_auctions[0].auctionID}  css=div[tid='auction.0.auctionID']
 ${procedure_data_cancellations[0].reason}  css=div[tid='cancellations.reason']
@@ -709,7 +711,8 @@ Check If Question Is Uploaded
 
 Внести зміни в умови проведення аукціону
   [Arguments]  ${username}  ${tender_id}  ${field_name}  ${value}  ${auction_index}
-  privatmarket.Пошук лоту по ідентифікатору  ${user_name}  ${tender_id}
+  ${status}=  Run Keyword And Return Status  Wait Until Element Is Visible  ${tender_data_title}  5s
+  Run Keyword If  '${status}' == 'False'  privatmarket.Пошук лоту по ідентифікатору  ${user_name}  ${tender_id}
   Reload Page
   Sleep  5s
   Wait Enable And Click Element  xpath=//button[@tid='btn.modifyLot']
@@ -1003,7 +1006,7 @@ Get Cancellation Status
   Choose File  css=input[id='input-doc-info']  ${file_path}
   Sleep  10s
   Wait Until Element Is Visible  xpath=(//select[@tid="doc.type"])[last()]
-  Select From List  xpath=(//select[@tid="doc.type"])[last()]  string:technicalSpecifications
+  Select From List  xpath=(//select[@tid="doc.type"])[last()]  string:clarifications
   Sleep  2s
 
 
@@ -1031,7 +1034,9 @@ Get Cancellation Status
   Wait Until Element Is Visible  css=select[tid="doc.type"]
   Select From List  css=select[tid="doc.type"]  string:illustration
   Sleep  2s
+  Завантажити документ про зміни  ${username}  ${tender_id}
   Wait Enable And Click Element  css=button[tid="btn.createInfo"]
+  Wait Until Element Is Not Visible  ${progress_bar}  ${COMMONWAIT}
 
 
 Завантажити документ в об'єкт МП з типом
@@ -1058,7 +1063,9 @@ Get Cancellation Status
   Wait Until Element Is Visible  xpath=(//select[@tid="doc.type"])[last()]
   Select From List  xpath=(//select[@tid="doc.type"])[last()]  string:${doc_type}
   Sleep  2s
+  Завантажити документ про зміни  ${username}  ${tender_id}
   Wait Enable And Click Element  css=button[tid="btn.createInfo"]
+  Wait Until Element Is Not Visible  ${progress_bar}  ${COMMONWAIT}
 
 
 Завантажити документ в умови проведення аукціону
@@ -1362,6 +1369,7 @@ Wait For Ajax
 
 Wait Enable And Click Element
   [Arguments]  ${elementLocator}
+  Wait For Ajax
   Wait Until Element Is Visible  ${elementLocator}  ${COMMONWAIT}
   Wait Until Element Is Enabled  ${elementLocator}  ${COMMONWAIT}
   Click Element  ${elementLocator}
@@ -1418,8 +1426,9 @@ Get New Auction Date
 
 Змінити дату аукціону
   [Arguments]  ${value}
+  ${value}=  Get Regexp Matches  ${value}  ^\\d{2}
   Wait Enable And Click Element  xpath=//button[@tid='auction.period.btn']
-  Wait Enable And Click Element  xpath=(//button[@ng-click='select(dt.date)']//span)[text()='${value}']
+  Wait Enable And Click Element  xpath=(//button[@ng-click='select(dt.date)']//span)[text()='${value[0]}']
   Wait Enable And Click Element  css=button[tid="btn.createInfo"]
 
 
