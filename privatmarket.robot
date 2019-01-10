@@ -199,7 +199,8 @@ ${contracting_data_milestones[2].status}  xpath=//div[@data-type='reporting']//d
   ${scenarios_name}=  get_scenarios_name
   ${accelerator}=  get_accelerator  ${scenarios_name}
   Execute Javascript  angular.prozorroaccelerator=${accelerator};
-  Execute Javascript  angular.prozorroauctionstartdelay = (30+180)*60*1000;
+#  Execute Javascript  angular.prozorroauctionstartdelay = (30+180)*60*1000;
+  Execute Javascript  angular.prozorroauctionstartdelay = (30+110)*60*1000;
   Click Element  xpath=//button[@tid='btn.createaInfo']
   Wait For Ajax
   Execute Javascript  document.querySelector("span[tid='lotID']").className = ''
