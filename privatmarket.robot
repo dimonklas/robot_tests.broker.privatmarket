@@ -200,7 +200,7 @@ ${contracting_data_milestones[2].status}  xpath=//div[@data-type='reporting']//d
   ${accelerator}=  get_accelerator  ${scenarios_name}
   Execute Javascript  angular.prozorroaccelerator=${accelerator};
 #  Execute Javascript  angular.prozorroauctionstartdelay = (30+180)*60*1000;
-  Execute Javascript  angular.prozorroauctionstartdelay = (30+110)*60*1000;
+  Execute Javascript  angular.prozorroauctionstartdelay = (30+108)*60*1000;
   Click Element  xpath=//button[@tid='btn.createaInfo']
   Wait For Ajax
   Execute Javascript  document.querySelector("span[tid='lotID']").className = ''
@@ -1130,8 +1130,8 @@ Get Cancellation Status
   Sleep  2s
   Choose File  css=input[id='docsProtocolI']  ${file_path}
   Wait For Ajax
-  Wait Until Element Is Visible  css=button[tid='confirmProtocol']  ${COMMONWAIT}
-  Click Element  css=button[tid='confirmProtocol']
+  Wait Until Element Is Visible  css=button[tid='addProtocol']  ${COMMONWAIT}
+  Click Element  css=button[tid='addProtocol']
   Wait For Ajax
   Wait Until Element Is Visible  css=button[tid='defaultOk']  ${COMMONWAIT}
   Click Element  css=button[tid='defaultOk']
@@ -1140,6 +1140,8 @@ Get Cancellation Status
 Підтвердити постачальника
   [Arguments]  ${username}  ${tender_id}  ${award_num}
   privatmarket.Пошук тендера по ідентифікатору  ${user_name}  ${tender_id}
+  Wait Until Element Is Visible  css=button[tid='addProtocol']  ${COMMONWAIT}
+  Click Element  css=button[tid='addProtocol']
 
 
 Завантажити угоду до тендера
@@ -1172,6 +1174,7 @@ Get Cancellation Status
   [Arguments]  ${username}  ${tender_id}  ${contract_num}
   Wait For Element With Reload  css=label[tid="contractActivate"]  1
   Click Element  css=label[tid="contractActivate"]
+  Wait Visibility And Click Element  css=button[tid='defaultOk']
 
 
 Завантажити протокол погодження в авард
@@ -1181,15 +1184,16 @@ Get Cancellation Status
   Sleep  2s
   Choose File  css=input[id='docsProtocolI']  ${filepath}
   Wait For Ajax
+  Wait Visibility And Click Element  xpath=//button[@tid='addProtocol']
+  Wait Until Element Is Visible  css=button[tid='defaultOk']  ${COMMONWAIT}
+  Click Element  css=button[tid='defaultOk']
 
 
 Активувати кваліфікацію учасника
   [Arguments]  ${username}  ${tender_uaid}
-  Wait Until Element Is Visible  css=button[tid='confirmProtocol']  ${COMMONWAIT}
-  Click Element  css=button[tid='confirmProtocol']
+  Wait Until Element Is Visible  xpath=//button[@tid='addProtocol']  ${COMMONWAIT}
+  Click Element  xpath=//button[@tid='addProtocol']
   Wait For Ajax
-  Wait Until Element Is Visible  css=button[tid='defaultOk']  ${COMMONWAIT}
-  Click Element  css=button[tid='defaultOk']
 
 
 #############################    CONTRACT_MANAGEMENT    ################################################################
