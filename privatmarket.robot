@@ -1258,6 +1258,7 @@ Change To Valid Date
   [Arguments]  ${username}  ${contract_id}  ${dateMet}
   sleep  1s
   ${date}=  Get New Auction Date  ${dateMet}
+  ${date}=  Change To Valid Date  ${date}
   ${hours}=  Get Regexp Matches  ${dateMet}  T(\\d{2})  1
   ${mins}=  Get Regexp Matches  ${dateMet}  T\\d{2}:(\\d{2})  1
   Wait For Element With Reload  xpath=(//input[@tid='approvalMilestoneDateMet'])[1]  1
@@ -1271,6 +1272,7 @@ Change To Valid Date
   [Arguments]  ${username}  ${contract_id}  ${dateMet}
   sleep  1s
   ${date}=  Get New Auction Date  ${dateMet}
+  ${date}=  Change To Valid Date  ${date}
   ${hours}=  Get Regexp Matches  ${dateMet}  T(\\d{2})  1
   ${mins}=  Get Regexp Matches  ${dateMet}  T\\d{2}:(\\d{2})  1
   Wait For Element With Reload  xpath=//input[@tid='financingMilestoneDateMet']  1
