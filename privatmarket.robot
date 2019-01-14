@@ -200,7 +200,7 @@ ${contracting_data_milestones[2].status}  xpath=//div[@data-type='reporting']//d
   ${accelerator}=  get_accelerator  ${scenarios_name}
   Execute Javascript  angular.prozorroaccelerator=${accelerator};
 #  Execute Javascript  angular.prozorroauctionstartdelay = (30+180)*60*1000;
-  Execute Javascript  angular.prozorroauctionstartdelay = (30+108)*60*1000;
+  Execute Javascript  angular.prozorroauctionstartdelay = (30+107)*60*1000;
   Click Element  xpath=//button[@tid='btn.createaInfo']
   Wait For Ajax
   Execute Javascript  document.querySelector("span[tid='lotID']").className = ''
@@ -1222,6 +1222,7 @@ Get Cancellation Status
 Вказати дату отримання оплати
   [Arguments]  ${username}  ${contract_id}  ${dateMet}  ${milestone_index}
   ${date}=  Get New Auction Date  ${dateMet}
+  ${date}=  Change To Valid Date  ${date}
   ${hours}=  Get Regexp Matches  ${dateMet}  T(\\d{2})  1
   ${mins}=  Get Regexp Matches  ${dateMet}  T\\d{2}:(\\d{2})  1
   Wait For Element With Reload  xpath=//input[@tid='financingMilestoneDateMet']  1
@@ -1229,6 +1230,16 @@ Get Cancellation Status
   Input Text  css=input[ng-model='hours']  ${hours}
   Input Text  css=input[ng-model='minutes']  ${mins}
   Wait Enable And Click Element  xpath=//button[@tid='btn.milestone.success']
+
+
+Change To Valid Date
+    [Arguments]  ${date}
+    ${match}=  Get Regexp Matches  ${date}  ^\\d{2}
+    ${day}=  Convert To Integer  ${match[0]}
+    ${newDate}=  Evaluate  ${day}-7
+    ${newDate}=  Convert To String  ${newDate}
+    ${result}=  Replace String Using Regexp  ${date}  ^\\d{2}  ${newDate}
+    [Return]  ${result}
 
 
 Завантажити наказ про завершення приватизації
