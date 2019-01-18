@@ -3510,7 +3510,7 @@ Get Item Number
 
 
 Завантажити документ в ставку
-    [Arguments]  ${username}  ${filePath}  ${tenderId}  ${doc_type}=documents
+    [Arguments]  ${username}  ${filePath}  ${tenderId}  ${doc_type}=documents  ${doc_type}=${None}
     ${status}=  Run Keyword And Return Status  Wait Until Element Is Visible  ${tender_data_title}  5s
     Run Keyword If  '${status}' == 'False'  privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tenderId}
 #    privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tenderId}
