@@ -7,7 +7,7 @@ Library  BuiltIn
 Library  DebugLibrary
 
 *** Variables ***
-${COMMONWAIT}  12
+${COMMONWAIT}  30
 
 ${progress_bar}  xpath=//div[contains(@class,'progress-bar')]
 
