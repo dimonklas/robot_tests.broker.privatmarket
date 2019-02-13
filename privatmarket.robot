@@ -335,7 +335,7 @@ ${contracting_data_milestones[2].status}  xpath=//div[@data-type='reporting']//d
   Sleep  3s
   @{titles}=  List Windows
   ${count_titles}=  Get length   ${titles}
-  Run Keyword If  ${count_titles} > 1  Select Window  ${titles[1]}
+  Run Keyword If  ${count_titles} > 1  Select Window  ${titles[${count_titles}-1]}
   Wait Until element Is Visible  css=div[tid='data.title']  ${COMMONWAIT}
 
 
