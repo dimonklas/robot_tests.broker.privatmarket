@@ -654,7 +654,7 @@ Check If Question Is Uploaded
   Wait For Ajax
   Wait Visibility And Click Element  css=div#bid button[tid='createBid']
   Wait Visibility And Click Element  css=button[tid='saveAndConfirm']
-  Wait Until Page Contains  Ставка успішно збережена  60
+  Wait Until Page Contains  Документи додані до пропозиції  60
   Wait For Ajax
   Wait Until Element Is Enabled  xpath=//button[@tid='defaultOk']  ${COMMONWAIT}
   Click Element  xpath=//button[@tid='defaultOk']
