@@ -9,7 +9,7 @@ Library  op_robot_tests.tests_files.service_keywords
 
 
 *** Variables ***
-${COMMONWAIT}  40s
+${COMMONWAIT}  60s
 ${locator_tenderSearch.searchInput}  css=input#search-query-input
 ${locator_tender.switchToDemo}  css=a#test-model-switch
 ${locator_tender.switchToDemoMessage}  css=.test-mode-popup-content.ng-binding
@@ -895,6 +895,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ${item_criterion_count}=  Get Length  ${item_enums}
 
     : FOR  ${index}  IN RANGE  0  ${item_criterion_count}
+
     \  Run Keyword Unless  '${index}' == '0'  Wait Visibility And Click Element  css=[data-id='item'] [data-id='criteria'] button[data-id='actAdd']
     \  ${item_criterion_value}=  privatmarket_service.get_percent  ${item_enums[${index}].value}
     \  ${item_criterion_value}=  Convert to String   ${item_criterion_value}
@@ -2824,6 +2825,7 @@ Try Search Tender
 Check Current Mode New Realisation
     [Arguments]  ${education_type}=${True}
     privatmarket.Оновити сторінку з тендером
+    Wait Until Element Is Not Visible  xpath=//*[@class='spinner']  ${COMMONWAIT}
     Wait Until Element Is Visible  ${locator_tender.switchToDemo}  ${COMMONWAIT}
     Wait Visibility And Click Element  ${locator_tender.switchToDemo}
     Wait For Ajax
