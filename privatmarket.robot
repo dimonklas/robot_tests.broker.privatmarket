@@ -1451,7 +1451,7 @@ Get New Auction Date
   [Arguments]  ${value}
   ${value}=  Get Regexp Matches  ${value}  ^\\d{2}
   Wait Enable And Click Element  xpath=//button[@tid='auction.period.btn']
-  Wait Enable And Click Element  xpath=(//button[@ng-click='select(dt.date)']//span)[text()='${value[0]}']
+  Wait Enable And Click Element  xpath=(//button[@ng-click='select(dt.date)']//span)[text()='${value[0]}'][last()]
   Wait Enable And Click Element  css=button[tid="btn.createInfo"]
 
 
