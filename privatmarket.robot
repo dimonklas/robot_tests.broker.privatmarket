@@ -1523,7 +1523,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 Підписати ЕЦП
     [Arguments]  ${bid_index}
     Reload Page
-    Wait For Element With Reload  xpath=//span[@data-id="status" and contains(text(), 'Очікує ЕЦП')]  1
+    Wait For Element With Reload  xpath=//span[@data-id="status" and contains(text(), 'Очікує ЕЦП / КЕП')]  1
 
     ${elements}=  Get Webelements  //table[@class='bids']//tbody//tr
     ${count}=  Get_Length  ${elements}
@@ -3085,8 +3085,11 @@ Get Item Number
     Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'lot-parts')]
     ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'lot-parts')]@class
     Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
-    Wait Visibility And Click Element  xpath=(//img[contains(@ng-src,'icon-plus')])[last()]
-    Wait Visibility And Click Element  xpath=//div[contains(text(),'Пiдпис замовника')]/following-sibling::div[@data-id='no-ecp']
+    Wait Until Element Is Visible  xpath=//a[@data-id='status' and contains(text(),'Очікує ЕЦП / КЕП')]
+    Wait Visibility And Click Element  xpath=//a[@data-id='status' and contains(text(),'Очікує ЕЦП / КЕП')]/following-sibling::span
+    Wait Visibility And Click Element  xpath=//button[@data-id='addAwardFileEcp']
+#    Wait Visibility And Click Element  xpath=(//img[contains(@ng-src,'icon-plus')])[last()]
+#    Wait Visibility And Click Element  xpath=//div[contains(text(),'Пiдпис замовника')]/following-sibling::div[@data-id='no-ecp']
 
 
 Завантажити ЕЦП
