@@ -602,6 +602,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ...  ELSE IF  ${type} == '' and 'after_resolved_award_complaint' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '144')]
     ...  ELSE IF  ${type} == ''  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '1440')]
     ...  ELSE IF  ${type} == 'reporting'  no operation
+    ...  ELSE IF  'framework_agreement_SOROKA' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '43200')]
     ...  ELSE  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '1440')]
 
 #step 0
@@ -646,6 +647,7 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
     #skipAuction
     Run Keyword If  'quick(mode:fast-forward)' in ${mode}  Wait Visibility And Click Element  css=label[data-id='skip_auction']
+    Run Keyword If  'framework_agreement_SOROKA' in '${scenarios_name}'  Wait Visibility And Click Element  css=label[data-id='skip_auction']
 
     #cause
     Run Keyword If  ${type} == 'negotiation'
@@ -3012,7 +3014,7 @@ Get Item Number
 Завантажити документ рішення кваліфікаційної комісії
     [Arguments]  ${username}  ${document}  ${tender_uaid}  ${award_num}
     Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'lot-parts')]
-    Wait Until Keyword Succeeds  10min  10s  Дочекатися можливості завантажити документ рішення кваліфікаційної комісії
+    Wait Until Keyword Succeeds  10min  10s  Дочекатися можливості завантажити документ рішення кваліфікаційної комісії  ${award_num}
     Wait Visibility And Click Element  xpath=//div[@class='files-upload']//select[@class='form-block__select form-block__select_short']//option[2]
     Sleep  1s
     Wait Visibility And Click Element  xpath=//div[@class='files-upload']//select[@class='form-block__select ng-scope form-block__select_short']//option[3]
@@ -3024,9 +3026,11 @@ Get Item Number
 
 
 Дочекатися можливості завантажити документ рішення кваліфікаційної комісії
+    [Arguments]  ${award_num}
+    ${award_index}=  Evaluate  ${award_num}+1
     Reload Page
     Wait Visibility And Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
-    Wait Visibility And Click Element  xpath=//div[@class='lot-info ng-scope' and contains(.,'Кваліфікація учасників') ]//table[@class='bids']//a[@class='ng-binding']
+    Wait Visibility And Click Element  xpath=(//div[@class='lot-info ng-scope' and contains(.,'Кваліфікація учасників') ]//table[@class='bids']//a[@class='ng-binding'])[${award_index}]
     Wait Until Element Is Visible  xpath=//div[@class='files-upload']
 
 
@@ -3043,6 +3047,9 @@ Get Item Number
     ${scenarios_name}=  privatmarket_service.get_scenarios_name
 
     ${tender_type}=  Отримати інформацію з procurementMethodType
+
+    ${award_index}=  Evaluate  ${award_num}+1
+    Wait Visibility And Click Element  xpath=(//div[@class='lot-info ng-scope' and contains(.,'Кваліфікація учасників') ]//table[@class='bids']//a[@class='ng-binding'])[${award_index}]
 
     Run Keyword Unless  'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}' or 'belowThreshold' in '${tender_type}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
     Run Keyword Unless  'до переговорної процедури' in '${TEST_NAME}' or 'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}' or 'belowThreshold' in '${tender_type}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
@@ -3063,7 +3070,7 @@ Get Item Number
 #    ...  AND  Wait Visibility And Click Element  xpath=//div[contains(text(),'Пiдпис замовника')]/following-sibling::div[@data-id='no-ecp']
 #    ...  AND  Завантажити ЕЦП
     Reload Page
-    Sleep  180s
+    Sleep  120s
 
 
 Скасування рішення кваліфікаційної комісії
@@ -3078,6 +3085,12 @@ Get Item Number
     Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]  ${COMMONWAIT}
     Click Element  xpath=//button[@data-id='btn-close']
     Sleep  120s
+
+
+Затвердити постачальників
+    [Arguments]  ${username}  ${tender_uaid}
+    Wait For Element With Reload  xpath=//button[@data-id='finishQualBtn']  1
+    Click Element  xpath=//button[@data-id='finishQualBtn']
 
 
 Дочекатися можливості завантажити ЕЦП
