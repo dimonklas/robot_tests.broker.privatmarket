@@ -3398,8 +3398,9 @@ Get Item Number
     Wait Element Visibility And Input Text  css=input[data-id='email']  ${bid.data.tenderers[0].contactPoint.email}
     Click Button  css=button[data-id='save-bid-btn']
     Wait For Ajax
-    Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
-    Sleep  1s
+    Wait Visibility And Click Element  xpath=//span[contains(text(),'автоматично')]
+    Wait Visibility And Click Element  xpath=//button[contains(@class,'submit')]
+
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']
     Sleep  60s
 
