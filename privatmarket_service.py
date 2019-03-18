@@ -348,3 +348,38 @@ def is_click_button(item_index, items_count):
     if int(item_index) < int(items_count):
         return 'true'
     return status
+
+
+def get_milestones_title(title):
+    titles = {
+        u'підписання договору': 'signingTheContract',
+        u'поставка товару': 'deliveryOfGoods',
+        u'дата подання заявки': 'submissionDateOfApplications',
+        u'дата закінчення звітного періоду': 'endDateOfTheReportingPeriod',
+        u'дата виставлення рахунку': 'dateOfInvoicing',
+        u'виконання робіт': 'executionOfWorks',
+        u'надання послуг': 'submittingServices',
+        u'інша подія': 'anotherEvent'
+    }
+    title_name = titles.get(title)
+    return title_name
+
+
+def get_milestones_code(code):
+    codes = {
+        u'Аванс': 'prepayment',
+        u'Пiсляоплата': 'postpayment'
+    }
+    code_name = codes.get(code)
+    return code_name
+
+
+def get_milestones_duration_type(type):
+    types = {
+        u'робочих': 'working',
+        u'банківськіх': 'banking',
+        u'календарних': 'calendar'
+    }
+    type_name = types.get(type)
+    return type_name
+

@@ -175,6 +175,23 @@ ${tender_data_lots[0].minimalStepPercentage}  xpath=(//div[@ng-include='page.fin
 ${tender_data_lots[0].fundingKind}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[4]
 ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[3]
 
+${tender_data_milestones[0].code}  xpath=//milestone[1]//div[contains(text(),'Тип оплати')]//following-sibling::div
+${tender_data_milestones[0].title}  xpath=//milestone[1]//div[contains(text(),'Подія')]//following-sibling::div
+${tender_data_milestones[0].percentage}  xpath=//milestone[1]//div[contains(text(),'Розмір платежу')]//following-sibling::div
+${tender_data_milestones[0].duration.days}  xpath=//milestone[1]//div[contains(text(),'Період оплати')]//following-sibling::div
+${tender_data_milestones[0].duration.type}  xpath=//milestone[1]//div[contains(text(),'Тип днів')]//following-sibling::div
+
+${tender_data_milestones[1].code}  xpath=//milestone[2]//div[contains(text(),'Тип оплати')]//following-sibling::div
+${tender_data_milestones[1].title}  xpath=//milestone[2]//div[contains(text(),'Подія')]//following-sibling::div
+${tender_data_milestones[1].percentage}  xpath=//milestone[2]//div[contains(text(),'Розмір платежу')]//following-sibling::div
+${tender_data_milestones[1].duration.days}  xpath=//milestone[2]//div[contains(text(),'Період оплати')]//following-sibling::div
+${tender_data_milestones[1].duration.type}  xpath=//milestone[2]//div[contains(text(),'Тип днів')]//following-sibling::div
+
+${tender_data_milestones[2].code}  xpath=//milestone[3]//div[contains(text(),'Тип оплати')]//following-sibling::div
+${tender_data_milestones[2].title}  xpath=//milestone[3]//div[contains(text(),'Подія')]//following-sibling::div
+${tender_data_milestones[2].percentage}  xpath=//milestone[3]//div[contains(text(),'Розмір платежу')]//following-sibling::div
+${tender_data_milestones[2].duration.days}  xpath=//milestone[3]//div[contains(text(),'Період оплати')]//following-sibling::div
+${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(text(),'Тип днів')]//following-sibling::div
 
 
 *** Keywords ***
@@ -376,6 +393,16 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     \  Set Date In Item  ${index}  deliveryDate  endDate  ${items[${index}].deliveryDate.endDate}
 
 
+Вказати вид предмету закупівлі
+    [Arguments]  ${value}  ${index_xpath}
+    ${type}=  Set Variable If
+    ...  'goods' in '${value}'  Товар
+    ...  'works' in '${value}'  Роботи
+    ...  'services' in '${value}'  Послуга
+    ...  ${value}
+    Wait Visibility And Click Element  xpath=(//span[contains(text(),'${type}')])[${index_xpath}]/preceding-sibling::input[1]
+
+
 Внести зміни в план
     [Arguments]  ${user_name}  ${tenderId}  ${parameter}  ${value}
     Дочекатися зміни статусу  ${tenderId}
@@ -556,12 +583,15 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
 
 Створити тендер
     [Arguments]  ${username}  ${tender_data}
+    Set Global Variable  ${TENDER_DATA}  ${tender_data}
     ${presence}=  Run Keyword And Return Status  List Should Contain Value  ${tender_data.data}  lots
     @{lots}=  Run Keyword If  ${presence}  Get From Dictionary  ${tender_data.data}  lots
     ${presence}=  Run Keyword And Return Status  List Should Contain Value  ${tender_data.data}  items
     @{items}=  Run Keyword If  ${presence}  Get From Dictionary  ${tender_data.data}  items
     ${presence}=  Run Keyword And Return Status  List Should Contain Value  ${tender_data.data}  features
     @{features}=  Run Keyword If  ${presence}  Get From Dictionary  ${tender_data.data}  features
+    ${presence}=  Run Keyword And Return Status  List Should Contain Value  ${tender_data.data}  milestones
+    @{milestones}=  Run Keyword If  ${presence}  Get From Dictionary  ${tender_data.data}  milestones
 
     Wait Until Element Is Visible  ${locator_tenderSearch.searchInput}  ${COMMONWAIT}
     Check Current Mode New Realisation
@@ -691,6 +721,15 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Run Keyword Unless  ${type} == 'reporting'  Додати lots  ${lots}  ${items}  ${type}
 
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
+
+#Заповнити умови оплати для закупівлі
+    Run Keyword Unless  ${type} == 'esco'
+    ...  Run Keywords
+    ...  Wait Visibility And Click Element  css=label[for='financing_milistones_flag_yes']
+    ...  AND  Додати milestones  ${milestones}  ${type}
+
+    Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
+
     Run Keyword If  ${type} == 'negotiation'  Wait Until Element Is Visible  css=label[for='documentation_tender_yes']  ${COMMONWAIT}
     ...  ELSE IF  ${type} == 'reporting'  Wait Until Element Is Visible  css=section[data-id='step4']  ${COMMONWAIT}
     ...  ELSE  Wait Until Element Is Visible  css=section[data-id='step3']  ${COMMONWAIT}
@@ -784,6 +823,9 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     ${is_click}=  is_click_button  ${item_index}  ${items_count}
     Run Keyword If  '${is_click}' == 'true'  Wait Visibility And Click Element  xpath=(//button[@data-id='actAddItem'])[${lot_index}]
     Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//input[@data-id='description'])[${item_index}]  ${items[${index}].description}
+
+    Вказати вид предмету закупівлі  ${TENDER_DATA.data.mainProcurementCategory}  ${item_index}
+
     Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//input[@data-id='quantity'])[${item_index}]  ${items[${index}].quantity}
     ${unitName}=  Run Keyword If
     ...  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  privatmarket_service.get_unit_name  ${items[${index}].unit.name}
@@ -820,6 +862,22 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Set Date In Item  ${abs_item_index}  deliveryDate  endDate  ${items[${index}].deliveryDate.endDate}
     Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'
     ...  Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//input[@data-id='descriptionEn']  ${items[${index}].description_en}
+
+
+Додати milestones
+    [Arguments]  ${milestones}  ${type}
+    ${milestones_count}=  Get Length  ${milestones}
+    Wait For Ajax
+     :FOR   ${index}   IN RANGE  0  ${milestones_count}
+    \  ${elem_index}=  Evaluate  ${index}+1
+    \  Wait Visibility And Click Element  xpath=//button[@data-id='actAdd']
+    \  Wait Visibility And Click Element  xpath=(//select[@data-id='financing-milestone-code'])[${elem_index}]/option[contains(@value,'${milestones[${index}].code}')]
+    \  Wait Visibility And Click Element  xpath=(//select[@data-id='financing-milestone-title'])[${elem_index}]/option[contains(@value,'${milestones[${index}].title}')]
+    \  ${presence}=  Run Keyword And Return Status  List Should Contain Value  ${milestones[${index}]}  description
+    \  Run Keyword If  ${presence}  Wait Element Visibility And Input Text  xpath=(//textarea[@data-id='financing-milestone-description'])[${elem_index}]  ${milestones[${index}].description}
+    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='financing-milestone-duration-days'])[${elem_index}]  ${milestones[${index}].duration.days}
+    \  Wait Visibility And Click Element  xpath=(//select[@data-id='financing-milestone-duration-type'])[${elem_index}]/option[contains(@value,'${milestones[${index}].duration.type}')]
+    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='financing-milestone-percentage'])[${elem_index}]  ${milestones[${index}].percentage}
 
 
 Додати нецінові показники
@@ -1772,10 +1830,39 @@ ${tender_data_lots[0].yearlyPaymentsPercentageRange}  xpath=(//div[@ng-include='
     Run Keyword And Return If  'NBUdiscountRate' in '${field_name}'  Отримати інформацію з NBUdiscountRate  ${field_name}
     Run Keyword And Return If  'minimalStepPercentage' in '${field_name}'  Отримати інформацію з minimalStepPercentage  ${field_name}
     Run Keyword And Return If  'yearlyPaymentsPercentageRange' in '${field_name}'  Отримати інформацію з yearlyPaymentsPercentageRange  ${field_name}
+    Run Keyword And Return If  'milestones' in '${field_name}'  Отримати інформацію про умови оплати  ${field_name}
 
     Wait Until Element Is Visible  ${tender_data_${field_name}}
     ${result_full}=  Get Text  ${tender_data_${field_name}}
     ${result}=  Strip String  ${result_full}
+    [Return]  ${result}
+
+
+Отримати інформацію про умови оплати
+    [Arguments]  ${field_name}
+    Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'milestones')]
+    ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'milestones')]@class
+    Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=//a[contains(@ng-class, 'milestones')]
+
+    ${field_value}=  Отримати текст елемента  ${tender_data_${field_name}}
+
+    Run Keyword And Return If  'code' in '${field_name}'  privatmarket_service.get_milestones_code  ${field_value}
+    Run Keyword And Return If  'title' in '${field_name}'  privatmarket_service.get_milestones_title  ${field_value}
+    Run Keyword And Return If  'percentage' in '${field_name}'  Отримати інформацію з milestones.percentage  ${field_value}
+    Run Keyword And Return If  'duration.days' in '${field_name}'  Отримати інформацію з milestones.duration.days  ${field_value}
+    Run Keyword And Return If  'duration.type' in '${field_name}'  privatmarket_service.get_milestones_duration_type  ${field_value}
+
+
+Отримати інформацію з milestones.duration.days
+    [Arguments]  ${field_value}
+    ${result}=  Convert To Number  ${field_value}
+    [Return]  ${result}
+
+
+Отримати інформацію з milestones.percentage
+    [Arguments]  ${field_value}
+    ${percent}=  Remove String  ${field_value}  %
+    ${result}=  Convert To Number  ${percent}
     [Return]  ${result}
 
 
