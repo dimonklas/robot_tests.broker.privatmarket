@@ -240,14 +240,14 @@ ${contracting_data_milestones[2].status}  xpath=//div[@data-type='reporting']//d
   ${value}=  Convert To String  ${tender_data.value.amount}
   ${guarantee}=  Convert To String  ${tender_data.guarantee.amount}
   ${minimalStep}=  Convert To String  ${tender_data.minimalStep.amount}
-  ${registrationFee}=  Convert To String  ${tender_data.registrationFee.amount}
+#  ${registrationFee}=  Convert To String  ${tender_data.registrationFee.amount}
   Wait Enable And Click Element  css=input[tid='valueAddedTaxIncluded']
   Wait Until Element Is Visible  css=input[tid='auction.value']  ${COMMONWAIT}
   Input Text  css=input[tid='auction.value']  ${value}
   Input Text  css=input[tid='auction.guarantee']  ${guarantee}
   Input Text  css=input[tid='auction.minimalStep']  ${minimalStep}
   Input Text  css=input[tid='auction.period']  ${correctDate}
-  Input Text  css=input[tid='auction.registrationFee']  ${registrationFee}
+#  Input Text  css=input[tid='auction.registrationFee']  ${registrationFee}
   Input Text  css=input[tid='auction.bankAccount.description']  ${tender_data.bankAccount.description}
   Input Text  css=input[tid='auction.bankAccount.bankName']  ${tender_data.bankAccount.bankName}
   Input Text  css=input[tid='auction.bankAccount.accountIdentification.mfo']  ${tender_data.bankAccount.accountIdentification[0].scheme}
