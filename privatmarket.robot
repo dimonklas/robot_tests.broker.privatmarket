@@ -3422,7 +3422,7 @@ Get Item Number
     @{contactPoint} =  Split String  ${question.data.author.contactPoint.name}
     Wait Element Visibility And Input Text  css=#personSurname  @{contactPoint}[0]
     Wait Element Visibility And Input Text  css=#personName  @{contactPoint}[1]
-    Wait Element Visibility And Input Text  css=#personPatronymic  @{contactPoint}[2]
+    Wait Element Visibility And Input Text  css=#personPatronymic  @{contactPoint}[0]    # Используем 0 так как @{contactPoint}[2] невалидное значение
     Wait Element Visibility And Input Text  css=#personPhone  ${question.data.author.contactPoint.telephone}
     Wait Element Visibility And Input Text  css=#personFax  ${question.data.author.contactPoint.faxNumber}
     Wait Element Visibility And Input Text  css=#personEmail  ${question.data.author.contactPoint.email}
@@ -3541,7 +3541,7 @@ Get Item Number
     Wait Element Visibility And Input Text  xpath=//input[@data-id='email']   ${bid.data.tenderers[0].contactPoint.email}
 
     Wait Visibility And Click Element  xpath=//button[@data-id='save-bid-btn']
-    Wait Visibility And Click Element  xpath=//button[@data-id='save-bid-btn']
+    Wait Visibility And Click Element  xpath=//button[contains(@class,'payment-submit')]
     Sleep  1s
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']
     Sleep  60s
@@ -3620,7 +3620,7 @@ Get Item Number
     Wait For Ajax
     Click Button  css=button[data-id='save-bid-btn']
     Sleep  10s
-    Wait Visibility And Click Element  xpath=//span[contains(text(),'автоматично')]
+    Run Keyword Unless  '${mode}' == 'open_esco'  Wait Visibility And Click Element  xpath=//span[contains(text(),'автоматично')]
     Wait Visibility And Click Element  xpath=//button[contains(@class,'submit')]
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']
     Sleep  90s
@@ -3644,7 +3644,7 @@ Get Item Number
     Wait For Ajax
     Click Button  css=button[data-id='save-bid-btn']
     Wait For Ajax
-    Wait Visibility And Click Element  xpath=//span[contains(text(),'автоматично')]
+    Run Keyword Unless  '${mode}' == 'open_esco'  Wait Visibility And Click Element  xpath=//span[contains(text(),'автоматично')]
     Wait Visibility And Click Element  xpath=//button[contains(@class,'submit')]
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']
     Sleep  60s
@@ -3670,7 +3670,7 @@ Get Item Number
     Wait For Ajax
     Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
     Sleep  1s
-    Wait Visibility And Click Element  xpath=//span[contains(text(),'автоматично')]
+    Run Keyword Unless  '${mode}' == 'open_esco'  Wait Visibility And Click Element  xpath=//span[contains(text(),'автоматично')]
     Wait Visibility And Click Element  xpath=//button[contains(@class,'submit')]
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']
     Sleep  60s
@@ -3699,7 +3699,7 @@ Get Item Number
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modalOkBtn']
     Wait Visibility And Click Element  css=button[data-id='save-bid-btn']
     Wait For Ajax
-    Wait Visibility And Click Element  xpath=//span[contains(text(),'автоматично')]
+    Run Keyword Unless  '${mode}' == 'open_esco'  Wait Visibility And Click Element  xpath=//span[contains(text(),'автоматично')]
     Wait Visibility And Click Element  xpath=//button[contains(@class,'submit')]
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']
     Sleep  60s
