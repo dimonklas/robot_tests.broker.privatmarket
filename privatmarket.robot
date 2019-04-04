@@ -3422,7 +3422,7 @@ Get Item Number
     @{contactPoint} =  Split String  ${question.data.author.contactPoint.name}
     Wait Element Visibility And Input Text  css=#personSurname  @{contactPoint}[0]
     Wait Element Visibility And Input Text  css=#personName  @{contactPoint}[1]
-    Wait Element Visibility And Input Text  css=#personPatronymic  @{contactPoint}[2]
+    Wait Element Visibility And Input Text  css=#personPatronymic  @{contactPoint}[0]    # Используем 0 так как @{contactPoint}[2] невалидное значение
     Wait Element Visibility And Input Text  css=#personPhone  ${question.data.author.contactPoint.telephone}
     Wait Element Visibility And Input Text  css=#personFax  ${question.data.author.contactPoint.faxNumber}
     Wait Element Visibility And Input Text  css=#personEmail  ${question.data.author.contactPoint.email}
