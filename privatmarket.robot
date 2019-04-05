@@ -3230,7 +3230,7 @@ Get Item Number
     @{contactPoint} =  Split String  ${claim.data.author.contactPoint.name}
     Wait Element Visibility And Input Text  css=#personSurname  @{contactPoint}[0]
     Wait Element Visibility And Input Text  css=#personName  @{contactPoint}[1]
-    Wait Element Visibility And Input Text  css=#personPatronymic  @{contactPoint}[2]
+    Wait Element Visibility And Input Text  css=#personPatronymic  @{contactPoint}[0]  # Используем 0 так как @{contactPoint}[2] невалидное значение
     ${telephone}=  Привести номер телефону до відповідного формату  ${claim.data.author.contactPoint.telephone}
     Wait Element Visibility And Input Text  css=#personPhone  ${telephone}
     ${faxNumber}=  Привести номер телефону до відповідного формату  ${claim.data.author.contactPoint.faxNumber}
