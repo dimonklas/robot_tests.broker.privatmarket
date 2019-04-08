@@ -45,7 +45,7 @@ def get_accelerator(scenarios):
     if scenarios in actives_and_lots:
         return 150
     else:
-        return 1440
+        return 1080
 
 
 def get_scenarios_name():
