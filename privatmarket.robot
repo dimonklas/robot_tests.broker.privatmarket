@@ -2897,6 +2897,7 @@ Try Search Tender
 
     #выберем поиск по планам закупок
     Run Keyword If  '${type}' == 'plan'  Wait Visibility And Click Element  css=[data-id='ttype-plans-label']
+    Wait Until Element Is Not Visible  xpath=//div[@class='ajax_overflow']  ${COMMONWAIT}
 
     #заполним поле поиска
     Clear Element Text  ${locator_tenderSearch.searchInput}
