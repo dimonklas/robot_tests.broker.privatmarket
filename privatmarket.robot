@@ -137,8 +137,8 @@ ${tender_data_awards[0].value.currency}  css=.participant-info-block [data-id='v
 ${tender_data_awards[0].value.amount}  css=.participant-info-block [data-id='value.amount']
 ${tender_data_awards[1].value.amount}  css=.participant-info-block [data-id='value.amount']
 ${tender_data_contracts[1].value.amount}  css=#contractAmount
-${tender_data_contracts[0].status}  css=#contractStatus
-${tender_data_contracts[1].status}  css=#contractStatus
+${tender_data_contracts[0].status}  xpath=//span[@data-id='contractStatus']
+${tender_data_contracts[1].status}  xpath=//span[@data-id='contractStatus']
 ${tender_data_contracts[1].dateSigned}  xpath=//div[contains(@class,'contracts info')]//div[text()='Договiр №:']/following-sibling::div/span
 ${tender_data_contracts[1].period.startDate}  xpath=//div[contains(@class,'contracts info')]//div[text()='Дата початку:']/following-sibling::div/span
 ${tender_data_contracts[1].period.endDate}  xpath=//div[contains(@class,'contracts info')]//div[text()='Дата кiнця:']/following-sibling::div/span
@@ -159,9 +159,9 @@ ${tender_data_lots[0].auctionPeriod.startDate}  id=active.auction-bd
 ${tender_data_lots[0].auctionPeriod.endDate}  id=active.auction-ed
 ${tender_data_tender.tenderPeriod.startDate}  xpath=//div[@data-id='plan-purchase-beg']
 
-${tender_data_classification.description}  xpath=//*[@data-id='common-classif-description']
-${tender_data_classification.scheme}  xpath=//*[@data-id='common-classif-scheme']
-${tender_data_classification.id}  xpath=//*[@data-id='common-classif-id']
+${tender_data_classification.description}  xpath=//*[@data-id='item-classif-description']  # //*[@data-id='common-classif-description']
+${tender_data_classification.scheme}  xpath=//*[@data-id='item-classif-scheme']  # //*[@data-id='common-classif-scheme']
+${tender_data_classification.id}  xpath=//*[@data-id='item-classif-id']  # //*[@data-id='common-classif-id']
 
 ${tender_data_agreementDuration}  xpath=//div[@class='agreement-duration']
 ${tender_data_maxAwardsCount}  xpath=//div[@data-id='maxAwardsCount']
@@ -1761,7 +1761,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Until Element Is Visible  css=.notify  ${COMMONWAIT}
     Sleep  1min
     Reload Page
-    Wait For Element With Reload  xpath=//span[@id='contractStatus']  1
+    Wait For Element With Reload  xpath=//span[@data-id='contractStatus']  1
     Wait Visibility And Click Element  xpath=//div[contains(@class,'contracts info')]//div[@id='noEcp']
     Sleep  1s
     Run Keyword  Завантажити ЕЦП
