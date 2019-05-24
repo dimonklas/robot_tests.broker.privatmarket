@@ -2296,7 +2296,7 @@ Try To Search Complaint
     Відкрити детальну інформацію про контракт
 
     Run Keyword If  'статусу підписаної угоди з постачальником' in '${TEST_NAME}'
-    ...  Wait For Element With Reload  xpath=//span[contains(., 'Підписаний') and contains(@id, 'contractStatus')]  1
+    ...  Wait For Element With Reload  xpath=//span[contains(., 'Підписаний') and contains(@data-id, 'contractStatus')]  1
 
     ${status}  ${status_name}=  Run Keyword And Ignore Error  Get text  ${tender_data_${field_name}}
     ${status_name}=  Run Keyword If
