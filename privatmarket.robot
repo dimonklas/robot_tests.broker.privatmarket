@@ -825,7 +825,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//input[@data-id='description'])[${item_index}]  ${items[${index}].description}
 
     Вказати вид предмету закупівлі  ${TENDER_DATA.data.mainProcurementCategory}  ${item_index}
-    debug
+
 
     # ВРЕМЕННОЕ РЕШЕНИЕ ОКРУГЛЯТЬ ЗНАЧЕНИЕ (ВЕРНУТЬ ТОЧНОСТЬ 3 ЗНАКА ПОСЛЕ ДОРАБОТКИ РАЗРАБАМИ)
     ${value}=  Set Variable  ${items[${index}].quantity}
@@ -833,7 +833,8 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     ${result}=  Evaluate  "%.2f" % ${res}
 
     Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//input[@data-id='quantity'])[${item_index}]  ${result}  # ${items[${index}].quantity}
-    debug
+
+
     ${unitName}=  Run Keyword If
     ...  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  privatmarket_service.get_unit_name  ${items[${index}].unit.name}
     ...  ELSE  privatmarket_service.get_unit_name  ${items[${index}].unit.name}
