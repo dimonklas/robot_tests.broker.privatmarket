@@ -381,7 +381,11 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     \  ...  AND  Wait Visibility And Click Element  xpath=//div[@data-id='foundItem']//label[contains(text(),'${classif_id}')]
     \  ...  AND  Wait Visibility And Click Element  xpath=//button[@data-id='actConfirm']
     \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='description'])[${index_xpath}]  ${items[${index}].description}
-    \  Input Text  xpath=(//input[@data-id='quantity'])[${index_xpath}]  ${items[${index}].quantity}
+    \      # ВРЕМЕННОЕ РЕШЕНИЕ ОКРУГЛЯТЬ ЗНАЧЕНИЕ (ВЕРНУТЬ ТОЧНОСТЬ 3 ЗНАКА ПОСЛЕ ДОРАБОТКИ РАЗРАБАМИ)
+    \  ${value}=  Set Variable  ${items[${index}].quantity}
+    \  ${res}=  Convert To Number  ${value}
+    \  ${result}=  Evaluate  "%.2f" % ${res}
+    \  Input Text  xpath=(//input[@data-id='quantity'])[${index_xpath}]  ${result}
     \  Select From List By Label  xpath=(//select[@data-id='unit'])[${index_xpath}]  ${items[${index}].unit.name}
     \  Run Keyword If  ${type} == 'reporting'
     \  ...  Run Keywords
@@ -3478,7 +3482,7 @@ Get Item Number
 
     ${scenarios_name}=  privatmarket_service.get_scenarios_name
     Run Keyword If  'Неможливість' in '${TEST_NAME}'  Відмітити лот
-    ...  ELSE IF  'dialogue' in '${scenarios_name}'  Відмітити лот
+#    ...  ELSE IF  'dialogue' in '${scenarios_name}'  Відмітити лот
     ...  ELSE  Wait Element Visibility And Input Text  css=${input_field}  ${value_amount}
 
     Click Button  css=button[data-id='save-bid-btn']
