@@ -1850,7 +1850,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     [Arguments]  ${field_name}
     Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'milestones')]
     ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'milestones')]@class
-    Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=//a[contains(@ng-class, 'milestones')]
+    Run Keyword Unless  'checked' in '${class}'  Відкрити детальну інформацію про умови оплати
 
     ${field_value}=  Отримати текст елемента  ${tender_data_${field_name}}
 
@@ -2287,6 +2287,15 @@ Try To Search Complaint
     ${class}=  Get Element Attribute  xpath=(//a[contains(@ng-class, 'lot-parts')])[1]@class
     Run Keyword Unless  'checked-nav' in '${class}'  Click Element  xpath=(//a[contains(@ng-class, 'lot-parts')])[1]
     Run keyword And Ignore Error  Wait Visibility And Click Element  xpath=//img[contains(@ng-src, 'icon-plus')]
+
+
+Відкрити детальну інформацію про умови оплати
+    ${count}=  Get Matching Xpath Count  xpath=//a[contains(@ng-class, 'milestones')]
+
+    :FOR  ${i}  In Range  0  ${count}
+    \  ${elem_index}=  Evaluate  ${i}+1
+    \  Scroll To Element  xpath=(//a[contains(@ng-class, 'milestones')])[${elem_index}]
+    \  Click Element  xpath=(//a[contains(@ng-class, 'milestones')])[${elem_index}]
 
 
 Отримати статус заявки
