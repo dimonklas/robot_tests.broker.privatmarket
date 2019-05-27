@@ -3482,8 +3482,10 @@ Get Item Number
 
     ${scenarios_name}=  privatmarket_service.get_scenarios_name
     Run Keyword If  'Неможливість' in '${TEST_NAME}'  Відмітити лот
-#    ...  ELSE IF  'dialogue' in '${scenarios_name}'  Відмітити лот
+    ...  ELSE IF  'dialogue' in '${scenarios_name}'  Відмітити лот
     ...  ELSE  Wait Element Visibility And Input Text  css=${input_field}  ${value_amount}
+
+    Run Keyword If  'на другому етапі' in '${TEST_NAME}'  Wait Element Visibility And Input Text  css=${input_field}  ${value_amount}
 
     Click Button  css=button[data-id='save-bid-btn']
     Wait For Ajax
