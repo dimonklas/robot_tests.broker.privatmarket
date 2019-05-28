@@ -1513,7 +1513,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     #Допустити до аукциону
     Wait Visibility And Click Element  xpath=//button[@data-id='setQualStatusActive']
     Sleep  1s
-    Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]  ${COMMONWAIT}
+    Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправку в Prozorro')]  ${COMMONWAIT}
     Підписати ЕЦП  ${index}
     Sleep  240s
 
@@ -1548,7 +1548,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Element Visibility And Input Text  xpath=//textarea[@data-id='decline-description']  ${comment}
     Wait Visibility And Click Element  xpath=//label[@for='chk-dr0']
     Wait Visibility And Click Element  xpath=//button[@data-id='btn-ok']
-    Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]  ${COMMONWAIT}
+    Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправку в Prozorro')]  ${COMMONWAIT}
     Wait Visibility And Click Element  xpath=//button[@data-id='btn-close']
     Sleep  5s
     Підписати ЕЦП  ${index}
@@ -1587,7 +1587,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Run Keyword If  ${count} > 1  Wait Visibility And Click Element  xpath=(//table[@class='bids']//tbody//tr)[${index}]//span[@ng-click='act.openCancelQualificationWindow(q.id)']
     Wait Visibility And Click Element  xpath=//button[@data-id='btn-cancel-qualification-or-award']
 
-    Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]  ${COMMONWAIT}
+    Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправку в Prozorro')]  ${COMMONWAIT}
 
     Wait Visibility And Click Element  xpath=(//button[@data-id='btn-close'])[last()]
     Sleep  240s
@@ -1738,6 +1738,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Visibility And Click Element  xpath=(//a[contains(@ng-class, 'lot-parts')])[1]
     Wait For Element With Reload  xpath=//span[@ng-click="act.openAward(b)"]  1
     Wait Visibility And Click Element  xpath=//span[@ng-click="act.openAward(b)"]
+    debug
     Wait Visibility And Click Element  xpath=//div[@class='form-block__item']/form/select[1]/option[2]
     Sleep  1s
     Wait Visibility And Click Element  xpath=//div[@class='form-block__item']/form/select[2]/option[2]
@@ -1863,6 +1864,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     ${result}=  Set Variable If
     ...  '${text}' == 'Товар'  goods
     ...  '${text}' == 'Роботи'  works
+    ...  '${text}' == 'Послуги'  services
     [Return]  ${result}
 
 
@@ -3174,7 +3176,7 @@ Get Item Number
     Run Keyword Unless  'до переговорної процедури' in '${TEST_NAME}' or 'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}' or 'belowThreshold' in '${tender_type}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
     Wait Visibility And Click Element  xpath=//div[@class='award-section award-actions ng-scope']//button[@data-id='setActive']
     Sleep  1s
-    Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]  ${COMMONWAIT}
+    Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправку в Prozorro')]  ${COMMONWAIT}
     Reload Page
 
     Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'lot-parts')]
@@ -3201,7 +3203,7 @@ Get Item Number
     Wait Visibility And Click Element  xpath=//span[contains(@ng-if,'CancelAwardDecision')]
 #    Wait Element Visibility And Input Text  xpath=//textarea[@data-id='decline-description']  ${comment}
     Wait Visibility And Click Element  xpath=//button[@data-id='btn-cancel-qualification-or-award']
-    Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправкув Prozorro')]  ${COMMONWAIT}
+    Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправку в Prozorro')]  ${COMMONWAIT}
     Click Element  xpath=//button[@data-id='btn-close']
     Sleep  120s
 
