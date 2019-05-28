@@ -1862,6 +1862,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     ${text}=  Strip String  ${field_value}
     ${result}=  Set Variable If
     ...  '${text}' == 'Товар'  goods
+    ...  '${text}' == 'Роботи'  works
     [Return]  ${result}
 
 
