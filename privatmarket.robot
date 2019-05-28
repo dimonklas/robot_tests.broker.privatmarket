@@ -165,6 +165,7 @@ ${tender_data_classification.id}  xpath=//*[@data-id='item-classif-id']  # //*[@
 
 ${tender_data_agreementDuration}  xpath=//div[@class='agreement-duration']
 ${tender_data_maxAwardsCount}  xpath=//div[@data-id='maxAwardsCount']
+${tender_data_mainProcurementCategory}  xpath=//div[contains(text(),'Вид предмету закупівлі')]/following-sibling::div
 
 ${tender_data_minimalStepPercentage}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[1]
 ${tender_data_NBUdiscountRate}  xpath=(//div[@ng-include='page.financialItems']//following-sibling::div[contains(@class,'descript')])[2]
@@ -658,6 +659,8 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Search By Query  css=input[data-id='query']  ${items[0].classification.id}
     Wait Visibility And Click Element  css=button[data-id='actConfirm']
 #    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
+
+    Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'defineProcurementCategory')]
 
     Run Keyword If  ${type} == 'closeFrameworkAgreementUA'
     ...  Run Keywords
@@ -1845,10 +1848,20 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Run Keyword And Return If  'minimalStepPercentage' in '${field_name}'  Отримати інформацію з minimalStepPercentage  ${field_name}
     Run Keyword And Return If  'yearlyPaymentsPercentageRange' in '${field_name}'  Отримати інформацію з yearlyPaymentsPercentageRange  ${field_name}
     Run Keyword And Return If  'milestones' in '${field_name}'  Отримати інформацію про умови оплати  ${field_name}
+    Run Keyword And Return If  'mainProcurementCategory' in '${field_name}'  Отримати інформацію про вид предмету закупівлі  ${field_name}
 
     Wait Until Element Is Visible  ${tender_data_${field_name}}
     ${result_full}=  Get Text  ${tender_data_${field_name}}
     ${result}=  Strip String  ${result_full}
+    [Return]  ${result}
+
+
+Отримати інформацію про вид предмету закупівлі
+    [Arguments]  ${field_name}
+    ${field_value}=  Отримати текст елемента  ${tender_data_${field_name}}
+    ${text}=  Strip String  ${field_value}
+    ${result}=  Set Variable If
+    ...  '${text}' == 'Товар'  goods
     [Return]  ${result}
 
 
