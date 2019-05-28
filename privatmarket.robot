@@ -406,6 +406,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     ...  'services' in '${value}'  Послуга
     ...  ${value}
     Wait Visibility And Click Element  xpath=(//span[contains(text(),'${type}')])[${index_xpath}]/preceding-sibling::input[1]
+    Run Keyword And Ignore Error  Wait Visibility And Click Element  xpath=//button[@data-id='modalOkBtn']
 
 
 Внести зміни в план
@@ -1738,7 +1739,10 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Visibility And Click Element  xpath=(//a[contains(@ng-class, 'lot-parts')])[1]
     Wait For Element With Reload  xpath=//span[@ng-click="act.openAward(b)"]  1
     Wait Visibility And Click Element  xpath=//span[@ng-click="act.openAward(b)"]
-    debug
+    Wait For Ajax
+    Reload Page
+    Wait Visibility And Click Element  xpath=(//a[contains(@ng-class, 'lot-parts')])[1]
+    Wait Visibility And Click Element  xpath=//span[@ng-click="act.openAward(b)"]
     Wait Visibility And Click Element  xpath=//div[@class='form-block__item']/form/select[1]/option[2]
     Sleep  1s
     Wait Visibility And Click Element  xpath=//div[@class='form-block__item']/form/select[2]/option[2]
