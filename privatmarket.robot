@@ -1709,6 +1709,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Until Element Is Visible  css=.modal.fade.in  ${COMMONWAIT}
     Wait For Ajax
     Wait Element Visibility And Input Text  css=input[ng-model='supplier.identifier.legalName']  ${supplier_data.data.suppliers[0].identifier.legalName}
+    Wait Visibility And Click Element  xpath=//select[contains(@class,'company-scale')]/option[@value='string:${supplier_data.data.suppliers[0].scale}']
     Wait Element Visibility And Input Text  css=input[ng-model='supplier.identifier.id']  ${supplier_data.data.suppliers[0].identifier.id}
 
     Wait Element Visibility And Input Text  css=input[ng-model='supplier.address.postalCode']  ${supplier_data.data.suppliers[0].address.postalCode}
@@ -1718,7 +1719,8 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Element Visibility And Input Text  css=input[ng-model='supplier.address.streetAddress']  ${supplier_data.data.suppliers[0].address.streetAddress}
 
     Wait Element Visibility And Input Text  css=input[ng-model='supplier.contactPoint.name']  ${supplier_data.data.suppliers[0].contactPoint.name}
-    Wait Element Visibility And Input Text  css=input[ng-model='supplier.contactPoint.telephone']  ${supplier_data.data.suppliers[0].contactPoint.telephone}
+    ${modified_phone}=  Привести номер телефону до відповідного формату  ${supplier_data.data.suppliers[0].contactPoint.telephone}
+    Wait Element Visibility And Input Text  css=input[ng-model='supplier.contactPoint.telephone']  ${modified_phone}
     Wait Element Visibility And Input Text  css=input[ng-model='supplier.contactPoint.email']  ${supplier_data.data.suppliers[0].contactPoint.email}
     Wait Element Visibility And Input Text  css=input[ng-model='supplier.contactPoint.url']  ${supplier_data.data.suppliers[0].contactPoint.url}
     Wait Element Visibility And Input Text  css=input[ng-model='model.awardDraft.value.amount']  ${supplier_data.data.value.amount}
@@ -3512,7 +3514,7 @@ Get Item Number
     Wait Element Visibility And Input Text  css=input[data-id='email']  ${bid.data.tenderers[0].contactPoint.email}
     Click Button  css=button[data-id='save-bid-btn']
     Wait For Ajax
-    Wait Visibility And Click Element  xpath=//span[contains(text(),'автоматично')]
+    Run Keyword Unless  'на другому етапі' in '${TEST_NAME}'  Wait Visibility And Click Element  xpath=//span[contains(text(),'автоматично')]
     Wait Visibility And Click Element  xpath=//button[contains(@class,'submit')]
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']
     Sleep  60s
