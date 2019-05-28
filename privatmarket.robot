@@ -1380,7 +1380,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
     #откроем нужную вкладку
     Run Keyword If  'переговорної процедури' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_2 a
-    ...  ELSE IF  'додати документацію до звіту' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_2 a
+    ...  ELSE IF  'додати документацію до звіту' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_3 a
     ...  ELSE  Wait Visibility And Click Element  css=#tab_3 a
 
     #загрузим файл
@@ -1958,7 +1958,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     ${rate}=  Remove String Using Regexp  ${text}  \\s%$
     ${rate}=  Convert To Number  ${rate}  3
     ${result}=  Evaluate  ${rate}/${100}
-    ${result}=  Convert To Number  ${result}  5
+    ${result}=  Evaluate  "%.5f" % ${result}
     [Return]  ${result}
 
 
