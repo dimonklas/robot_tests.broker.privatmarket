@@ -1148,7 +1148,11 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Run Keyword If  '${parameter}' == 'maxAwardsCount'  Wait Element Visibility And Input Text  css=input[data-id='maxAwardsCount']  ${value}
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
     Wait Until Element Is Visible  css=section[data-id='step2']  ${COMMONWAIT}
-    Wait Visibility And Click Element  css=#tab_4 a
+
+    Run Keyword If
+    ...  '${MODE}' == 'esco'  Wait Visibility And Click Element  css=#tab_4 a
+    ...  ELSE  Wait Visibility And Click Element  css=#tab_5 a
+
     Wait For Ajax
     Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
     Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
@@ -1168,7 +1172,12 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Element Visibility And Input Text  xpath=(//textarea[@data-id='lotDescription'])[1]  ${value}
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
     Wait For Ajax
-    Wait Visibility And Click Element  css=#tab_4 a
+
+    Run Keyword If
+    ...  '${MODE}' == 'esco'  Wait Visibility And Click Element  css=#tab_4 a
+    ...  ELSE  Wait Visibility And Click Element  css=#tab_5 a
+#    Wait Visibility And Click Element  css=#tab_4 a
+
     Wait For Ajax
     Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
     Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
@@ -1385,7 +1394,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     #откроем нужную вкладку
     Run Keyword If  'переговорної процедури' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_2 a
     ...  ELSE IF  'додати документацію до звіту' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_3 a
-    ...  ELSE  Wait Visibility And Click Element  css=#tab_3 a
+    ...  ELSE  Wait Visibility And Click Element  css=#tab_4 a
 
     #загрузим файл
     Wait Visibility And Click Element  css=label[for='documentation_tender_yes']
@@ -1982,6 +1991,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     ${rate}=  Convert To Number  ${rate}  3
     ${result}=  Evaluate  ${rate}/${100}
     ${result}=  Evaluate  "%.5f" % ${result}
+    ${result}=  Convert To Number  ${result}
     [Return]  ${result}
 
 
@@ -3179,6 +3189,10 @@ Get Item Number
 
     Run Keyword Unless  'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}' or 'belowThreshold' in '${tender_type}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
     Run Keyword Unless  'до переговорної процедури' in '${TEST_NAME}' or 'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}' or 'belowThreshold' in '${tender_type}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
+
+    Wait For Element With Reload  xpath=//span[@ng-click="act.openAward(b)"]  1
+    Wait Visibility And Click Element  xpath=//span[@ng-click="act.openAward(b)"]
+
     Wait Visibility And Click Element  xpath=//div[@class='award-section award-actions ng-scope']//button[@data-id='setActive']
     Sleep  1s
     Wait Until Element Is Visible  xpath=//div[contains(text(),'Ваше рішення поставлено в чергу на відправку в Prozorro')]  ${COMMONWAIT}
