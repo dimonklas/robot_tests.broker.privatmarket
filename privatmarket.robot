@@ -475,7 +475,9 @@ Wait for question
 Отримати число
   [Arguments]  ${element_name}
   ${value}=  Отримати текст елемента  ${element_name}
-  ${result}=  Convert To Number  ${value}
+  ${res}=  Replace String  ${value}  ,  .
+  ${res}=  Replace String  ${res}  ${SPACE}  ${EMPTY}
+  ${result}=  Convert To Number  ${res}
   [Return]  ${result}
 
 
