@@ -55,7 +55,7 @@ ${tender_data.doc.title}  xpath=(//div[@id='fileitem'])
 
 ${tender_data.cancellations[0].status}  xpath=//span[@tid='data.statusName' and contains(., 'Торги відмінено')]
 ${tender_data.cancellations[0].reason}  css=div[tid='cancellations.reason']
-${tender_data.cancellation.doc.title}  css=div[tid='doc.title']
+${tender_data.cancellation.doc.title}  css=div[tid='cancellations.doc'] div[tid='doc.title']
 ${tender_data.cancellation.doc.description}  css=div[tid='cancellations.doc.description']
 
 ${tender_data.procurementMethodType}  css=div[tid='data.procurementMethodType']
@@ -124,21 +124,32 @@ ${tenderBtn.create_edit}  css=button[tid='btn.createlot']
 
   #main info
   Execute Javascript  angular.prozorroaccelerator=1440;
-  Execute Javascript  angular.prozorroauctionstartdelay = 30*60*1000;
+#  Execute Javascript  angular.prozorroauctionstartdelay = 30*60*1000;
+  Execute Javascript  angular.prozorroauctionstartdelay = (30+180)*60*1000;
+
   Wait Until Element Is Enabled  css=input[tid='data.title']
   Input text  css=input[tid='data.title']  ${tender_data.data.title}
+  Input text  css=input[tid='data.title_ru']  ${tender_data.data.title_ru}
+  Input text  css=input[tid='data.title_en']  ${tender_data.data.title_en}
   Input text  css=input[tid='data.dgfID']  ${tender_data.data.dgfID}
   Select From List  css=select[tid='data.procurementMethodType']  string:${tender_data.data.procurementMethodType}
-  Input Text  css=input[tid='dgfDecisionDate']  ${correctDate}
-  Input text  css=input[tid='data.dgfDecisionID']  ${tender_data.data.dgfDecisionID}
+
+#  Input Text  css=input[tid='dgfDecisionDate']  ${correctDate}
+#  Input text  css=input[tid='data.dgfDecisionID']  ${tender_data.data.dgfDecisionID}
 
   Select From List  css=select[tid='data.tenderAttempts']  number:${tender_data.data.tenderAttempts}
   Input text  css=textarea[tid='data.description']  ${tender_data.data.description}
+
   ${amount_to_enter}=  Convert To String  ${tender_data.data.value.amount}
   ${amount_to_enter2}=  Replace String  ${amount_to_enter}  .  ,
   Click Element  css=input[tid='data.value.amount']
   Run Keyword If  '${os}' == 'Linux'  Input text  css=input[tid='data.value.amount']  ${amount_to_enter}
   ...  ELSE  Input text  css=input[tid='data.value.amount']  ${amount_to_enter2}
+
+  ${amount_to_enter}=  Convert To String  ${tender_data.data.guarantee.amount}
+  ${amount_to_enter2}=  Replace String  ${amount_to_enter}  .  ,
+  Run Keyword If  '${os}' == 'Linux'  Input text  css=input[tid='guarantyAmount']  ${amount_to_enter}
+  ...  ELSE  Input text  css=input[tid='guarantyAmount']  ${amount_to_enter2}
 
   Run Keyword If  '${tender_data.data.value.valueAddedTaxIncluded}' == 'True'  Click Element  css=input[tid='data.value.valueAddedTaxIncluded']
   ...  ELSE  Click Element  css=input[tid='data.value.valueAddedTaxNotIncluded']
@@ -309,7 +320,11 @@ ${tenderBtn.create_edit}  css=button[tid='btn.createlot']
 Пошук тендера по ідентифікатору
   [Arguments]  ${user_name}  ${tender_id}
   Wait For Auction  ${tender_id}
-  Wait Enable And Click Element  css=a[tid='${tender_id}']
+  Wait Enable And Click Element  xpath=(//div[@tid='${tender_id}'])[2]  # css=a[tid='${tender_id}']
+  Sleep  3s
+  @{titles}=  List Windows
+  ${count_titles}=  Get length   ${titles}
+  Run Keyword If  ${count_titles} > 1  Select Window  ${titles[${count_titles}-1]}
   Wait Until element Is Visible  css=div[tid='data.title']  ${COMMONWAIT}
 
 
@@ -1038,19 +1053,20 @@ Login with P24
   [Arguments]  ${username}
   Wait Enable And Click Element  xpath=//a[contains(@href, 'https://bankid.privatbank.ua')]
 
-  Wait Until Element Is Visible  css=input[id='loginLikePhone']  5s
-  Input Text  css=input[id='loginLikePhone']  +${USERS.users['${username}'].login}
-  Input Text  css=input[id='passwordLikePassword']  ${USERS.users['${username}'].password}
-  Click Element  css=div[id='signInButton']
+  Wait Until Element Is Visible  css=input[id='inputLogin']  5s
+  Input Text  css=input[id='inputLogin']  +${USERS.users['${username}'].login}
+  Input Text  css=input[id='inputPassword']  ${USERS.users['${username}'].password}
+  Click Element  css=div.step1>button.btn-success
   Wait Until Element Is Visible  css=input[id='first-section']  5s
   Input Text  css=input[id='first-section']  12
   Input Text  css=input[id='second-section']  34
   Input Text  css=input[id='third-section']  56
-  Click Element  css=a[id='confirmButton']
+  Wait Until Element Is Not Visible  css=div#preloader
+  Click Element  css=div.step2 button.btn-success
   Sleep  3s
   Wait For Ajax
   Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
-  Wait Until Element Is Not Visible  css=a[id='confirmButton']
+#  Wait Until Element Is Not Visible  css=a[id='confirmButton']
 
 
 Login with email
@@ -1141,8 +1157,8 @@ Try Search Auction
   Press Key  css=input[tid='global.search']  \\13
   Wait Until Element Is Not Visible  css=div.progress.progress-bar  ${COMMONWAIT}
   Wait Until Element Is Not Visible  css=div[role='dialog']  ${COMMONWAIT}
-  Wait Until Element Not Stale  css=a[tid='${tender_id}']  ${COMMONWAIT}
-  Wait Until Element Is Visible  css=a[tid='${tender_id}']  ${COMMONWAIT}
+  Wait Until Element Not Stale  css=div[tid='${tender_id}']  ${COMMONWAIT}
+  Wait Until Element Is Visible  css=div[tid='${tender_id}']  ${COMMONWAIT}
   [Return]  True
 
 
