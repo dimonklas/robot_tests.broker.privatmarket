@@ -538,17 +538,19 @@ Wait for question
   [Arguments]  ${element}
   Reload Page
   Sleep  10s
-  ${element_text}=  Get Text  ${tender_data.${element}}
-  ${text}=  Strip String  ${element_text}
-  ${result}=  Set Variable If
-  ...  '${text}' == 'очікується протокол'  pending.verification
-  ...  '${text}' == 'у черзі на кваліфікацію'  pending.waiting
-  ...  '${text}' == 'Очікується підписання договору'  pending.payment
-  ...  '${text}' == 'Оплачено, очікується підписання договору/переможець'  active
-  ...  '${text}' == 'учасник самодискваліфікувався'  cancelled
-  ...  '${text}' == 'дискваліфіковано'  unsuccessful
-  ...  ${element}
-  [Return]  ${result}
+  ${text}=  Get Element Attribute  ${tender_data.${element}}@tidvalue
+#  ${element_text}=  Get Text  ${tender_data.${element}}
+#  ${text}=  Strip String  ${element_text}
+#  ${result}=  Set Variable If
+#  ...  '${text}' == 'кваліфікується'  pending
+#  ...  '${text}' == 'очікується протокол'  pending.verification
+#  ...  '${text}' == 'у черзі на кваліфікацію'  pending.waiting
+#  ...  '${text}' == 'Очікується підписання договору'  pending.payment
+#  ...  '${text}' == 'Оплачено, очікується підписання договору/переможець'  active
+#  ...  '${text}' == 'учасник самодискваліфікувався'  cancelled
+#  ...  '${text}' == 'дискваліфіковано'  unsuccessful
+#  ...  ${element}
+  [Return]  ${text}
 
 
 Отримати інформацію із пропозиції
