@@ -2918,7 +2918,7 @@ Switch To Frame
 
 Login
     [Arguments]  ${username}
-    Wait Visibility And Click Element  css=button[ng-click='act.loginPage()']
+    Wait Visibility And Click Element  xpath=//button[text()='Увійти']
     Wait Until Element Is Visible  css=input[data-id='enter-login']  ${COMMONWAIT}
     Input Text  css=input[data-id='enter-login']  +${USERS.users['${username}'].login}
     Input Text  css=input[data-id='enter-pwd']  ${USERS.users['${username}'].password}
