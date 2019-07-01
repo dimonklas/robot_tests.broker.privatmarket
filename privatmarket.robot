@@ -2343,6 +2343,11 @@ Try To Search Complaint
     \  Click Element  xpath=(//a[contains(@ng-class, 'milestones')])[${elem_index}]
 
 
+Відкрити детальну інформацію про рамкові угоди
+    ${class}=  Get Element Attribute  xpath=//a[@id='agreementBtn']@class
+    Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=//a[@id='agreementBtn']
+
+
 Отримати статус заявки
     [Arguments]  ${field_name}
     Wait Until Element Is Visible  ${tender_data_${field_name}}  ${COMMONWAIT}
