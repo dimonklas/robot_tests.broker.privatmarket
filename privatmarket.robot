@@ -1932,6 +1932,13 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     [Return]  ${result}
 
 
+Отримати статус рамкової угоди
+    [Arguments]  ${field_name}
+    Wait For Element With Reload  xpath=//span[contains(@data-id,'agreement-id')]  1
+    ${status}=  Get Element Attribute  xpath=//span[contains(@data-id,'agreement-id')]@data-agreement-status
+    [Return]  ${status}
+
+
 Отримати інформацію з agreementDuration
     [Arguments]  ${field_name}
     ${result}=  Get Element Attribute  xpath=//span[@data-id='agreementDuration']@innerHTML
