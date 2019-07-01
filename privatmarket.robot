@@ -3031,6 +3031,7 @@ Try Search Element
     ...  ELSE IF  '${tab_number}' == '2' and 'відповіді на запитання' in '${TEST_NAME}'  Відкрити повну відповідь на запитання
     ...  ELSE IF  '${tab_number}' == '3' and 'заголовку документації' in '${TEST_NAME}'  Відкрити інформацію про вкладені файли вимоги
     ...  ELSE IF  '${tab_number}' == '3' and 'вмісту документа до вимоги' in '${TEST_NAME}'  Відкрити інформацію про вкладені файли вимоги
+    ...  ELSE IF  '${tab_number}' == '1' and 'статусу зареєстрованої угоди' in '${TEST_NAME}'  Відкрити детальну інформацію про рамкові угоди
     Wait Until Element Is Enabled  ${locator}  10
     Wait For Ajax
     [Return]  True
