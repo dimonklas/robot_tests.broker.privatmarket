@@ -307,6 +307,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     ${presence}=  Run Keyword And Return Status  List Should Contain Value  ${tender_data.data}  features
     @{features}=  Run Keyword If  ${presence}  Get From Dictionary  ${tender_data.data}  features
 
+    Check Current Mode New Realisation
     Wait Visibility And Click Element  ${locator_tenderSearch.addTender}
     Wait Visibility And Click Element  xpath=(//a[@data-toggle='tab'])[2]
     Wait Visibility And Click Element  xpath=//a[@data-id='choosedPrzPlanBelowThreshold']
@@ -337,6 +338,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
 
     #Заповнити лоти та предмети закупівлі
     Додати предмети закупівлі в план  ${items}  ${type}
+
     Click Element  xpath=//button[@data-id='actSave']
     Wait Visibility And Click Element  xpath=//button[@data-id='actSend']
     Wait Visibility And Click Element  xpath=//button[@data-id='modal-close']
@@ -651,7 +653,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     ...  AND  Wait Element Visibility And Input Text  css=textarea[data-id='procurementDescriptionEn']  ${tender_data.data.description_en}
 
     #Who is donor?
-    Run Keyword If  'below_funders' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='funder']/option[@value='44000']
+    Run Keyword If  'below_funders' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='funder']/option[@label='${tender_data.data.funders[0].name}']
 
     #CPV
     Wait Visibility And Click Element  xpath=(//a[@data-id='actChoose'])[1]
@@ -1346,7 +1348,9 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
 
 Видалити донора
     [Arguments]  ${user_name}  ${tenderId}  ${funders_index}
-    privatmarket.Пошук тендера по ідентифікатору  ${tender_owner}  ${tenderId}
+    ${status}=  Run Keyword And Return Status  Wait Until Element Is Visible  ${tender_data_title}  5s
+    Run Keyword If  '${status}' == 'False'  privatmarket.Пошук тендера по ідентифікатору  ${tender_owner}  ${tender_uaid}
+
     Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
     Wait For Ajax
@@ -1355,7 +1359,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Visibility And Click Element  xpath=//select[@data-id='funder']/option[@value='none']
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
     Wait For Ajax
-    Wait Visibility And Click Element  css=#tab_4 a
+    Wait Visibility And Click Element  css=#tab_5 a
     Wait For Ajax
     Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
     Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
@@ -1372,7 +1376,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Visibility And Click Element  xpath=//select[@data-id='funder']/option[@value='${funders_data.identifier.id}']
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
     Wait For Ajax
-    Wait Visibility And Click Element  css=#tab_4 a
+    Wait Visibility And Click Element  css=#tab_5 a
     Wait For Ajax
     Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
     Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
@@ -3032,6 +3036,7 @@ Try Search Element
     ...  ELSE IF  '${tab_number}' == '1' and 'підтвердити постачальника до звіту про укладений договір' in '${TEST_NAME}'  Відкрити детальну інформацію про постачальника
     ...  ELSE IF  '${tab_number}' == '1' and 'підтвердити постачальника до переговорної процедури' in '${TEST_NAME}'  Відкрити детальну інформацію про постачальника
     ...  ELSE IF  '${tab_number}' == '1' and 'підтвердити постачальника' in '${TEST_NAME}'  Відкрити детальну інформацію про постачальника
+    ...  ELSE IF  '${tab_number}' == '1' and 'підтвердити учасника' in '${TEST_NAME}'  Відкрити детальну інформацію про постачальника
     ...  ELSE IF  '${tab_number}' == '1'  Відкрити детальну інформацію по позиціям
     ...  ELSE IF  '${tab_number}' == '2' and 'відповіді на запитання' in '${TEST_NAME}'  Відкрити повну відповідь на запитання
     ...  ELSE IF  '${tab_number}' == '3' and 'заголовку документації' in '${TEST_NAME}'  Відкрити інформацію про вкладені файли вимоги
