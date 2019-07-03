@@ -2947,6 +2947,7 @@ Login
 Wait Visibility And Click Element
     [Arguments]  ${elementLocator}
     Wait Until Element Is Visible  ${elementLocator}  ${COMMONWAIT}
+    Wait Until Element Is Enabled  ${elementLocator}  ${COMMONWAIT}
     Click Element  ${elementLocator}
 
 
@@ -3210,8 +3211,8 @@ Get Item Number
     Run Keyword Unless  'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}' or 'belowThreshold' in '${tender_type}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
     Run Keyword Unless  'до переговорної процедури' in '${TEST_NAME}' or 'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}' or 'belowThreshold' in '${tender_type}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
 
-    Wait For Element With Reload  xpath=//span[@ng-click="act.openAward(b)"]  1
-    Wait Visibility And Click Element  xpath=//span[@ng-click="act.openAward(b)"]
+#    Wait For Element With Reload  xpath=//span[@ng-click="act.openAward(b)"]  1
+#    Wait Visibility And Click Element  xpath=//span[@ng-click="act.openAward(b)"]
 
     Wait Visibility And Click Element  xpath=//div[@class='award-section award-actions ng-scope']//button[@data-id='setActive']
     Sleep  1s
