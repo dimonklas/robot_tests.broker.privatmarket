@@ -401,13 +401,13 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
 
 
 Вказати вид предмету закупівлі
-    [Arguments]  ${value}  ${index_xpath}
+    [Arguments]  ${value}  ${index_xpath}  ${lot_index}
     ${type}=  Set Variable If
     ...  'goods' in '${value}'  Товар
     ...  'works' in '${value}'  Роботи
     ...  'services' in '${value}'  Послуга
     ...  ${value}
-    Wait Visibility And Click Element  xpath=(//span[contains(text(),'${type}')])[${index_xpath}]/preceding-sibling::input[1]
+    Wait Visibility And Click Element  xpath=((//div[@data-id='lot'])[${lot_index}]//span[contains(text(), '${type}')])[${index_xpath}]/preceding-sibling::input[1]
     Run Keyword And Ignore Error  Wait Visibility And Click Element  xpath=//button[@data-id='modalOkBtn']
 
 
@@ -635,7 +635,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
 
     Wait For Ajax
     Run Keyword If
-    ...  ${type} == 'negotiation' or 'openua_award_complaint' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '1080')]
+    ...  'openua_award_complaint' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '1080')]
     ...  ELSE IF  ${type} == '' and 'before_resolved_award_complaint' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '720')]
     ...  ELSE IF  ${type} == '' and 'after_resolved_award_complaint' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '144')]
     ...  ELSE IF  ${type} == ''  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '1440')]
@@ -720,7 +720,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
 
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
-    ${lots_count}=  Run Keyword Unless  ${type} == 'reporting'  Get Length  @{lots}
+    ${lots_count}=  Run Keyword Unless  ${type} == 'reporting'  Get Length  ${lots}
 
     Run Keyword If  ${type} == 'esco' and ${lots_count} > 0  Wait Visibility And Click Element  xpath=//label[@for='lot_choosed']
     ...  ELSE IF  ${type} == 'esco' and ${lots_count} == 0  Wait Visibility And Click Element  xpath=//label[@for='nolot_choosed']
@@ -834,7 +834,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Run Keyword If  '${is_click}' == 'true'  Wait Visibility And Click Element  xpath=(//button[@data-id='actAddItem'])[${lot_index}]
     Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//input[@data-id='description'])[${item_index}]  ${items[${index}].description}
 
-    Вказати вид предмету закупівлі  ${TENDER_DATA.data.mainProcurementCategory}  ${item_index}
+    Вказати вид предмету закупівлі  ${TENDER_DATA.data.mainProcurementCategory}  ${item_index}  ${lot_index}
 
 
     # ВРЕМЕННОЕ РЕШЕНИЕ ОКРУГЛЯТЬ ЗНАЧЕНИЕ (ВЕРНУТЬ ТОЧНОСТЬ 3 ЗНАКА ПОСЛЕ ДОРАБОТКИ РАЗРАБАМИ)
@@ -1388,7 +1388,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Run Keyword If
     ...  'Неможливість' in '${TEST_NAME}'  Wait Until Element Is Visible  ${locator_tenderClaim.buttonCreate}  1s
     ...  ELSE  Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
-
+    Execute JavaScript    window.scrollTo(${0},${0})
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
 
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
@@ -1396,9 +1396,9 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
     #откроем нужную вкладку
-    Run Keyword If  'переговорної процедури' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_2 a
-    ...  ELSE IF  'додати документацію до звіту' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_3 a
-    ...  ELSE  Wait Visibility And Click Element  css=#tab_4 a
+    Run Keyword If  'переговорної процедури' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_3 a
+    ...  ELSE IF  'додати документацію до звіту' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_4 a
+    ...  ELSE  Wait Visibility And Click Element  css=#tab_5 a
 
     #загрузим файл
     Wait Visibility And Click Element  css=label[for='documentation_tender_yes']
@@ -1784,19 +1784,26 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait For Element With Reload  css=input[data-id='contract.title']  1
     Wait Element Visibility And Input Text  css=input[data-id='contract.title']  ${tender_uaid}
     Wait Element Visibility And Input Text  css=#contractNumber  ${tender_uaid}
-    Click Element  css=#dateSigned
-    Wait Visibility And Click Element  css=.today.day
-    Wait For Ajax
-    Click Element  css=#endDate
+
+    Click Element  xpath=//input[@name='dateSigned']
+    Wait Visibility And Click Element  xpath=//div[@class='datepicker-days']//td[@class='today day']
+    Wait Visibility And Click Element  xpath=//input[@name='endDate']
     Wait Visibility And Click Element  xpath=//div[@class="datepicker-days"]//tbody//tr[6]//td[4]
+
+#    Click Element  css=#dateSigned
+#    Wait Visibility And Click Element  css=.today.day
+#    Wait For Ajax
+#    Click Element  css=#endDate
+#    Wait Visibility And Click Element  xpath=//div[@class="datepicker-days"]//tbody//tr[6]//td[4]
     Wait For Ajax
-    Run Keyword Unless  '${mode}' == 'reporting'  Wait Visibility And Click Element  xpath=//label[@for='agree']
+#    Run Keyword Unless  '${mode}' == 'reporting'  Wait Visibility And Click Element  xpath=//label[@for='agree']
     Wait Until Element Is Enabled  css=button[ng-click="act.saveContract('active')"]  ${COMMONWAIT}
     Click Button  css=button[ng-click="act.saveContract('active')"]
+    Wait Visibility And Click Element  xpath=//button[@data-id='modal-close']
     Wait Until Element Is Visible  css=.notify  ${COMMONWAIT}
-    Sleep  1min
+    Sleep  30s
     Reload Page
-    Wait For Element With Reload  xpath=//span[@data-id='contractStatus']  1
+    Wait For Element With Reload  xpath=//span[@id='contractStatus']  1
     Wait Visibility And Click Element  xpath=//div[contains(@class,'contracts info')]//div[@id='noEcp']
     Sleep  1s
     Run Keyword  Завантажити ЕЦП
@@ -1805,7 +1812,44 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
 
 Редагувати угоду
     [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${field_name}  ${value}
-    Fail  Ключевое слово не реализовано
+    Reload Page
+    Wait For Element With Reload  xpath=//input[@data-id='contract.title']  1
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='contract.title']  Договір до закупівлі
+    Wait Element Visibility And Input Text  xpath=//input[@id='contractNumber']  1234567890
+    Click Element  xpath=//input[@name='dateSigned']
+    Wait Visibility And Click Element  xpath=//div[@class='datepicker-days']//td[@class='today day']
+    Wait Visibility And Click Element  xpath=//input[@name='endDate']
+    Wait Visibility And Click Element  xpath=//td[contains(@class, 'today')]//../following-sibling::tr[1]//td[5]
+    Wait Visibility And Click Element  xpath=//div[@class='form-block__item']/form/select[1]/option[3]
+    Sleep  1s
+    Wait Visibility And Click Element  xpath=//div[@class='form-block__item']/form/select[2]/option[2]
+    ${file_path}  ${file_name}  ${file_content}=  create_fake_doc
+    Sleep  1s
+    Choose File  xpath=//div[@class='form-block__item']/form/div/input  ${file_path}
+    Sleep  5s
+    Run Keyword If  '${field_name}' == 'value.amountNet'  Редагувати вартість угоди без урахування ПДВ  ${value}
+    Run Keyword If  '${field_name}' == 'value.amount'  Редагувати вартість угоди з урахуванням ПДВ  ${value}
+    Wait Until Element Is Enabled  css=button[ng-click="act.saveContract('pending')"]  ${COMMONWAIT}
+    Click Button  css=button[ng-click="act.saveContract('pending')"]
+    Wait Visibility And Click Element  xpath=//button[@data-id='modal-close']
+    Sleep  60s
+    Reload Page
+
+
+Редагувати вартість угоди без урахування ПДВ
+    [Arguments]  ${value}
+    Wait Until Element Is Enabled  xpath=//input[@data-id='contract-value-amount-net-input']
+    Clear Element Text  xpath=//input[@data-id='contract-value-amount-net-input']
+    ${value}=  Convert to String  ${value}
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='contract-value-amount-net-input']  ${value}
+
+
+Редагувати вартість угоди з урахуванням ПДВ
+    [Arguments]  ${value}
+    Wait Until Element Is Enabled  xpath=//input[@data-id='contract-value-amount-input']
+    Clear Element Text  xpath=//input[@data-id='contract-value-amount-input']
+    ${value}=  Convert to String  ${value}
+    Wait Element Visibility And Input Text  xpath=//input[@data-id='contract-value-amount-input']  ${value}
 
 
 Встановити дату підписання угоди
@@ -3016,7 +3060,7 @@ Convert Amount To Number
 
 
 Wait For Element With Reload
-    [Arguments]  ${locator}  ${tab_number}  ${period}=7
+    [Arguments]  ${locator}  ${tab_number}  ${period}=10
     Wait Until Keyword Succeeds  ${period}min  10s  Try Search Element  ${locator}  ${tab_number}
 
 
@@ -3030,6 +3074,7 @@ Try Search Element
     ...  ELSE IF  '${tab_number}' == '1' and '${TEST_NAME}' == 'Можливість укласти угоду для закупівлі'  Відкрити детальну інформацію про контракт
     ...  ELSE IF  '${tab_number}' == '1' and '${TEST_NAME}' == 'Можливість укласти угоду для звіту про укладений договір'  Відкрити детальну інформацію про контракт
     ...  ELSE IF  '${tab_number}' == '1' and '${TEST_NAME}' == 'Можливість укласти угоду для переговорної процедури'  Відкрити детальну інформацію про контракт
+    ...  ELSE IF  '${tab_number}' == '1' and 'редагувати вартість угоди' in '${TEST_NAME}'  Відкрити детальну інформацію про контракт
     ...  ELSE IF  '${tab_number}' == '1' and 'пропозицію кваліфікації' in '${TEST_NAME}'  Wait Visibility And Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
     ...  ELSE IF  '${tab_number}' == '1' and 'вичитати посилання на аукціон' in '${TEST_NAME}'  Відкрити модальне вікно з посиланням на аукціон
     ...  ELSE IF  '${tab_number}' == '1' and 'дочекатися завершення аукціону' in '${TEST_NAME}'  Відкрити модальне вікно з посиланням на аукціон
