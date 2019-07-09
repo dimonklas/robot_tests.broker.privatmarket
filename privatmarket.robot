@@ -1397,8 +1397,8 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
     #откроем нужную вкладку
     Run Keyword If  'переговорної процедури' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_3 a
-    ...  ELSE IF  'додати документацію до звіту' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_4 a
-    ...  ELSE  Wait Visibility And Click Element  css=#tab_5 a
+    ...  ELSE IF  'додати документацію до звіту' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_3 a
+    ...  ELSE  Wait Visibility And Click Element  css=#tab_4 a
 
     #загрузим файл
     Wait Visibility And Click Element  css=label[for='documentation_tender_yes']
