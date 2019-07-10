@@ -73,6 +73,9 @@ ${tender_data_item.quantity}  //div[@ng-if='adb.quantity']/div[2]/span)
 ${tender_data_items[0].deliveryDate.endDate}  xpath=//div[@data-id='deliveryDate.endDate']
 ${tender_data_items[0].deliveryDate.startDate}  xpath=//div[@data-id='deliveryDate.startDate']
 ${tender_data_items[0].description}  xpath=//div[@class='description']
+${tender_data_items[0].quantity}  xpath=(//div[@ng-if='adb.quantity']/div[2]/span)[1]
+${tender_data_lots[0].value.amount}  xpath=//div[@id='lotAmount']
+${tender_data_lots[0].minimalStep.amount}  xpath=//div[@id='lotMinStepAmount']
 
 ${tender_data_lot.title}  //div[@id='lot-title'])
 ${tender_data_lot.description}  //section[contains(@class, 'description marged')])
@@ -142,7 +145,7 @@ ${tender_data_contracts[1].status}  xpath=//span[@data-id='contractStatus']
 ${tender_data_contracts[1].dateSigned}  xpath=//div[contains(@class,'contracts info')]//div[text()='Договiр №:']/following-sibling::div/span
 ${tender_data_contracts[1].period.startDate}  xpath=//div[contains(@class,'contracts info')]//div[text()='Дата початку:']/following-sibling::div/span
 ${tender_data_contracts[1].period.endDate}  xpath=//div[contains(@class,'contracts info')]//div[text()='Дата кiнця:']/following-sibling::div/span
-${tender_data_features[0].title}  xpath=//div[@class='no-price']//span[@data-id='feature.title']
+${tender_data_features[0].title}  css=div.no-price span[data-id='feature.title']
 
 ${tender_data_funders[0].name}  xpath=//td[@ng-bind='model.ad.funders[0].contactPoint.name']
 ${tender_data_funders[0].address.countryName}  xpath=//div[@data-id='funders-block']//span[@data-id='address.countryName']
@@ -1897,6 +1900,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Run Keyword And Return If  '${field_name}' == 'items[0].deliveryDate.endDate'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'stage2TenderID'  Отримати інформацію з ${field_name}
     Run Keyword And Return If  '${field_name}' == 'features[0].title'  Отримати інформацію з ${field_name}  ${field_name}
+#    Run Keyword And Return If  '${field_name}' == 'features[1].title'  Отримати інформацію з features[0].title  ${field_name}
 #    Run Keyword And Return If  '${field_name}' == 'lots[0].auctionPeriod.endDate'  Отримати дату та час  ${field_name}
 #    Run Keyword And Return If  '${field_name}' == 'lots[0].auctionPeriod.startDate'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'questions[0].title'  Отримати інформацію з ${field_name}  ${field_name}
@@ -2553,9 +2557,9 @@ Scroll To Element
 Отримати інформацію з features[0].title
     [Arguments]  ${element_name}
     Reload Page
-    Wait Until Element Is Visible  xpath=//li[contains(@ng-class, 'lot-parts')]
-    ${class}=  Get Element Attribute  xpath=//li[contains(@ng-class, 'lot-parts')]@class
-    Run Keyword Unless  'checked-nav' in '${class}'  Click Element  xpath=(//li[contains(@ng-class, 'lot.showTab')])[1]
+    Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'lot-parts')]
+    ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'lot-parts')]@class
+    Run Keyword Unless  'checked-nav' in '${class}'  Click Element  xpath=(//a[contains(@ng-class, 'lot.showTab')])[1]
     Wait Until Element Is Visible  ${tender_data_${element_name}}
     ${result_full}=  Get Text  ${tender_data_${element_name}}
     ${result}=  Strip String  ${result_full}
@@ -2885,10 +2889,14 @@ Scroll To Element
 Отримати дату та час
     [Arguments]  ${element_name}
     Switch Browser  ${ALIAS_NAME}
-    ${element_present}=  Run Keyword And Return Status  Element Should Be Visible  ${element_name}
-    Run Keyword unless  ${element_present}  Wait For Element With Reload  ${tender_data_${element_name}}  1
+    ${xpath}=  Set Variable If
+        ...  '${mode}' == 'framework_selection' and '${element_name}' == 'enquiryPeriod.startDate'  xpath=//*[@id='active.enquiries.cfas-bd']
+        ...  '${mode}' == 'framework_selection' and '${element_name}' == 'enquiryPeriod.endDate'  xpath=//*[@id='active.enquiries.cfas-ed']
+        ...  ${tender_data_${element_name}}
+    ${element_present}=  Run Keyword And Return Status  Element Should Be Visible  ${xpath}
+    Run Keyword unless  ${element_present}  Wait For Element With Reload  ${xpath}  1
 
-    ${result_full}=  Отримати текст елемента  ${element_name}
+    ${result_full}=  Отримати текст елемента  ${xpath}
     ${work_string}=  Replace String  ${result_full}  ${SPACE},${SPACE}  ${SPACE}
     ${work_string}=  Replace String  ${work_string}  ,${SPACE}  ${SPACE}
     ${work_string}=  Replace String  ${work_string}  .  ${SPACE}
