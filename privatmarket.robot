@@ -1813,6 +1813,13 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
 #    Click Element  css=#endDate
 #    Wait Visibility And Click Element  xpath=//div[@class="datepicker-days"]//tbody//tr[6]//td[4]
     Wait For Ajax
+    ${file_path}  ${file_name}  ${file_content}=  create_fake_doc
+    Wait Visibility And Click Element  xpath=//div[@class='form-block__item']/form/select[1]/option[2]
+    Sleep  1s
+    Wait Visibility And Click Element  xpath=//div[@class='form-block__item']/form/select[2]/option[2]
+    Sleep  1s
+    Choose File  xpath=//div[@class='form-block__item']/form/div/input  ${file_path}
+
 #    Run Keyword Unless  '${mode}' == 'reporting'  Wait Visibility And Click Element  xpath=//label[@for='agree']
     Wait Until Element Is Enabled  css=button[ng-click="act.saveContract('active')"]  ${COMMONWAIT}
     Click Button  css=button[ng-click="act.saveContract('active')"]
