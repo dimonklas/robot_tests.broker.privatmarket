@@ -98,6 +98,11 @@ ${tender_data_lot_question.questions[0].answer}  (//div[@class='question-div']/d
 ${tender_data_lot_question.questions[2].answer}  //div[@data-id='lot-question-answer']//div[@class='question-div']/div[1]
 
 ${tender_data_feature.featureOf}  /../../../*[1]
+${tender_data_features[0].featureOf}  xpath=(//div[contains(@class, 'feature name')]/../../../*[1])[1]
+${tender_data_features[1].featureOf}  xpath=(//div[contains(@class, 'feature name')]/../../../*[1])[2]
+
+${tender_data_features[0].description}  //div[@data-id='feature.description']
+${tender_data_features[1].description}  xpath=(//div[@data-id='feature.description'])[2]
 
 ${tender_data_complaint.complaintID}  //span[@data-id='complaint-id']
 ${tender_data_complaint.status}  //span[contains(@id, 'cmplStatus')]
@@ -146,6 +151,7 @@ ${tender_data_contracts[1].dateSigned}  xpath=//div[contains(@class,'contracts i
 ${tender_data_contracts[1].period.startDate}  xpath=//div[contains(@class,'contracts info')]//div[text()='Дата початку:']/following-sibling::div/span
 ${tender_data_contracts[1].period.endDate}  xpath=//div[contains(@class,'contracts info')]//div[text()='Дата кiнця:']/following-sibling::div/span
 ${tender_data_features[0].title}  css=div.no-price span[data-id='feature.title']
+${tender_data_features[1].title}  xpath=(//div[contains(@class, 'no-price')]//span[@data-id='feature.title'])[2]
 
 ${tender_data_funders[0].name}  xpath=//td[@ng-bind='model.ad.funders[0].contactPoint.name']
 ${tender_data_funders[0].address.countryName}  xpath=//div[@data-id='funders-block']//span[@data-id='address.countryName']
@@ -1900,7 +1906,10 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Run Keyword And Return If  '${field_name}' == 'items[0].deliveryDate.endDate'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'stage2TenderID'  Отримати інформацію з ${field_name}
     Run Keyword And Return If  '${field_name}' == 'features[0].title'  Отримати інформацію з ${field_name}  ${field_name}
-#    Run Keyword And Return If  '${field_name}' == 'features[1].title'  Отримати інформацію з features[0].title  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'features[1].title'  Отримати інформацію з features[0].title  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'features[1].description'  Отримати інформацію з features[0].title  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'features[0].featureOf'  Отримати інформацію з features[0].title  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'features[1].featureOf'  Отримати інформацію з features[0].title  ${field_name}
 #    Run Keyword And Return If  '${field_name}' == 'lots[0].auctionPeriod.endDate'  Отримати дату та час  ${field_name}
 #    Run Keyword And Return If  '${field_name}' == 'lots[0].auctionPeriod.startDate'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'questions[0].title'  Отримати інформацію з ${field_name}  ${field_name}
@@ -2560,6 +2569,7 @@ Scroll To Element
     Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'lot-parts')]
     ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'lot-parts')]@class
     Run Keyword Unless  'checked-nav' in '${class}'  Click Element  xpath=(//a[contains(@ng-class, 'lot.showTab')])[1]
+    Відкрити детальну інформацію по позиціям
     Wait Until Element Is Visible  ${tender_data_${element_name}}
     ${result_full}=  Get Text  ${tender_data_${element_name}}
     ${result}=  Strip String  ${result_full}
