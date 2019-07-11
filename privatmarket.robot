@@ -1167,6 +1167,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Run Keyword And Return If  'value.amount' == '${field}'  Змінити ${field} лоту  ${value}
     Run Keyword And Return If  'minimalStep.amount' == '${field}'  Змінити ${field} лоту  ${value}
     Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
+    Execute JavaScript    window.scrollTo(${0},${0})
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
@@ -1657,7 +1658,8 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Choose File  id=PKeyFileInput  ${path}
 #    Wait Element Visibility And Input Text  id=PKeyPassword  1111111111
 #    Wait Element Visibility And Input Text  id=PKeyPassword  12345677
-    Wait Element Visibility And Input Text  id=PKeyPassword  1111qqqq
+#    Wait Element Visibility And Input Text  id=PKeyPassword  1111qqqq
+    Wait Element Visibility And Input Text  id=PKeyPassword  11111111
     Wait Visibility And Click Element  id=PKeyReadButton
     Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'Ключ успішно завантажено')]  ${COMMONWAIT}
     Wait Visibility And Click Element  id=SignDataButton
@@ -2427,7 +2429,7 @@ Try To Search Complaint
     Відкрити детальну інформацію про контракт
 
     Run Keyword If  'статусу підписаної угоди з постачальником' in '${TEST_NAME}'
-    ...  Wait For Element With Reload  xpath=//span[contains(., 'Підписаний') and contains(@data-id, 'contractStatus')]  1
+    ...  Wait For Element With Reload  xpath=//span[contains(., 'Підписаний') and contains(@id, 'contractStatus')]  1
 
     ${status}  ${status_name}=  Run Keyword And Ignore Error  Get text  ${tender_data_${field_name}}
     ${status_name}=  Run Keyword If
@@ -3333,7 +3335,8 @@ Get Item Number
     ${path}=   get_ECP_key  src/robot_tests.broker.privatmarket/11141802_11141802.jks
     Choose File  id=PKeyFileInput  ${path}
 #    Wait Element Visibility And Input Text  id=PKeyPassword  12345677
-    Wait Element Visibility And Input Text  id=PKeyPassword  1111qqqq
+#    Wait Element Visibility And Input Text  id=PKeyPassword  1111qqqq
+    Wait Element Visibility And Input Text  id=PKeyPassword  11111111
     Wait Visibility And Click Element  id=PKeyReadButton
     Wait Until Element Is Visible  xpath=//span[@id='PKStatusInfo' and contains(text(), 'Ключ успішно завантажено')]
     Wait Visibility And Click Element  id=SignDataButton
