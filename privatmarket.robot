@@ -96,6 +96,7 @@ ${tender_data_lot_question.questions[0].title}  //span[contains(@class, 'questio
 ${tender_data_lot_question.questions[0].description}  (//div[@class='question-div']/div[1])[1]
 ${tender_data_lot_question.questions[0].answer}  (//div[@class='question-div']/div[1])[2]
 ${tender_data_lot_question.questions[2].answer}  //div[@data-id='lot-question-answer']//div[@class='question-div']/div[1]
+${tender_data_lot_question.questions[1].answer}  //div[@data-id='lot-question-answer']//div[contains(@class,'question-div')]/div[1]
 
 ${tender_data_feature.featureOf}  /../../../*[1]
 
@@ -1137,6 +1138,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
 Внести зміни в тендер
     [Arguments]  ${user_name}  ${tenderId}  ${parameter}  ${value}
     Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
+    Execute JavaScript    window.scrollTo(${0},${0})
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
 
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
@@ -1148,9 +1150,11 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
     Wait Until Element Is Visible  css=section[data-id='step2']  ${COMMONWAIT}
 
-    Run Keyword If
-    ...  '${MODE}' == 'esco'  Wait Visibility And Click Element  css=#tab_4 a
-    ...  ELSE  Wait Visibility And Click Element  css=#tab_5 a
+#    Run Keyword If
+#    ...  '${MODE}' == 'esco'  Wait Visibility And Click Element  css=#tab_4 a
+#    ...  ELSE  Wait Visibility And Click Element  css=#tab_5 a
+
+    Wait Visibility And Click Element  xpath=//span[@title='Перевірка та публікація']
 
     Wait For Ajax
     Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
@@ -1189,8 +1193,8 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
     Wait For Ajax
-    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
-    Wait Visibility And Click Element  css=#tab_1 a
+    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']
+    Wait Visibility And Click Element  xpath=//span[@title='Лоти та предмети закупівлі']
     ${value_amount}=  privatmarket_service.convert_float_to_string  ${value}
     Wait Element Visibility And Input Text  css=input[data-id='valueAmount']  ${value_amount}
     Sleep  3s
@@ -1365,7 +1369,8 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Visibility And Click Element  xpath=//select[@data-id='funder']/option[@value='none']
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
     Wait For Ajax
-    Wait Visibility And Click Element  css=#tab_5 a
+    Wait Visibility And Click Element  xpath=//span[@title='Перевірка та публікація']
+#    Wait Visibility And Click Element  css=#tab_5 a
     Wait For Ajax
     Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
     Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
@@ -1382,7 +1387,8 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Visibility And Click Element  xpath=//select[@data-id='funder']/option[@value='${funders_data.identifier.id}']
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
     Wait For Ajax
-    Wait Visibility And Click Element  css=#tab_5 a
+    Wait Visibility And Click Element  xpath=//span[@title='Перевірка та публікація']
+#    Wait Visibility And Click Element  css=#tab_5 a
     Wait For Ajax
     Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
     Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
@@ -1402,9 +1408,10 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
     #откроем нужную вкладку
-    Run Keyword If  'переговорної процедури' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_3 a
-    ...  ELSE IF  'додати документацію до звіту' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_3 a
-    ...  ELSE  Wait Visibility And Click Element  css=#tab_4 a
+    Wait Visibility And Click Element  xpath=//span[@title='Документація']
+#    Run Keyword If  'переговорної процедури' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_3 a
+#    ...  ELSE IF  'додати документацію до звіту' in '${TEST_NAME}'  Wait Visibility And Click Element  css=#tab_3 a
+#    ...  ELSE  Wait Visibility And Click Element  css=#tab_4 a
 
     #загрузим файл
     Wait Visibility And Click Element  css=label[for='documentation_tender_yes']
@@ -1418,7 +1425,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Sleep  5s
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
     Wait For Ajax
-    Wait Until Element Is Visible  css=section[data-id='step5']  ${COMMONWAIT}
+    Wait Until Element Is Visible  xpath=//span[@title='Перевірка та публікація']  ${COMMONWAIT}
     Sleep  1s
     Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
 
@@ -1432,14 +1439,16 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Run Keyword If
     ...  'Неможливість' in '${TEST_NAME}'  Wait Until Element Is Visible  ${locator_tenderClaim.buttonCreate}
     ...  ELSE  Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
+    Execute JavaScript    window.scrollTo(${0},${0})
 
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
 
-    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
+    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']
     Sleep  2s
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
-    Wait Visibility And Click Element  css=#tab_4 a
+    Wait Visibility And Click Element  xpath=//span[@title='Документація']
+#    Wait Visibility And Click Element  css=#tab_4 a
     Sleep  2s
     Wait Visibility And Click Element  css=label[for='documentation_lot_yes']
     Sleep  1s
@@ -1453,7 +1462,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Sleep  5s
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
     Wait For Ajax
-    Wait Until Element Is Visible  css=section[data-id='step5']  ${COMMONWAIT}
+    Wait Until Element Is Visible  xpath=//span[@title='Перевірка та публікація']  ${COMMONWAIT}
     Wait For Ajax
     Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
 
@@ -1908,7 +1917,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
 #    Run Keyword And Return If  '${field_name}' == 'lots[0].auctionPeriod.startDate'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'questions[0].title'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'questions[0].description'  Отримати інформацію з ${field_name}  ${field_name}
-    Run Keyword And Return If  '${field_name}' == 'questions[0].answer' or '${field_name}' == 'questions[2].answer'  Отримати інформацію з questions.answer  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'questions[0].answer' or '${field_name}' == 'questions[2].answer' or '${field_name}' == 'questions[1].answer'  Отримати інформацію з questions.answer  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'contracts[0].status' or '${field_name}' == 'contracts[1].status'  Отримати статус договору  ${field_name}
     Run Keyword And Return If  'endDate' in '${field_name}' or 'startDate' in '${field_name}'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'agreementDuration'  Отримати інформацію з ${field_name}  ${field_name}
@@ -3267,8 +3276,8 @@ Get Item Number
     Run Keyword Unless  'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}' or 'belowThreshold' in '${tender_type}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
     Run Keyword Unless  'до переговорної процедури' in '${TEST_NAME}' or 'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}' or 'belowThreshold' in '${tender_type}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
 
-#    Wait For Element With Reload  xpath=//span[@ng-click="act.openAward(b)"]  1
-#    Wait Visibility And Click Element  xpath=//span[@ng-click="act.openAward(b)"]
+    Wait For Element With Reload  xpath=//span[@ng-click="act.openAward(b)"]  1
+    Wait Visibility And Click Element  xpath=//span[@ng-click="act.openAward(b)"]
 
     Wait Visibility And Click Element  xpath=//div[@class='award-section award-actions ng-scope']//button[@data-id='setActive']
     Sleep  1s
