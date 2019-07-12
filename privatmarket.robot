@@ -1672,6 +1672,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
 Затвердити остаточне рішення кваліфікації
     [Arguments]  ${user_name}  ${tenderId}
     Wait For Element With Reload  css=button[data-id='finishPreQualBtn']  1
+    Execute JavaScript    window.scrollTo(${0},${0})
     Wait Visibility And Click Element  css=button[data-id='finishPreQualBtn']
     Wait For Element With Reload  css=[data-tender-status='active.pre-qualification.stand-still']  1
 
