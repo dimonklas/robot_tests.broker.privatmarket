@@ -625,7 +625,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
 
 #go to form
     Wait For Ajax
-    Wait Visibility And Click Element  ${locator_tenderSearch.addTender}
+    Run Keyword Unless  '${MODE}' == 'framework_selection'  Wait Visibility And Click Element  ${locator_tenderSearch.addTender}
 
     ${status}  ${type}=  Run Keyword And Ignore Error  Set Variable  '${tender_data.data.procurementMethodType}'
     ${type}=  Run Keyword If
@@ -677,10 +677,10 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Run Keyword IF  ${type} != 'closeFrameworkAgreementSelectionUA'
     ...  Run Keywords
     ...  Wait Visibility And Click Element  xpath=(//a[@data-id='actChoose'])[1]
-    ...  Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
-    ...  Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
-    ...  Search By Query  css=input[data-id='query']  ${items[0].classification.id}
-    ...  Wait Visibility And Click Element  css=button[data-id='actConfirm']
+    ...  AND  Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
+    ...  AND  Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
+    ...  AND  Search By Query  css=input[data-id='query']  ${items[0].classification.id}
+    ...  AND  Wait Visibility And Click Element  css=button[data-id='actConfirm']
 #    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
 
     Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'defineProcurementCategory')]
@@ -753,15 +753,16 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
 #Заповнити умови оплати для закупівлі
-    Run Keyword Unless  ${type} == 'esco'
+    Run Keyword Unless  ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'
     ...  Run Keywords
     ...  Wait Visibility And Click Element  css=label[for='financing_milistones_flag_yes']
     ...  AND  Додати milestones  ${milestones}  ${type}
 
-    Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
+    Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA' or ${type} == 'esco'  Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
     Run Keyword If  ${type} == 'negotiation'  Wait Until Element Is Visible  css=label[for='documentation_tender_yes']  ${COMMONWAIT}
     ...  ELSE IF  ${type} == 'reporting'  Wait Until Element Is Visible  css=section[data-id='step4']  ${COMMONWAIT}
+    ...  ELSE IF  ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Until Element Is Visible  css=section[data-id='step5']  ${COMMONWAIT}
     ...  ELSE  Wait Until Element Is Visible  css=section[data-id='step3']  ${COMMONWAIT}
 
 #step 3
@@ -774,15 +775,16 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     ...  ELSE IF  ${type} == 'aboveThresholdUA.defense' and ${exist_features}  Додати нецінові показники  ${features}  ${type}
     ...  ELSE IF  'competitiveDialogue' in ${type} and ${exist_features}  Додати нецінові показники  ${features}  ${type}
     ...  ELSE IF  'closeFrameworkAgreementUA' in ${type} and ${exist_features}  Додати нецінові показники  ${features}  ${type}
+    ...  ELSE IF  'esco' in ${type} and ${exist_features}  Додати нецінові показники  ${features}  ${type}
 
-    Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
+    Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
 #step 4
-    Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'reporting'  Wait Until Element Is Visible  css=section[data-id='step4']  ${COMMONWAIT}
-    Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'reporting'  Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
+    Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'reporting' or ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Until Element Is Visible  css=section[data-id='step4']  ${COMMONWAIT}
+    Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'reporting' or ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
 #step 5
-    Wait Until Element Is Visible  css=section[data-id='step5']  ${COMMONWAIT}
+    Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Until Element Is Visible  css=section[data-id='step5']  ${COMMONWAIT}
     Sleep  3s
 
     Run Keyword And Ignore Error  Wait Visibility And Click Element  xpath=//button[@data-id="modal-close"]
@@ -824,12 +826,12 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     \  Wait Element Visibility And Input Text  xpath=(//textarea[@data-id='lotDescription'])[${lot_index}]  ${lots[${index}].description}
     \  ${amount}=  Set Variable If  ${type} != 'esco'  ${lots[${index}].value.amount}  ''
     \  ${value_amount}=  privatmarket_service.convert_float_to_string  ${amount}
-    \  Run Keyword Unless  ${type} == 'esco'  Wait Element Visibility And Input Text  xpath=(//input[@data-id='valueAmount'])[${lot_index}]  ${value_amount}
+    \  Run Keyword Unless  ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Element Visibility And Input Text  xpath=(//input[@data-id='valueAmount'])[${lot_index}]  ${value_amount}
     \  Sleep  3s
-    \  Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'esco'  Ввести мінімальний крок  ${lots}  ${index}  ${lot_index}
-    \  Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'esco'  Wait Visibility And Click Element  xpath=(//label[contains(@for,'guarantee')])[${lot_index}]
-    \  Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'esco'  Wait Element Visibility And Input Text  xpath=(//input[@data-id='guaranteeAmount'])[${lot_index}]  1
-    \  Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco'
+    \  Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'  Ввести мінімальний крок  ${lots}  ${index}  ${lot_index}
+    \  Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Visibility And Click Element  xpath=(//label[contains(@for,'guarantee')])[${lot_index}]
+    \  Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Element Visibility And Input Text  xpath=(//input[@data-id='guaranteeAmount'])[${lot_index}]  1
+    \  Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'
     \  ...  Run Keywords
     \  ...  Wait Element Visibility And Input Text  xpath=(//input[@data-id='procurementNameEn'])[${lot_index}]  ${lots[${index}].title_en}
     \  ...  AND  Wait Element Visibility And Input Text  xpath=(//textarea[@data-id='lotDescriptionEn'])[${lot_index}]  ${lots[${index}].description}
@@ -861,34 +863,54 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Run Keyword If  '${is_click}' == 'true'  Wait Visibility And Click Element  xpath=(//button[@data-id='actAddItem'])[${lot_index}]
     Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//input[@data-id='description'])[${item_index}]  ${items[${index}].description}
 
-    Вказати вид предмету закупівлі  ${TENDER_DATA.data.mainProcurementCategory}  ${item_index}  ${lot_index}
+    Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA' or ${type} == 'esco'  Вказати вид предмету закупівлі  ${TENDER_DATA.data.mainProcurementCategory}  ${item_index}  ${lot_index}
 
     ${item_quantity}=  Convert To String  ${items[${index}].quantity}
 
-    Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//input[@data-id='quantity'])[${item_index}]  ${item_quantity}
+    Run Keyword Unless  ${type} == 'esco'  Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//input[@data-id='quantity'])[${item_index}]  ${item_quantity}
 
     ${unitName}=  Run Keyword If
     ...  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU'  privatmarket_service.get_unit_name  ${items[${index}].unit.name}
+    ...  ELSE IF  ${type} == 'esco'  No Operation
     ...  ELSE  privatmarket_service.get_unit_name  ${items[${index}].unit.name}
 
-    Wait Visibility And Click Element  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//select[@data-id='unit'])[${item_index}]/option[text()='${unitName}']
+    Run Keyword Unless  ${type} == 'esco'  Wait Visibility And Click Element  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//select[@data-id='unit'])[${item_index}]/option[text()='${unitName}']
 
     #CPV
-    Wait Visibility And Click Element  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//a[@data-id='actChoose']
-    Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
-    Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
-    Search By Query  css=input[data-id='query']  ${items[${index}].classification.id}
-    Wait Visibility And Click Element  css=button[data-id='actConfirm']
+    Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA'
+    ...  Run Keywords
+    ...  Wait Visibility And Click Element  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//a[@data-id='actChoose']
+    ...  AND  Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
+    ...  AND  Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
+    ...  AND  Search By Query  css=input[data-id='query']  ${items[${index}].classification.id}
+    ...  AND  Wait Visibility And Click Element  css=button[data-id='actConfirm']
 
-    ${classification_id}=  Get Substring  ${items[${index}].classification.id}  0  5
-    ${pre_classification_id}=  Get Substring  ${items[${index}].classification.id}  0  3
+    ${status}  ${classification_id}=  Run Keyword And Ignore Error  Set Variable  ${items[${index}].classification.id}
+    ${classification_id}=  Run Keyword If
+    ...  '${status}' == 'PASS'  Set Variable  ${classification_id}
+    ...  ELSE  Set Variable  ''
+#    ${classification_id}=  Get Substring  ${items[${index}].classification.id}  0  5
+    ${classification_id}=  Get Substring  ${classification_id}  0  5
+#    ${pre_classification_id}=  Get Substring  ${items[${index}].classification.id}  0  3
+    ${pre_classification_id}=  Get Substring  ${classification_id}  0  3
     ${classification_status}=  Set Variable If  '${pre_classification_id}' == '33695'  ${False}  ${True}
-    Run Keyword If  '${classification_status}' == 'True' and '${pre_classification_id}' == '336'  Обрати додаткові класифікатори для лікарських засобів  ${items}  ${index}  ${item_index}  ${lot_index}
+    Run Keyword If  '${classification_status}' == 'True' and ${pre_classification_id} == '336' and ${type} != 'closeFrameworkAgreementSelectionUA'  Обрати додаткові класифікатори для лікарських засобів  ${items}  ${index}  ${item_index}  ${lot_index}
 
-    ${deliveryStartDate}=  Get Regexp Matches  ${items[${index}].deliveryDate.startDate}  (\\d{4}-\\d{2}-\\d{2})
-    ${deliveryStartDate}=  Convert Date  ${deliveryStartDate[0]}  result_format=%d-%m-%Y
-    ${deliveryEndDate}=  Get Regexp Matches  ${items[${index}].deliveryDate.endDate}  (\\d{4}-\\d{2}-\\d{2})
-    ${deliveryEndDate}=  Convert Date  ${deliveryEndDate[0]}  result_format=%d-%m-%Y
+    ${status}  ${deliveryStartDate}=  Run Keyword And Ignore Error  Set Variable  ${items[${index}].deliveryDate.startDate}
+    ${deliveryStartDate}=  Run Keyword If
+    ...  '${status}' == 'PASS'  Run Keyword  Отримати період для номенклатури  ${deliveryStartDate}
+    ...  ELSE  Set Variable  ''
+#    ${deliveryStartDate}=  Get Regexp Matches  ${deliveryStartDate}  (\\d{4}-\\d{2}-\\d{2})
+
+    ${status}  ${deliveryEndDate}=  Run Keyword And Ignore Error  Set Variable  ${items[${index}].deliveryDate.endDate}
+    ${deliveryEndDate}=  Run Keyword If
+    ...  '${status}' == 'PASS'  Run Keyword  Отримати період для номенклатури  ${deliveryEndDate}
+    ...  ELSE  Set Variable  ''
+#    ${deliveryEndDate}=  Get Regexp Matches  ${deliveryEndDate}  (\\d{4}-\\d{2}-\\d{2})
+#    ${deliveryEndDate}=  Convert Date  ${deliveryEndDate[0]}  result_format=%d-%m-%Y
+
+
+    Run Keyword If  ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'changeItemDeliveryOptions')]
 
     Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//input[@data-id='postalCode']  ${items[${index}].deliveryAddress.postalCode}
     Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//input[@data-id='countryName']  ${items[${index}].deliveryAddress.countryName}
@@ -896,12 +918,23 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//input[@data-id='locality']  ${items[${index}].deliveryAddress.locality}
     Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//input[@data-id='streetAddress']  ${items[${index}].deliveryAddress.streetAddress}
 
-    Wait Until Element Is Visible  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//input[@data-id='deliveryDateEnd']  ${COMMONWAIT}
+    Run Keyword Unless  ${type} == 'esco'  Wait Until Element Is Visible  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//input[@data-id='deliveryDateEnd']  ${COMMONWAIT}
+
     ${abs_item_index}=  privatmarket_service.get_abs_item_index  ${lot_index}  ${index}  ${items_count}
-    Set Date In Item  ${abs_item_index}  deliveryDate  startDate  ${items[${index}].deliveryDate.startDate}
-    Set Date In Item  ${abs_item_index}  deliveryDate  endDate  ${items[${index}].deliveryDate.endDate}
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'
+    Run Keyword Unless  ${type} == 'esco'
+    ...  Run Keywords
+    ...  Set Date In Item  ${abs_item_index}  deliveryDate  startDate  ${items[${index}].deliveryDate.startDate}
+    ...  AND  Set Date In Item  ${abs_item_index}  deliveryDate  endDate  ${items[${index}].deliveryDate.endDate}
+
+    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA' or ${type} == 'closeFrameworkAgreementSelectionUA' or ${type} == 'esco'
     ...  Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//input[@data-id='descriptionEn']  ${items[${index}].description_en}
+
+
+Отримати період для номенклатури
+    [Arguments]  ${date}
+    ${deliveryDate}=  Get Regexp Matches  ${date}  (\\d{4}-\\d{2}-\\d{2})
+    ${deliveryDate}=  Convert Date  ${deliveryDate[0]}  result_format=%d-%m-%Y
+    [Return]  ${deliveryDate}
 
 
 Додати milestones
@@ -960,9 +993,9 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait For Ajax
     Wait Visibility And Click Element  css=label[for='features_tender_yes']
     Wait Element Visibility And Input Text  css=[data-id='ptrFeatures'] [data-id='title']  ${features.title}
-    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'  Wait Element Visibility And Input Text  css=[data-id='ptrFeatures'] [data-id='titleEn']  ${features.title_en}
+    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA' or ${type} == 'esco'  Wait Element Visibility And Input Text  css=[data-id='ptrFeatures'] [data-id='titleEn']  ${features.title_en}
     Wait Element Visibility And Input Text  css=textarea[data-id='description']  ${features.description}
-    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'  Wait Element Visibility And Input Text  css=[data-id='ptrFeatures'] textarea[data-id='descriptionEn']  ${features.description}
+    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA' or ${type} == 'esco'  Wait Element Visibility And Input Text  css=[data-id='ptrFeatures'] textarea[data-id='descriptionEn']  ${features.description}
 
     @{tender_enums}=  Get From Dictionary  ${features}  enum
     ${tender_criterion_count}=  Get Length  ${tender_enums}
@@ -975,7 +1008,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='criterionValue'])[${elem_index}]  ${tender_criterion_value}
     \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='criterionTitle'])[${elem_index}]  ${tender_enums[${index}].title}
 #    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='criterionTitleEn'])[${elem_index}]  ${tender_enums[${index}].title}
-    \  Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'
+    \  Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA' or ${type} == 'esco'
     \  ...  Wait Element Visibility And Input Text  xpath=(//section[@data-id='ptrFeatures']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${tender_enums[${index}].title}
 
 
@@ -985,9 +1018,11 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Visibility And Click Element  css=label[for='features_items_yes']
     Wait Visibility And Click Element  css=[data-id='item'] button[data-id='actAdd']
     Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='title']  ${features.title}
-    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'  Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='titleEn']  ${features.title_en}
+    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA' or ${type} == 'esco'
+    ...  Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='titleEn']  ${features.title_en}
     Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='description']  ${features.description}
-    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'  Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='descriptionEn']  ${features.description}
+    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA' or ${type} == 'esco'
+    ...  Wait Element Visibility And Input Text  css=[data-id='item'] [data-id='descriptionEn']  ${features.description}
 
     @{item_enums}=  Get From Dictionary  ${features}  enum
     ${item_criterion_count}=  Get Length  ${item_enums}
@@ -1001,7 +1036,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionValue'])[${elem_index}]  ${item_criterion_value}
     \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionTitle'])[${elem_index}]  ${item_enums[${index}].title}
 #    \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${item_enums[${index}].title}
-    \  Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'
+    \  Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA' or ${type} == 'esco'
     \  ...  Wait Element Visibility And Input Text  xpath=(//div[@data-id='item']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${item_enums[${index}].title}
 
 
@@ -1011,9 +1046,11 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Visibility And Click Element  css=label[for='features_lots_yes']
     Wait Visibility And Click Element  css=[data-id='lot'] button[data-id='actAdd']
     Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='title']  ${features.title}
-    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'  Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='titleEn']  ${features.title_en}
+    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA' or ${type} == 'esco'
+    ...  Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='titleEn']  ${features.title_en}
     Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='description']  ${features.description}
-    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'  Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='descriptionEn']  ${features.description}
+    Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA' or ${type} == 'esco'
+    ...  Wait Element Visibility And Input Text  css=[data-id='lot'] [data-id='descriptionEn']  ${features.description}
 
     @{lot_enums}=  Get From Dictionary  ${features}  enum
     ${lot_criterion_count}=  Get Length  ${lot_enums}
@@ -1026,7 +1063,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionValue'])[${elem_index}]  ${lot_criterion_value}
     \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionTitle'])[${elem_index}]  ${lot_enums[${index}].title}
 #    \  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${lot_enums[${index}].title}
-    \  Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA'
+    \  Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA' or ${type} == 'esco'
     \  ...  Wait Element Visibility And Input Text  xpath=(//div[@data-id='lot']//input[@data-id='criterionTitleEn'])[${elem_index}]  ${lot_enums[${index}].title}
 
 
@@ -1672,7 +1709,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Visibility And Click Element  xpath=//button[@data-id='addQualFileEcp']
     Sleep  2s
     Select Window  name=signWin
-    Wait Until Keyword Succeeds  2min  10s  Дочекатися завантаження сторінки підписання ЕЦП
+    Wait Until Keyword Succeeds  2min  20s  Дочекатися завантаження сторінки підписання ЕЦП
     Wait Until Element Is Visible  id=CAsServersSelect  ${COMMONWAIT}
     Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[8]
 #    Wait Visibility And Click Element  xpath=//select[@id='CAsServersSelect']//option[19]
@@ -3089,6 +3126,8 @@ Check Current Mode New Realisation
     [Arguments]  ${education_type}=${True}
     privatmarket.Оновити сторінку з тендером
     Wait Until Element Is Not Visible  xpath=//*[@class='spinner']  ${COMMONWAIT}
+    Wait Until Element Is Not Visible  css=div.animate-loader  ${COMMONWAIT}
+    sleep  5s
     Wait Until Element Is Visible  ${locator_tender.switchToDemo}  ${COMMONWAIT}
     Wait Visibility And Click Element  ${locator_tender.switchToDemo}
     Wait For Ajax
@@ -3098,6 +3137,7 @@ Check Current Mode New Realisation
 
 Switch To Education Mode
     [Arguments]  ${education_type}=${True}
+    Wait Until Element Is Not Visible  css=div.animate-loader  ${COMMONWAIT}
     Wait Visibility And Click Element  ${locator_tender.switchToDemo}
     Wait Until Element Is Visible  ${locator_tender.switchToDemoMessage}  ${COMMONWAIT}
 
