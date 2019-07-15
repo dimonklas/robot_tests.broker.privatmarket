@@ -99,6 +99,11 @@ ${tender_data_lot_question.questions[2].answer}  //div[@data-id='lot-question-an
 ${tender_data_lot_question.questions[1].answer}  //div[@data-id='lot-question-answer']//div[contains(@class,'question-div')]/div[1]
 
 ${tender_data_feature.featureOf}  /../../../*[1]
+${tender_data_features[0].featureOf}  xpath=(//div[contains(@class, 'feature name')]/../../../*[1])[1]
+${tender_data_features[1].featureOf}  xpath=(//div[contains(@class, 'feature name')]/../../../*[1])[2]
+
+${tender_data_features[0].description}  //div[@data-id='feature.description']
+${tender_data_features[1].description}  xpath=(//div[@data-id='feature.description'])[2]
 
 ${tender_data_complaint.complaintID}  //span[@data-id='complaint-id']
 ${tender_data_complaint.status}  //span[contains(@id, 'cmplStatus')]
@@ -147,6 +152,7 @@ ${tender_data_contracts[1].dateSigned}  xpath=//div[contains(@class,'contracts i
 ${tender_data_contracts[1].period.startDate}  xpath=//div[contains(@class,'contracts info')]//div[text()='Дата початку:']/following-sibling::div/span
 ${tender_data_contracts[1].period.endDate}  xpath=//div[contains(@class,'contracts info')]//div[text()='Дата кiнця:']/following-sibling::div/span
 ${tender_data_features[0].title}  css=div.no-price span[data-id='feature.title']
+${tender_data_features[1].title}  xpath=(//div[contains(@class, 'no-price')]//span[@data-id='feature.title'])[2]
 
 ${tender_data_funders[0].name}  xpath=//td[@ng-bind='model.ad.funders[0].contactPoint.name']
 ${tender_data_funders[0].address.countryName}  xpath=//div[@data-id='funders-block']//span[@data-id='address.countryName']
@@ -251,6 +257,14 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Sleep  5s
     Wait Until Element Is Visible  ${tender_data_title}  ${COMMONWAIT}
     Log To Console  ${tenderId}
+
+
+Пошук договору по ідентифікатору
+    [Arguments]  ${username}  ${contract_uaid}
+    ${tenderId}=  Remove String Using Regexp  ${contract_uaid}  -\\w+\\d$
+    Пошук тендера по ідентифікатору  ${username}  ${tenderId}
+    Відкрити детальну інформацію про контракт
+    Page Should Contain  ${contract_uaid}
 
 
 Пошук плану по ідентифікатору
@@ -634,6 +648,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     ...  ELSE IF  ${type} == 'reporting'  Wait Visibility And Click Element  css=a[data-id='choosedPrzReporting']
     ...  ELSE IF  ${type} == 'esco'  Wait Visibility And Click Element  css=a[data-id='choosedPrzEsco']
     ...  ELSE IF  ${type} == 'closeFrameworkAgreementUA'  Wait Visibility And Click Element  css=a[data-id='choosedPrzCloseFrameworkAgreementUA']
+    ...  ELSE IF  ${type} == 'closeFrameworkAgreementSelectionUA'  Перейти до створення другого етапу рамок  ${username}  ${TENDER.TENDER_UAID}
     ...  ELSE  Wait Visibility And Click Element  css=a[data-id='choosedPrzBelowThreshold']
 
     Wait For Ajax
@@ -650,7 +665,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait For Ajax
     Wait Element Visibility And Input Text  css=input[data-id='procurementName']  ${tender_data.data.title}
     Wait Element Visibility And Input Text  css=textarea[data-id='procurementDescription']  ${tender_data.data.description}
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'
+    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or 'FrameworkAgreement' in ${type}
     ...  Run Keywords
     ...  Wait Element Visibility And Input Text  css=input[data-id='procurementNameEn']  ${tender_data.data.title_en}
     ...  AND  Wait Element Visibility And Input Text  css=textarea[data-id='procurementDescriptionEn']  ${tender_data.data.description_en}
@@ -659,11 +674,13 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Run Keyword If  'below_funders' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='funder']/option[@label='${tender_data.data.funders[0].name}']
 
     #CPV
-    Wait Visibility And Click Element  xpath=(//a[@data-id='actChoose'])[1]
-    Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
-    Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
-    Search By Query  css=input[data-id='query']  ${items[0].classification.id}
-    Wait Visibility And Click Element  css=button[data-id='actConfirm']
+    Run Keyword IF  ${type} != 'closeFrameworkAgreementSelectionUA'
+    ...  Run Keywords
+    ...  Wait Visibility And Click Element  xpath=(//a[@data-id='actChoose'])[1]
+    ...  Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
+    ...  Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
+    ...  Search By Query  css=input[data-id='query']  ${items[0].classification.id}
+    ...  Wait Visibility And Click Element  css=button[data-id='actConfirm']
 #    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
 
     Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'defineProcurementCategory')]
@@ -675,7 +692,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
 
     Run Keyword If  ${type} == 'esco'  Wait Visibility And Click Element  xpath=//input[@value='${tender_data.data.fundingKind}']
 
-    ${value_amount}=  Set Variable If  ${type} != 'esco'  ${tender_data.data.value.amount}  ''
+    ${value_amount}=  Set Variable If  ${type} != 'esco' and ${type} != 'closeFrameworkAgreementSelectionUA'  ${tender_data.data.value.amount}  ''
     ${amount}=  convert_float_to_string  ${value_amount}
 #    ${amount}=  convert_float_to_string  ${tender_data.data.value.amount}
     Run Keyword If  ${type} == 'reporting'  Input Text  xpath=//input[@data-id='valueAmount']  ${amount}
@@ -683,9 +700,9 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
 
     #date
     Wait For Ajax
-    Run Keyword Unless  ${type} == 'aboveThresholdEU' or ${type} == 'aboveThresholdUA' or ${type} == 'aboveThresholdUA.defense' or ${type} == 'negotiation' or ${type} == 'competitiveDialogueEU' or ${type} == 'competitiveDialogueUA' or ${type} == 'reporting' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'  Set Enquiry Period  ${tender_data.data.enquiryPeriod.startDate}  ${tender_data.data.enquiryPeriod.endDate}
+    Run Keyword Unless  ${type} == 'aboveThresholdEU' or ${type} == 'aboveThresholdUA' or ${type} == 'aboveThresholdUA.defense' or ${type} == 'negotiation' or ${type} == 'competitiveDialogueEU' or ${type} == 'competitiveDialogueUA' or ${type} == 'reporting' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA' or ${type} == 'closeFrameworkAgreementSelectionUA'  Set Enquiry Period  ${tender_data.data.enquiryPeriod.startDate}  ${tender_data.data.enquiryPeriod.endDate}
     Run Keyword If  ${type} == ''  Set Start Tender Period  ${tender_data.data.tenderPeriod.startDate}
-    Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'reporting'  Set End Tender Period  ${tender_data.data.tenderPeriod.endDate}
+    Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'reporting' or ${type} == 'closeFrameworkAgreementSelectionUA'  Set End Tender Period  ${tender_data.data.tenderPeriod.endDate}
 
     #skipAuction
     Run Keyword If  'quick(mode:fast-forward)' in ${mode}  Wait Visibility And Click Element  css=label[data-id='skip_auction']
@@ -705,7 +722,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
 
     #contactPoint
     Wait Element Visibility And Input Text  css=[data-id='contactPoint'] input[data-id='fullNameUa']  ${tender_data.data.procuringEntity.contactPoint.name}
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'
+    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA' or ${type} == 'closeFrameworkAgreementSelectionUA'
     ...  Wait Element Visibility And Input Text  css=[data-id='contactPoint'] input[data-id='fullNameEn']  ${tender_data.data.procuringEntity.contactPoint.name_en}
 
     ${modified_phone}=  Привести номер телефону до відповідного формату  ${tender_data.data.procuringEntity.contactPoint.telephone}
@@ -713,7 +730,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Wait Element Visibility And Input Text  css=input[data-id='email']  ${USERS.users['${username}'].email}
     Wait Element Visibility And Input Text  css=input[data-id='url']  ${tender_data.data.procuringEntity.contactPoint.url}
 
-    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA'
+    Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementUA' or ${type} == 'closeFrameworkAgreementSelectionUA'
     ...  Run Keywords
     ...  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='fullNameUa']  ${tender_data.data.procuringEntity.contactPoint.name}
     ...  AND  Wait Element Visibility And Input Text  css=[data-id='addContactPoint'] input[data-id='fullNameEn']  ${tender_data.data.procuringEntity.contactPoint.name_en}
@@ -784,6 +801,13 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     ${tender_id}=  Get Text  ${tender_data_tenderID}
     Log To Console  ${tender_id}
     [Return]  ${tender_id}
+
+
+Перейти до створення другого етапу рамок
+    [Arguments]  ${username}  ${tender_uaid}
+    privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    Wait Visibility And Click Element  xpath=//button[@data-id='createCfasDraft']
+    Wait Until Element Is Visible  xpath=//div[text()='Відбір для закупівлі за рамковою угодою']
 
 
 Додати lots
@@ -1922,7 +1946,10 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Run Keyword And Return If  '${field_name}' == 'items[0].deliveryDate.endDate'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'stage2TenderID'  Отримати інформацію з ${field_name}
     Run Keyword And Return If  '${field_name}' == 'features[0].title'  Отримати інформацію з ${field_name}  ${field_name}
-#    Run Keyword And Return If  '${field_name}' == 'features[1].title'  Отримати інформацію з features[0].title  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'features[1].title'  Отримати інформацію з features[0].title  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'features[1].description'  Отримати інформацію з features[0].title  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'features[0].featureOf'  Отримати інформацію з features[0].title  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'features[1].featureOf'  Отримати інформацію з features[0].title  ${field_name}
 #    Run Keyword And Return If  '${field_name}' == 'lots[0].auctionPeriod.endDate'  Отримати дату та час  ${field_name}
 #    Run Keyword And Return If  '${field_name}' == 'lots[0].auctionPeriod.startDate'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'questions[0].title'  Отримати інформацію з ${field_name}  ${field_name}
@@ -2582,6 +2609,7 @@ Scroll To Element
     Wait Until Element Is Visible  xpath=//a[contains(@ng-class, 'lot-parts')]
     ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'lot-parts')]@class
     Run Keyword Unless  'checked-nav' in '${class}'  Click Element  xpath=(//a[contains(@ng-class, 'lot.showTab')])[1]
+    Відкрити детальну інформацію по позиціям
     Wait Until Element Is Visible  ${tender_data_${element_name}}
     ${result_full}=  Get Text  ${tender_data_${element_name}}
     ${result}=  Strip String  ${result_full}
