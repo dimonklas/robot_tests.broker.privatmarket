@@ -799,6 +799,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     ...  ELSE IF  ${type} == 'aboveThresholdUA.defense' or ${type} == 'competitiveDialogueUA'  Wait For Element With Reload  css=[data-tender-status='active.tendering']  1
     ...  ELSE IF  ${type} == 'closeFrameworkAgreementUA'  Wait For Element With Reload  css=[data-tender-status='active.tendering']  1
     ...  ELSE IF  ${type} == 'negotiation' or ${type} == 'reporting'  Wait For Element With Reload  css=[data-tender-status='active']  1
+    ...  ELSE IF  ${type} == 'esco'  Wait For Element With Reload  css=[data-tender-status='active.tendering']  1
     ...  ELSE  Wait For Element With Reload  css=[data-tender-status='active.enquiries']  1
     ${tender_id}=  Get Text  ${tender_data_tenderID}
     Log To Console  ${tender_id}
@@ -992,6 +993,9 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     [Arguments]  ${features}  ${type}
     Wait For Ajax
     Wait Visibility And Click Element  css=label[for='features_tender_yes']
+    Run Keyword If  ${type} == 'esco'  Run Keywords
+    ...  Wait Visibility And Click Element  xpath=//section[@data-id='ptrFeatures']//button[@data-id='actAdd']
+    ...  AND  Wait Visibility And Click Element  xpath=(//section[@data-id='ptrFeatures']//button[@data-id='actRemove'])[1]
     Wait Element Visibility And Input Text  css=[data-id='ptrFeatures'] [data-id='title']  ${features.title}
     Run Keyword If  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementUA' or ${type} == 'esco'  Wait Element Visibility And Input Text  css=[data-id='ptrFeatures'] [data-id='titleEn']  ${features.title_en}
     Wait Element Visibility And Input Text  css=textarea[data-id='description']  ${features.description}
