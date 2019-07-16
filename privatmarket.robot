@@ -981,7 +981,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Додати lots  ${lots}  ${items}  ${type}
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
     Sleep  5s
-    Wait Visibility And Click Element  css=#tab_4 a
+    Wait Visibility And Click Element  xpath=//span[@title='Перевірка та публікація']
     Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
 
     Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
