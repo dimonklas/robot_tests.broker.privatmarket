@@ -1748,7 +1748,8 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Run Keyword If  '${status}' == 'False'  privatmarket.Пошук тендера по ідентифікатору  ${user_name}  ${tender_uaid}
     Reload And Switch To Tab  1
     Wait Until Element Is Visible  ${tender_data_title}  ${COMMONWAIT}
-    Run Keyword Unless  'award_view' in @{TEST_TAGS} or 'add_contract' in @{TEST_TAGS} or 'contract_view' in @{TEST_TAGS}  Відкрити детальну інформацію по позиціям
+    Run Keyword Unless  'award_view' in @{TEST_TAGS} or 'add_contract' in @{TEST_TAGS} or 'contract_view' in @{TEST_TAGS} or 'stage2_pending_status_view' in @{TEST_TAGS}
+    ...  Відкрити детальну інформацію по позиціям
     #get information
     ${result}=  Run Keyword If
     ...  'award_view' in @{TEST_TAGS} or 'add_contract' in @{TEST_TAGS}  Отримати інформацію про постачальника  ${tender_uaid}  ${field_name}
@@ -1960,6 +1961,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
 Отримати інформацію зі сторінки
     [Arguments]  ${user_name}  ${base_tender_uaid}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'value.amount'  Convert Amount To Number  ${field_name}
+    Run Keyword And Return If  'stage2_pending_status_view' in @{TEST_TAGS}  Дочекатися статусу
     Run Keyword And Return If  '${field_name}' == 'value.currency'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'value.valueAddedTaxIncluded'  Отримати інформацію з ${field_name}  ${field_name}
 #    Run Keyword And Return If  '${field_name}' == 'enquiryPeriod.startDate'  Отримати дату та час  ${field_name}
@@ -2012,6 +2014,27 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     ${result_full}=  Get Text  ${tender_data_${field_name}}
     ${result}=  Strip String  ${result_full}
     [Return]  ${result}
+
+
+Дочекатися статусу
+    Run Keyword And Return If  'дочекатися початку періоду очікування' in '${TEST_NAME}'  Wait For ActiveStage2Pending
+    Run Keyword And Return If  'перевести тендер в статус очікування обробки мостом' in '${TEST_NAME}'  Wait For ActiveStage2Waiting
+
+
+Wait For ActiveStage2Pending
+    Reload Page
+    Sleep  1s
+    Page Should Contain Element    xpath=//div[@data-tender-status='active.stage2.pending']
+    ${status}=  Get Element Attribute  xpath=//div[@id='tenderStatus']@data-tender-status
+    [Return]  ${status}
+
+
+Wait For ActiveStage2Waiting
+    Reload Page
+    Sleep  1s
+    Page Should Contain Element    xpath=//div[@data-tender-status='active.stage2.waiting']
+    ${status}=  Get Element Attribute  xpath=//div[@id='tenderStatus']@data-tender-status
+    [Return]  ${status}
 
 
 Отримати інформацію про вид предмету закупівлі
@@ -3355,11 +3378,11 @@ Get Item Number
 
     ${tender_type}=  Отримати інформацію з procurementMethodType
 
-    Run Keyword Unless  'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}' or 'belowThreshold' in '${tender_type}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
-    Run Keyword Unless  'до переговорної процедури' in '${TEST_NAME}' or 'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}' or 'belowThreshold' in '${tender_type}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
-
     Wait For Element With Reload  xpath=//span[@ng-click="act.openAward(b)"]  1
     Wait Visibility And Click Element  xpath=//span[@ng-click="act.openAward(b)"]
+
+    Run Keyword Unless  'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}' or 'belowThreshold' in '${tender_type}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
+    Run Keyword Unless  'до переговорної процедури' in '${TEST_NAME}' or 'single_item' in '${scenarios_name}' or 'до звіту про укладений договір' in '${TEST_NAME}' or 'belowThreshold' in '${tender_type}'  Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
 
     Wait Visibility And Click Element  xpath=//div[@class='award-section award-actions ng-scope']//button[@data-id='setActive']
     Sleep  1s
@@ -3985,4 +4008,28 @@ Get Item Number
 
 Активувати другий етап
     [Arguments]  ${username}  ${tender_uaid}
-    Fail  Test not ready
+    debug
+    Log  ${tender_uaid}
+    privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    Wait Visibility And Click Element  xpath=//button[@data-id='editProcBtn']
+    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
+    Wait Visibility And Click Element  ${locator_tenderadd.btnsave}
+    Wait Visibility And Click Element  ${locator_tenderadd.btnsave}
+    Wait Visibility And Click Element  ${locator_tenderadd.btnsave}
+    Wait Visibility And Click Element  ${locator_tenderadd.btnsave}
+    Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
+    Close Confirmation In Editor  Закупівля поставлена в чергу на відправку в ProZorro. Статус закупівлі Ви можете відстежувати в особистому кабінеті.
+    Run Keyword IF  ${type} == 'competitiveDialogueEU'  Wait For Element With Reload  css=[data-tender-status='active.tendering']  1
+
+
+
+Отримати тендер другого етапу та зберегти його
+    [Arguments]  ${username}  ${tender_uaid}
+    debug
+    Log  ${tender_uaid}
+    privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+    Wait Until Element Is Visible  xpath=//span[@id='tenderId']  ${COMMONWAIT}
+    ${value}=  Отримати текст елемента  xpath=//span[@id='tenderId']
+    ${id}=  Strip String  ${value}
+    Should Be Equal  ${tender_uaid}  ${id}  msg=tenderID are not equal
+    debug
