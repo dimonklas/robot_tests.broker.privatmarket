@@ -4008,7 +4008,6 @@ Get Item Number
 
 Активувати другий етап
     [Arguments]  ${username}  ${tender_uaid}
-    debug
     Log  ${tender_uaid}
     privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Wait Visibility And Click Element  xpath=//button[@data-id='editProcBtn']
@@ -4025,11 +4024,9 @@ Get Item Number
 
 Отримати тендер другого етапу та зберегти його
     [Arguments]  ${username}  ${tender_uaid}
-    debug
     Log  ${tender_uaid}
     privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
     Wait Until Element Is Visible  xpath=//span[@id='tenderId']  ${COMMONWAIT}
     ${value}=  Отримати текст елемента  xpath=//span[@id='tenderId']
     ${id}=  Strip String  ${value}
     Should Be Equal  ${tender_uaid}  ${id}  msg=tenderID are not equal
-    debug
