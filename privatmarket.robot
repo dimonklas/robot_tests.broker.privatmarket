@@ -146,8 +146,8 @@ ${tender_data_awards[0].value.currency}  css=.participant-info-block [data-id='v
 ${tender_data_awards[0].value.amount}  css=.participant-info-block [data-id='value.amount']
 ${tender_data_awards[1].value.amount}  css=.participant-info-block [data-id='value.amount']
 ${tender_data_contracts[1].value.amount}  css=#contractAmount
-${tender_data_contracts[0].status}  xpath=//span[@data-id='contractStatus']
-${tender_data_contracts[1].status}  xpath=//span[@data-id='contractStatus']
+${tender_data_contracts[0].status}  xpath=//span[@id='contractStatus']
+${tender_data_contracts[1].status}  xpath=//span[@id='contractStatus']
 ${tender_data_contracts[1].dateSigned}  xpath=//div[contains(@class,'contracts info')]//div[text()='Договiр №:']/following-sibling::div/span
 ${tender_data_contracts[1].period.startDate}  xpath=//div[contains(@class,'contracts info')]//div[text()='Дата початку:']/following-sibling::div/span
 ${tender_data_contracts[1].period.endDate}  xpath=//div[contains(@class,'contracts info')]//div[text()='Дата кiнця:']/following-sibling::div/span
@@ -328,7 +328,19 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Check Current Mode New Realisation
     Wait Visibility And Click Element  ${locator_tenderSearch.addTender}
     Wait Visibility And Click Element  xpath=(//a[@data-toggle='tab'])[2]
-    Wait Visibility And Click Element  xpath=//a[@data-id='choosedPrzPlanBelowThreshold']
+
+    Run Keyword If
+    ...  '${MODE}' == 'reporting'  Wait Visibility And Click Element  xpath=//a[@data-id='choosedPrzPlanReporting']
+    ...  ELSE IF  '${MODE}' == 'closeFrameworkAgreementUA'  Wait Visibility And Click Element  xpath=//a[@data-id='choosedPrzPlanCloseFrameworkAgreementUA']
+    ...  ELSE IF  '${MODE}' == 'esco'  Wait Visibility And Click Element  xpath=//a[@data-id='choosedPrzPlanEsco']
+    ...  ELSE IF  '${MODE}' == 'negotiation'  Wait Visibility And Click Element  xpath=//a[@data-id='choosedPrzPlanNegotiation']
+    ...  ELSE IF  '${MODE}' == 'negotiation.quick'  Wait Visibility And Click Element  xpath=//a[@data-id='choosedPrzPlanNegotiationQuick']
+    ...  ELSE IF  '${MODE}' == 'aboveThresholdUA'  Wait Visibility And Click Element  xpath=//a[@data-id='choosedPrzPlanAboveThresholdUA']
+    ...  ELSE IF  '${MODE}' == 'aboveThresholdEU'  Wait Visibility And Click Element  xpath=//a[@data-id='choosedPrzPlanAboveThresholdEU']
+    ...  ELSE IF  '${MODE}' == 'aboveThresholdUA.defense'  Wait Visibility And Click Element  xpath=//a[@data-id='choosedPrzPlanAboveThresholdUADefense']
+    ...  ELSE IF  '${MODE}' == 'competitiveDialogueUA'  Wait Visibility And Click Element  xpath=//a[@data-id='choosedPrzPlanCompetitiveDialogueUA']
+    ...  ELSE IF  '${MODE}' == 'competitiveDialogueEU'  Wait Visibility And Click Element  xpath=//a[@data-id='choosedPrzPlanCompetitiveDialogueEU']
+    ...  ELSE  Wait Visibility And Click Element  xpath=//a[@data-id='choosedPrzPlanBelowThreshold']
 
 #    Wait Element Visibility And Input Text  //input[@data-id='budgetId']   ${tender_data.data.budget.id}
     Input Text  xpath=//input[@data-id='procurementName']  ${tender_data.data.budget.description}
@@ -405,13 +417,13 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     \  ${item_quantity}=  Convert To String  ${items[${index}].quantity}
     \  Input Text  xpath=(//input[@data-id='quantity'])[${index_xpath}]  ${item_quantity}
     \  Select From List By Label  xpath=(//select[@data-id='unit'])[${index_xpath}]  ${items[${index}].unit.name}
-    \  Run Keyword If  ${type} == 'reporting'
-    \  ...  Run Keywords
-    \  ...  Wait Element Visibility And Input Text  xpath=(//input[@data-id='postalCode'])[${index_xpath}]  ${items[${index}].deliveryAddress.postalCode}
-    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='countryName'])[${index_xpath}]  ${items[${index}].deliveryAddress.countryName}
-    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='region'])[${index_xpath}]  ${items[${index}].deliveryAddress.region}
-    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='locality'])[${index_xpath}]  ${items[${index}].deliveryAddress.locality}
-    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='streetAddress'])[${index_xpath}]  ${items[${index}].deliveryAddress.streetAddress}
+#    \  Run Keyword If  ${type} == 'reporting'
+#    \  ...  Run Keywords
+#    \  ...  Wait Element Visibility And Input Text  xpath=(//input[@data-id='postalCode'])[${index_xpath}]  ${items[${index}].deliveryAddress.postalCode}
+#    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='countryName'])[${index_xpath}]  ${items[${index}].deliveryAddress.countryName}
+#    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='region'])[${index_xpath}]  ${items[${index}].deliveryAddress.region}
+#    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='locality'])[${index_xpath}]  ${items[${index}].deliveryAddress.locality}
+#    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='streetAddress'])[${index_xpath}]  ${items[${index}].deliveryAddress.streetAddress}
     \  Set Date In Item  ${index}  deliveryDate  endDate  ${items[${index}].deliveryDate.endDate}
 
 
