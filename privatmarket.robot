@@ -204,6 +204,10 @@ ${tender_data_milestones[2].percentage}  xpath=//milestone[3]//div[contains(text
 ${tender_data_milestones[2].duration.days}  xpath=//milestone[3]//div[contains(text(),'Період оплати')]//following-sibling::div
 ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(text(),'Тип днів')]//following-sibling::div
 
+${tender_data_changes[0].rationale}  xpath=//div[contains(@class,'change-info')]//div[6]/div[2]
+${tender_data_terminationDetails}  xpath=//div[text()='Причини розiрвання:']/following-sibling::div/span
+${tender_data_amountPaid.amount}  xpath=//span[@id='contractAmount']
+
 
 *** Keywords ***
 Підготувати дані для оголошення тендера
@@ -2021,6 +2025,20 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
     Run Keyword And Return If  'milestones' in '${field_name}'  Отримати інформацію про умови оплати  ${field_name}
     Run Keyword And Return If  'mainProcurementCategory' in '${field_name}'  Отримати інформацію про вид предмету закупівлі  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'agreements[0].status'  Отримати статус рамкової угоди  ${field_name}
+
+    Wait Until Element Is Visible  ${tender_data_${field_name}}
+    ${result_full}=  Get Text  ${tender_data_${field_name}}
+    ${result}=  Strip String  ${result_full}
+    [Return]  ${result}
+
+
+Отримати інформацію із договору
+    [Arguments]  ${user_name}  ${contract_uaid}  ${field_name}
+    Reload Page
+    Sleep  1s
+    Wait Visibility And Click Element  xpath=//a[contains(@ng-class, 'lot-cont')]
+
+    Run Keyword And Return If  '${field_name}' == 'amountPaid.amount'  Convert Amount To Number  ${field_name}
 
     Wait Until Element Is Visible  ${tender_data_${field_name}}
     ${result_full}=  Get Text  ${tender_data_${field_name}}
