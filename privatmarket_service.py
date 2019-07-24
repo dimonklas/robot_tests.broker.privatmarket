@@ -383,3 +383,18 @@ def get_milestones_duration_type(type):
     type_name = types.get(type)
     return type_name
 
+
+def get_rationaleType (type):
+    type_dictionary = {
+        u'Зменшення обсягів закупівлі': 'volumeCuts',
+        u'Зміна сторонніх показників (курсу, тарифів...)': 'thirdParty',
+        u'Зміна ціни у зв’язку із зміною ставок податків і зборів': 'taxRate',
+        u'Покращення якості предмета закупівлі': 'qualityImprovement',
+        u'Узгоджене зменшення ціни': 'priceReduction',
+        u'Зміна ціни за одиницю товару': 'itemPriceVariation',
+        u'Продовження строку дії договору на наступний рік': 'fiscalYearExtension',
+        u'Продовження строку дії договору (через документально підтверджені об’єктивні обставини)': 'durationExtension',
+
+    }
+    type_name = type_dictionary.get(type)
+    return type_name
