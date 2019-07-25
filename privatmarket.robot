@@ -2048,8 +2048,8 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 
     Run Keyword And Return If  '${field_name}' == 'changes[0].rationaleTypes'  Get contract rationalTypes  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'amountPaid.amount'  Отримати суму з контракту  ${field_name}
-    Run Keyword And Return If  '${field_name}' == 'period.startDate'  Отримати суму з контракту  ${field_name}
-    Run Keyword And Return If  '${field_name}' == 'period.endDate'  Отримати суму з контракту  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'period.startDate'  Отримати дату з контракту  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'period.endDate'  Отримати дату з контракту  ${field_name}
 
     Wait Until Element Is Visible  ${contract_data_${field_name}}
     ${result_full}=  Get Text  ${contract_data_${field_name}}
