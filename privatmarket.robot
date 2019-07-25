@@ -207,6 +207,7 @@ ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(t
 ${tender_data_changes[0].rationale}  xpath=//div[contains(@class,'change-info')]//div[6]/div[2]
 ${tender_data_terminationDetails}  xpath=//div[text()='Причини розiрвання:']/following-sibling::div/span
 ${tender_data_amountPaid.amount}  xpath=//span[@id='contractAmount']
+${tender_data_rationale}  //div[contains(@class,'change-info')]//span[contains(@ng-repeat,'rationaleTypes')]/span[1]
 
 
 *** Keywords ***
@@ -2038,12 +2039,28 @@ ${tender_data_amountPaid.amount}  xpath=//span[@id='contractAmount']
     Sleep  1s
     Wait Visibility And Click Element  xpath=//a[contains(@ng-class, 'lot-cont')]
 
-    Run Keyword And Return If  '${field_name}' == 'amountPaid.amount'  Convert Amount To Number  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'changes[0].rationaleTypes'  Get contract rationalTypes  ${field_name}
 
     Wait Until Element Is Visible  ${tender_data_${field_name}}
     ${result_full}=  Get Text  ${tender_data_${field_name}}
     ${result}=  Strip String  ${result_full}
     [Return]  ${result}
+
+
+Get contract rationalTypes
+    [Arguments]  ${field_name}
+	Wait Until Element Is Visible  xpath=${tender_data_rationale}  ${COMMONWAIT}
+	@{rationales_list}=  Get WebElements  xpath=${tender_data_rationale}
+	${rationales_count}=  Get Length  ${rationales_list}
+	@{resulList}=  Create List
+	:FOR   ${index}   IN RANGE  0  ${rationales_count}
+	\  ${xpath_index}=  Evaluate  ${index}+1
+    \  ${value}=  Get Text  xpath=(${tender_data_rationale})[${xpath_index}]
+    \  ${value}=  Replace String  ${value}  ,  ${EMPTY}
+	\  ${value}=  Strip String  ${value}
+	\  ${rationaleType}=  get_rationaleType  ${value}
+	\  Append To List  ${resulList}    ${rationaleType}
+	[Return]  ${resulList}
 
 
 Дочекатися статусу
