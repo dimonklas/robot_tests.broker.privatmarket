@@ -204,10 +204,13 @@ ${tender_data_milestones[2].percentage}  xpath=//milestone[3]//div[contains(text
 ${tender_data_milestones[2].duration.days}  xpath=//milestone[3]//div[contains(text(),'Період оплати')]//following-sibling::div
 ${tender_data_milestones[2].duration.type}  xpath=//milestone[3]//div[contains(text(),'Тип днів')]//following-sibling::div
 
-${tender_data_changes[0].rationale}  xpath=//div[contains(@class,'change-info')]//div[6]/div[2]
-${tender_data_terminationDetails}  xpath=//div[text()='Причини розiрвання:']/following-sibling::div/span
-${tender_data_amountPaid.amount}  xpath=//span[@id='contractAmount']
-${tender_data_rationale}  //div[contains(@class,'change-info')]//span[contains(@ng-repeat,'rationaleTypes')]/span[1]
+${contract_data_changes[0].rationale}  xpath=//div[contains(@class,'change-info')]//div[6]/div[2]
+${contract_data_terminationDetails}  xpath=//div[text()='Причини розiрвання:']/following-sibling::div/span
+${contract_data_rationale}  //div[contains(@class,'change-info')]//span[contains(@ng-repeat,'rationaleTypes')]/span[1]
+${contract_data_title}  xpath=//dt[text()='Назва договору:']/following-sibling::dd
+${contract_data_amountPaid.amount}  xpath=//div[contains(@ng-repeat,'currentContr.pays')]/div[2]
+${contract_data_period.startDate}  xpath=//dt[text()='Дата початку:']/following-sibling::dd/span
+${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/following-sibling::dd/span
 
 
 *** Keywords ***
@@ -2038,29 +2041,52 @@ ${tender_data_rationale}  //div[contains(@class,'change-info')]//span[contains(@
     Reload Page
     Sleep  1s
     Wait Visibility And Click Element  xpath=//a[contains(@ng-class, 'lot-cont')]
+    Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'showPayms')]
+    Element Should Be Visible  xpath=//div[contains(@ng-if,'showPayms')]
+    Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'change.show')]
+    Element Should Be Visible  xpath=//div[@ng-if='change.show']
 
     Run Keyword And Return If  '${field_name}' == 'changes[0].rationaleTypes'  Get contract rationalTypes  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'amountPaid.amount'  Отримати суму з контракту  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'period.startDate'  Отримати суму з контракту  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'period.endDate'  Отримати суму з контракту  ${field_name}
 
-    Wait Until Element Is Visible  ${tender_data_${field_name}}
-    ${result_full}=  Get Text  ${tender_data_${field_name}}
+    Wait Until Element Is Visible  ${contract_data_${field_name}}
+    ${result_full}=  Get Text  ${contract_data_${field_name}}
     ${result}=  Strip String  ${result_full}
     [Return]  ${result}
 
 
 Get contract rationalTypes
     [Arguments]  ${field_name}
-	Wait Until Element Is Visible  xpath=${tender_data_rationale}  ${COMMONWAIT}
-	@{rationales_list}=  Get WebElements  xpath=${tender_data_rationale}
+	Wait Until Element Is Visible  xpath=${contract_data_rationale}  ${COMMONWAIT}
+	@{rationales_list}=  Get WebElements  xpath=${contract_data_rationale}
 	${rationales_count}=  Get Length  ${rationales_list}
 	@{resulList}=  Create List
 	:FOR   ${index}   IN RANGE  0  ${rationales_count}
 	\  ${xpath_index}=  Evaluate  ${index}+1
-    \  ${value}=  Get Text  xpath=(${tender_data_rationale})[${xpath_index}]
+    \  ${value}=  Get Text  xpath=(${contract_data_rationale})[${xpath_index}]
     \  ${value}=  Replace String  ${value}  ,  ${EMPTY}
 	\  ${value}=  Strip String  ${value}
-	\  ${rationaleType}=  get_rationaleType  ${value}
+	\  ${rationaleType}=  privatmarket_service.get_rationaleType  ${value}
 	\  Append To List  ${resulList}    ${rationaleType}
 	[Return]  ${resulList}
+
+
+Отримати суму з контракту
+	[Arguments]  ${field_name}
+	${result_full}=  Get Text  ${contract_data_${field_name}}
+    ${text}=  Strip String  ${result_full}
+    ${text_new}=  Replace String  ${text}  ${SPACE}  ${EMPTY}
+    ${result}=  convert to number  ${text_new}
+    [Return]  ${result}
+
+
+Отримати дату з контракту
+    [Arguments]  ${field_name}
+    ${date}=  Get Text  ${contract_data_${field_name}}
+    ${result}=  privatmarket_service.get_time_with_offset_formatted  ${date}  %d.%m.%Y
+    [Return]  ${result}
 
 
 Дочекатися статусу
