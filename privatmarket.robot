@@ -270,7 +270,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 Пошук договору по ідентифікатору
     [Arguments]  ${username}  ${contract_uaid}
     ${tenderId}=  Remove String Using Regexp  ${contract_uaid}  -\\w+\\d$
-    Пошук тендера по ідентифікатору  ${username}  ${tenderId}
+    privatmarket.Пошук тендера по ідентифікатору  ${username}  ${tenderId}
     Відкрити детальну інформацію про контракт
     Page Should Contain  ${contract_uaid}
 
@@ -2038,11 +2038,12 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 
 Отримати інформацію із договору
     [Arguments]  ${user_name}  ${contract_uaid}  ${field_name}
-    Reload Page
-    Sleep  1s
-    Wait Visibility And Click Element  xpath=//a[contains(@ng-class, 'lot-cont')]
-    Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'showPayms')]
-    Element Should Be Visible  xpath=//div[contains(@ng-if,'showPayms')]
+#    Reload Page
+#    Sleep  1s
+    Wait For Element With Reload  css=div.change-info  1
+#    Wait Visibility And Click Element  xpath=//a[contains(@ng-class, 'lot-cont')]
+#    Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'showPayms')]
+#    Element Should Be Visible  xpath=//div[contains(@ng-if,'showPayms')]
     Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'change.show')]
     Element Should Be Visible  xpath=//div[@ng-if='change.show']
 
@@ -2075,11 +2076,20 @@ Get contract rationalTypes
 
 Отримати суму з контракту
 	[Arguments]  ${field_name}
+	Wait Until Keyword Succeeds  10min  10s  Дочекатися публікації дійсно сплаченої суми договору
 	${result_full}=  Get Text  ${contract_data_${field_name}}
     ${text}=  Strip String  ${result_full}
     ${text_new}=  Replace String  ${text}  ${SPACE}  ${EMPTY}
     ${result}=  convert to number  ${text_new}
     [Return]  ${result}
+
+
+Дочекатися публікації дійсно сплаченої суми договору
+    Reload Page
+    Sleep  5s
+    Wait Visibility And Click Element  xpath=//a[contains(@ng-class, 'lot-cont')]
+    Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'showPayms')]
+    Element Should Be Visible  xpath=//div[contains(@ng-if,'showPayms')]
 
 
 Отримати дату з контракту
@@ -3281,11 +3291,12 @@ Try Search Element
     ...  ELSE IF  '${tab_number}' == '1' and 'підтвердити постачальника до переговорної процедури' in '${TEST_NAME}'  Відкрити детальну інформацію про постачальника
     ...  ELSE IF  '${tab_number}' == '1' and 'підтвердити постачальника' in '${TEST_NAME}'  Відкрити детальну інформацію про постачальника
     ...  ELSE IF  '${tab_number}' == '1' and 'підтвердити учасника' in '${TEST_NAME}'  Відкрити детальну інформацію про постачальника
+    ...  ELSE IF  '${tab_number}' == '1' and 'договору' in '${TEST_NAME}'  Відкрити детальну інформацію про контракт
+    ...  ELSE IF  '${tab_number}' == '1' and 'статусу зареєстрованої угоди' in '${TEST_NAME}'  Відкрити детальну інформацію про рамкові угоди
     ...  ELSE IF  '${tab_number}' == '1'  Відкрити детальну інформацію по позиціям
     ...  ELSE IF  '${tab_number}' == '2' and 'відповіді на запитання' in '${TEST_NAME}'  Відкрити повну відповідь на запитання
     ...  ELSE IF  '${tab_number}' == '3' and 'заголовку документації' in '${TEST_NAME}'  Відкрити інформацію про вкладені файли вимоги
     ...  ELSE IF  '${tab_number}' == '3' and 'вмісту документа до вимоги' in '${TEST_NAME}'  Відкрити інформацію про вкладені файли вимоги
-    ...  ELSE IF  '${tab_number}' == '1' and 'статусу зареєстрованої угоди' in '${TEST_NAME}'  Відкрити детальну інформацію про рамкові угоди
     Wait Until Element Is Enabled  ${locator}  10
     Wait For Ajax
     [Return]  True
@@ -4103,3 +4114,12 @@ Get Item Number
     ${value}=  Отримати текст елемента  xpath=//span[@id='tenderId']
     ${id}=  Strip String  ${value}
     Should Be Equal  ${tender_uaid}  ${id}  msg=tenderID are not equal
+
+
+Отримати доступ до договору
+    [Arguments]  ${username}  ${contract_uaid}
+    Wait Visibility And Click Element  xpath=//a[contains(@ng-class, 'lot-cont')]
+	Wait Until Element Is Visible  xpath=//span[@data-id='contractID']
+	${id}=  Отримати текст елемента  xpath=//span[@data-id='contractID']
+	Should Be Equal  ${contract_uaid}  ${id}  msg=contractID are not equal
+	Page Should Contain Element  xpath=//button[@ng-click='act.toChange()']
