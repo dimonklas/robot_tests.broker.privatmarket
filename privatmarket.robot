@@ -4105,7 +4105,6 @@ Get Item Number
     Run Keyword IF  ${type} == 'competitiveDialogueEU'  Wait For Element With Reload  css=[data-tender-status='active.tendering']  1
 
 
-
 Отримати тендер другого етапу та зберегти його
     [Arguments]  ${username}  ${tender_uaid}
     Log  ${tender_uaid}
@@ -4123,3 +4122,51 @@ Get Item Number
 	${id}=  Отримати текст елемента  xpath=//span[@data-id='contractID']
 	Should Be Equal  ${contract_uaid}  ${id}  msg=contractID are not equal
 	Page Should Contain Element  xpath=//button[@ng-click='act.toChange()']
+
+
+Внести зміну в договір
+    [Arguments]  ${username}  ${contract_uaid}  ${change_data}
+    privatmarket.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+#    Wait Visibility And Click Element  xpath=//button[@ng-click='act.toChange()']
+    Wait Until Element Is Visible  css=div.change
+    Wait Element Visibility And Input Text  xpath=//textarea[@data-id='rationale']  ${change_data.data.rationale}
+    Wait Visibility And Click Element  xpath=//a[@ng-click='act.setRationale()']
+    ${rationaleTypes_count}=  Get Length  ${change_data.data.rationaleTypes}
+    : FOR  ${index}  IN RANGE  0  ${rationaleTypes_count}
+    \  ${rationaleTypes_xpath}=  Set Variable  //label[contains(@for,'${change_data.data.rationaleTypes[${index}]}')]
+    \  Click Element  xpath=${rationaleTypes_xpath}
+    Wait Visibility And Click Element  xpath=//button[@ng-click='act.saveType()']
+    Wait Visibility And Click Element  xpath=//input[@ng-model='local.currentChange.dateSigned']
+    Wait Visibility And Click Element  css=div.datepicker-days td.today.day
+    Wait Visibility And Click Element  xpath=//button[@ng-click='act.saveChange()']
+    Sleep  60s
+    Reload Page
+    Wait Visibility And Click Element  xpath=//a[contains(@ng-class, 'lot-cont')]
+    Wait Visibility And Click Element  css=div.change-info div#noEcp
+    Sleep  1s
+    Run Keyword  Завантажити ЕЦП
+    Sleep  3min
+
+
+Додати документацію до зміни в договорі
+    [Arguments]  ${username}  ${contract_uaid}  ${file_path}
+    Reload Page
+    Wait Visibility And Click Element  xpath=//a[contains(@ng-class, 'lot-cont')]
+    Wait Visibility And Click Element  xpath=//button[@ng-click='act.toChange()']
+    Wait Visibility And Click Element  xpath=//select[contains(@id,'chooseType')]//option[@value=42]
+    Wait Visibility And Click Element  xpath=//select[contains(@id,'chooseLang')]//option[@value='en']
+    Sleep  1s
+    Run Keyword And Ignore Error  Execute Javascript  document.querySelector("input[id^=inputFile]").setAttribute('class','');
+    Sleep  1s
+    Run Keyword And Ignore Error  Choose File  css=input[id^=inputFile]  ${file_path}
+    Sleep  30
+
+
+Отримати інформацію із документа до договору
+    [Arguments]  ${username}  ${contract_uaid}  ${doc_id}  ${field}
+    Отримати інформацію із документа  ${username}  ${contract_uaid}  ${doc_id}  ${field}
+
+
+Отримати документ до договору
+    [Arguments]  ${username}  ${contract_uaid}  ${doc_id}
+    Отримати документ  ${username}  ${contract_uaid}  ${doc_id}

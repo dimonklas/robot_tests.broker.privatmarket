@@ -393,7 +393,7 @@ def get_rationaleType (type):
         u'Узгоджене зменшення ціни': 'priceReduction',
         u'Зміна ціни за одиницю товару': 'itemPriceVariation',
         u'Продовження строку дії договору на наступний рік': 'fiscalYearExtension',
-        u'Продовження строку дії договору (через документально підтверджені об’єктивні обставини)': 'durationExtension',
+        u'Продовження строку дії договору (черездокументально підтверджені об’єктивні обставини)': 'durationExtension',
 
     }
     type_name = type_dictionary.get(type)
