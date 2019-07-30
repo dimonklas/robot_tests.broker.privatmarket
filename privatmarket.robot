@@ -4164,9 +4164,39 @@ Get Item Number
 
 Отримати інформацію із документа до договору
     [Arguments]  ${username}  ${contract_uaid}  ${doc_id}  ${field}
-    Отримати інформацію із документа  ${username}  ${contract_uaid}  ${doc_id}  ${field}
+    privatmarket.Отримати інформацію із документа  ${username}  ${contract_uaid}  ${doc_id}  ${field}
 
 
 Отримати документ до договору
     [Arguments]  ${username}  ${contract_uaid}  ${doc_id}
-    Отримати документ  ${username}  ${contract_uaid}  ${doc_id}
+    privatmarket.Отримати документ  ${username}  ${contract_uaid}  ${doc_id}
+
+
+Редагувати поле договору
+    [Arguments]  ${username}  ${contract_uaid}  ${field_name}  ${value}
+    Fail  Ключевое слово не реализовано
+
+
+Редагувати зміну
+    [Arguments]  ${username}  ${contract_uaid}  ${field_name}  ${value}
+    Fail  Ключевое слово не реализовано
+
+
+Застосувати зміну
+    [Arguments]  ${username}  ${contract_uaid}  ${dateSigned}
+    Fail  Ключевое слово не реализовано
+
+
+Завантажити документацію до договору
+    [Arguments]  ${username}  ${contract_uaid}  ${file_path}
+    Fail  Ключевое слово не реализовано
+
+
+Внести зміни в договір
+    [Arguments]  ${username}  ${contract_uaid}  ${data}
+    Fail  Ключевое слово не реализовано
+
+
+Завершити договір
+    [Arguments]  ${username}  ${contract_uaid}
+    Fail  Ключевое слово не реализовано
