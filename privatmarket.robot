@@ -643,9 +643,15 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 
     ${scenarios_name}=  privatmarket_service.get_scenarios_name
 
-#go to form
-    Wait For Ajax
-    Run Keyword Unless  '${MODE}' == 'framework_selection'  Wait Visibility And Click Element  ${locator_tenderSearch.addTender}
+    ${plan_path}=  Get Variable Value  ${ARTIFACT_FILE}  artifact.yaml
+    ${ARTIFACT}=  load_data_from  ${plan_path}
+    privatmarket.Пошук плану по ідентифікатору  ${username}  ${ARTIFACT.tender_uaid}
+
+    #go to form
+    Wait Visibility And Click Element  xpath=//button[contains(@ng-click,'switchToTender')]
+
+#    Wait For Ajax
+#    Run Keyword Unless  '${MODE}' == 'framework_selection'  Wait Visibility And Click Element  ${locator_tenderSearch.addTender}
 
     ${status}  ${type}=  Run Keyword And Ignore Error  Set Variable  '${tender_data.data.procurementMethodType}'
     ${type}=  Run Keyword If
@@ -658,18 +664,18 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     ...  '${submissionMethod}' == 'PASS'  Set Variable  ${mode}
     ...  ELSE  Set Variable  ''
 
-    Run Keyword IF
-    ...  ${type} == 'aboveThresholdEU'  Wait Visibility And Click Element  css=a[data-id='choosedPrzAboveThresholdEU']
-    ...  ELSE IF  ${type} == 'aboveThresholdUA'  Wait Visibility And Click Element  css=a[data-id='choosedPrzAboveThresholdUA']
-    ...  ELSE IF  ${type} == 'aboveThresholdUA.defense'  Wait Visibility And Click Element  css=a[data-id='choosedPrzAboveThresholdUADefense']
-    ...  ELSE IF  ${type} == 'negotiation'  Wait Visibility And Click Element  css=a[data-id='choosedPrzNegotiation']
-    ...  ELSE IF  ${type} == 'competitiveDialogueEU'  Wait Visibility And Click Element  css=a[data-id='choosedPrzCompetitiveDialogueEU']
-    ...  ELSE IF  ${type} == 'competitiveDialogueUA'  Wait Visibility And Click Element  css=a[data-id='choosedPrzCompetitiveDialogueUA']
-    ...  ELSE IF  ${type} == 'reporting'  Wait Visibility And Click Element  css=a[data-id='choosedPrzReporting']
-    ...  ELSE IF  ${type} == 'esco'  Wait Visibility And Click Element  css=a[data-id='choosedPrzEsco']
-    ...  ELSE IF  ${type} == 'closeFrameworkAgreementUA'  Wait Visibility And Click Element  css=a[data-id='choosedPrzCloseFrameworkAgreementUA']
-    ...  ELSE IF  ${type} == 'closeFrameworkAgreementSelectionUA'  Перейти до створення другого етапу рамок  ${username}  ${TENDER.TENDER_UAID}
-    ...  ELSE  Wait Visibility And Click Element  css=a[data-id='choosedPrzBelowThreshold']
+#    Run Keyword IF
+#    ...  ${type} == 'aboveThresholdEU'  Wait Visibility And Click Element  css=a[data-id='choosedPrzAboveThresholdEU']
+#    ...  ELSE IF  ${type} == 'aboveThresholdUA'  Wait Visibility And Click Element  css=a[data-id='choosedPrzAboveThresholdUA']
+#    ...  ELSE IF  ${type} == 'aboveThresholdUA.defense'  Wait Visibility And Click Element  css=a[data-id='choosedPrzAboveThresholdUADefense']
+#    ...  ELSE IF  ${type} == 'negotiation'  Wait Visibility And Click Element  css=a[data-id='choosedPrzNegotiation']
+#    ...  ELSE IF  ${type} == 'competitiveDialogueEU'  Wait Visibility And Click Element  css=a[data-id='choosedPrzCompetitiveDialogueEU']
+#    ...  ELSE IF  ${type} == 'competitiveDialogueUA'  Wait Visibility And Click Element  css=a[data-id='choosedPrzCompetitiveDialogueUA']
+#    ...  ELSE IF  ${type} == 'reporting'  Wait Visibility And Click Element  css=a[data-id='choosedPrzReporting']
+#    ...  ELSE IF  ${type} == 'esco'  Wait Visibility And Click Element  css=a[data-id='choosedPrzEsco']
+#    ...  ELSE IF  ${type} == 'closeFrameworkAgreementUA'  Wait Visibility And Click Element  css=a[data-id='choosedPrzCloseFrameworkAgreementUA']
+#    ...  ELSE IF  ${type} == 'closeFrameworkAgreementSelectionUA'  Перейти до створення другого етапу рамок  ${username}  ${TENDER.TENDER_UAID}
+#    ...  ELSE  Wait Visibility And Click Element  css=a[data-id='choosedPrzBelowThreshold']
 
     Wait For Ajax
     Run Keyword If
@@ -683,8 +689,8 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 #step 0
     #we should add choosing of procurementMethodType
     Wait For Ajax
-    Wait Element Visibility And Input Text  css=input[data-id='procurementName']  ${tender_data.data.title}
-    Wait Element Visibility And Input Text  css=textarea[data-id='procurementDescription']  ${tender_data.data.description}
+#    Wait Element Visibility And Input Text  css=input[data-id='procurementName']  ${tender_data.data.title}
+#    Wait Element Visibility And Input Text  css=textarea[data-id='procurementDescription']  ${tender_data.data.description}
     Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or 'FrameworkAgreement' in ${type}
     ...  Run Keywords
     ...  Wait Element Visibility And Input Text  css=input[data-id='procurementNameEn']  ${tender_data.data.title_en}
@@ -694,16 +700,16 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Run Keyword If  'below_funders' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='funder']/option[@label='${tender_data.data.funders[0].name}']
 
     #CPV
-    Run Keyword IF  ${type} != 'closeFrameworkAgreementSelectionUA'
-    ...  Run Keywords
-    ...  Wait Visibility And Click Element  xpath=(//a[@data-id='actChoose'])[1]
-    ...  AND  Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
-    ...  AND  Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
-    ...  AND  Search By Query  css=input[data-id='query']  ${items[0].classification.id}
-    ...  AND  Wait Visibility And Click Element  css=button[data-id='actConfirm']
+#    Run Keyword IF  ${type} != 'closeFrameworkAgreementSelectionUA'
+#    ...  Run Keywords
+#    ...  Wait Visibility And Click Element  xpath=(//a[@data-id='actChoose'])[1]
+#    ...  AND  Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
+#    ...  AND  Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
+#    ...  AND  Search By Query  css=input[data-id='query']  ${items[0].classification.id}
+#    ...  AND  Wait Visibility And Click Element  css=button[data-id='actConfirm']
 #    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
 
-    Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'defineProcurementCategory')]
+#    Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'defineProcurementCategory')]
 
     Run Keyword If  ${type} == 'closeFrameworkAgreementUA'
     ...  Run Keywords
@@ -762,10 +768,10 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 
     ${lots_count}=  Run Keyword Unless  ${type} == 'reporting'  Get Length  ${lots}
 
-    Run Keyword If  ${type} == 'esco' and ${lots_count} > 0  Wait Visibility And Click Element  xpath=//label[@for='lot_choosed']
-    ...  ELSE IF  ${type} == 'esco' and ${lots_count} == 0  Wait Visibility And Click Element  xpath=//label[@for='nolot_choosed']
+#    Run Keyword If  ${type} == 'esco' and ${lots_count} > 0  Wait Visibility And Click Element  xpath=//label[@for='lot_choosed']
+#    ...  ELSE IF  ${type} == 'esco' and ${lots_count} == 0  Wait Visibility And Click Element  xpath=//label[@for='nolot_choosed']
 #Заповнити лоти та предмети закупівлі для процедури 'reporting'
-    Run Keyword IF  ${type} == 'reporting'  Додати предмети закупівлі в план  ${items}  ${type}
+#    Run Keyword IF  ${type} == 'reporting'  Додати предмети закупівлі в план  ${items}  ${type}
 
 #step 1
     Run Keyword Unless  ${type} == 'reporting'  Додати lots  ${lots}  ${items}  ${type}
@@ -852,7 +858,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     \  Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'  Ввести мінімальний крок  ${lots}  ${index}  ${lot_index}
     \  Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Visibility And Click Element  xpath=(//label[contains(@for,'guarantee')])[${lot_index}]
     \  Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Element Visibility And Input Text  xpath=(//input[@data-id='guaranteeAmount'])[${lot_index}]  1
-    \  Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'
+    \  Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA' or ${type} == 'closeFrameworkAgreementUA'
     \  ...  Run Keywords
     \  ...  Wait Element Visibility And Input Text  xpath=(//input[@data-id='procurementNameEn'])[${lot_index}]  ${lots[${index}].title_en}
     \  ...  AND  Wait Element Visibility And Input Text  xpath=(//textarea[@data-id='lotDescriptionEn'])[${lot_index}]  ${lots[${index}].description}
@@ -880,8 +886,9 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 Додати item до лоту
     [Arguments]  ${items}  ${items_count}  ${lot_index}  ${index}  ${type}
     ${item_index}=  privatmarket_service.sum_of_numbers  ${index}  1
-    ${is_click}=  is_click_button  ${item_index}  ${items_count}
-    Run Keyword If  '${is_click}' == 'true'  Wait Visibility And Click Element  xpath=(//button[@data-id='actAddItem'])[${lot_index}]
+
+#    ${is_click}=  is_click_button  ${item_index}  ${items_count}
+#    Run Keyword If  '${is_click}' == 'true'  Wait Visibility And Click Element  xpath=(//button[@data-id='actAddItem'])[${lot_index}]
     Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//input[@data-id='description'])[${item_index}]  ${items[${index}].description}
 
     Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA' or ${type} == 'esco'  Вказати вид предмету закупівлі  ${TENDER_DATA.data.mainProcurementCategory}  ${item_index}  ${lot_index}
@@ -898,13 +905,13 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Run Keyword Unless  ${type} == 'esco'  Wait Visibility And Click Element  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//select[@data-id='unit'])[${item_index}]/option[text()='${unitName}']
 
     #CPV
-    Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA'
-    ...  Run Keywords
-    ...  Wait Visibility And Click Element  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//a[@data-id='actChoose']
-    ...  AND  Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
-    ...  AND  Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
-    ...  AND  Search By Query  css=input[data-id='query']  ${items[${index}].classification.id}
-    ...  AND  Wait Visibility And Click Element  css=button[data-id='actConfirm']
+#    Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA'
+#    ...  Run Keywords
+#    ...  Wait Visibility And Click Element  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//a[@data-id='actChoose']
+#    ...  AND  Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
+#    ...  AND  Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
+#    ...  AND  Search By Query  css=input[data-id='query']  ${items[${index}].classification.id}
+#    ...  AND  Wait Visibility And Click Element  css=button[data-id='actConfirm']
 
     ${status}  ${classification_id}=  Run Keyword And Ignore Error  Set Variable  ${items[${index}].classification.id}
     ${classification_id}=  Run Keyword If
