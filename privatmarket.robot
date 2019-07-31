@@ -677,6 +677,9 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 #    ...  ELSE IF  ${type} == 'closeFrameworkAgreementSelectionUA'  Перейти до створення другого етапу рамок  ${username}  ${TENDER.TENDER_UAID}
 #    ...  ELSE  Wait Visibility And Click Element  css=a[data-id='choosedPrzBelowThreshold']
 
+    Run Keyword IF  ${type} == 'closeFrameworkAgreementSelectionUA'  Перейти до створення другого етапу рамок  ${username}  ${TENDER.TENDER_UAID}
+
+
     Wait For Ajax
     Run Keyword If
     ...  'openua_award_complaint' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '1080')]
@@ -689,8 +692,8 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 #step 0
     #we should add choosing of procurementMethodType
     Wait For Ajax
-#    Wait Element Visibility And Input Text  css=input[data-id='procurementName']  ${tender_data.data.title}
-#    Wait Element Visibility And Input Text  css=textarea[data-id='procurementDescription']  ${tender_data.data.description}
+    Wait Element Visibility And Input Text  css=input[data-id='procurementName']  ${tender_data.data.title}
+    Wait Element Visibility And Input Text  css=textarea[data-id='procurementDescription']  ${tender_data.data.description}
     Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or 'FrameworkAgreement' in ${type}
     ...  Run Keywords
     ...  Wait Element Visibility And Input Text  css=input[data-id='procurementNameEn']  ${tender_data.data.title_en}
@@ -700,14 +703,14 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Run Keyword If  'below_funders' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='funder']/option[@label='${tender_data.data.funders[0].name}']
 
     #CPV
-#    Run Keyword IF  ${type} != 'closeFrameworkAgreementSelectionUA'
-#    ...  Run Keywords
-#    ...  Wait Visibility And Click Element  xpath=(//a[@data-id='actChoose'])[1]
-#    ...  AND  Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
-#    ...  AND  Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
-#    ...  AND  Search By Query  css=input[data-id='query']  ${items[0].classification.id}
-#    ...  AND  Wait Visibility And Click Element  css=button[data-id='actConfirm']
-#    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
+    Run Keyword IF  ${type} != 'closeFrameworkAgreementSelectionUA'
+    ...  Run Keywords
+    ...  Wait Visibility And Click Element  xpath=(//a[@data-id='actChoose'])[1]
+    ...  AND  Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
+    ...  AND  Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
+    ...  AND  Search By Query  css=input[data-id='query']  ${items[0].classification.id}
+    ...  AND  Wait Visibility And Click Element  css=button[data-id='actConfirm']
+    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
 
 #    Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'defineProcurementCategory')]
 
@@ -779,10 +782,9 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
 #Заповнити умови оплати для закупівлі
+
     Run Keyword Unless  ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'
-    ...  Run Keywords
-    ...  Wait Visibility And Click Element  css=label[for='financing_milistones_flag_yes']
-    ...  AND  Додати milestones  ${milestones}  ${type}
+    ...  Додати milestones  ${milestones}  ${type}
 
     Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA' or ${type} == 'esco'  Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
@@ -813,7 +815,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Until Element Is Visible  css=section[data-id='step5']  ${COMMONWAIT}
     Sleep  3s
 
-    Run Keyword And Ignore Error  Wait Visibility And Click Element  xpath=//button[@data-id="modal-close"]
+#    Run Keyword And Ignore Error  Wait Visibility And Click Element  xpath=//button[@data-id="modal-close"]
 
     Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
 
@@ -856,7 +858,8 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     \  Run Keyword Unless  ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Element Visibility And Input Text  xpath=(//input[@data-id='valueAmount'])[${lot_index}]  ${value_amount}
     \  Sleep  3s
     \  Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'  Ввести мінімальний крок  ${lots}  ${index}  ${lot_index}
-    \  Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Visibility And Click Element  xpath=(//label[contains(@for,'guarantee')])[${lot_index}]
+    \  Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'
+    \  ...  Wait Visibility And Click Element  xpath=(//label[contains(@for,'guarantee')])[${lot_index}]
     \  Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Element Visibility And Input Text  xpath=(//input[@data-id='guaranteeAmount'])[${lot_index}]  1
     \  Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA' or ${type} == 'closeFrameworkAgreementUA'
     \  ...  Run Keywords
