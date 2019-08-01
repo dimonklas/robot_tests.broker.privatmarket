@@ -405,9 +405,12 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     ${items_count}=  Get Length  ${items}
     Wait For Ajax
 
+    ${item_block_count}=  Get Matching Xpath Count  xpath=//div[@data-id='item']
+    : FOR  ${index}  IN RANGE  ${item_block_count}  ${items_count}
+    \  Click Element  xpath=//button[@data-id='actAddItem']
+
     : FOR  ${index}  IN RANGE  0  ${items_count}
     \  ${index_xpath}=  privatmarket_service.sum_of_numbers  ${index}  1
-    \  Run Keyword If  ${index} > 0  Click Element  xpath=//button[@data-id='actAddItem']
     \  Wait Visibility And Click Element  xpath=(//div[@data-id='basicClassification'])[${index_xpath}]//a
     \  Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
     \  Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
@@ -493,6 +496,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     ${type}=  Отримати інформацію з procurementMethodType
     ${type}=  Set Variable  '${type}'
     Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
+    Execute JavaScript    window.scrollTo(${0},${0})
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
     Sleep  5s
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
@@ -772,8 +776,9 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 
 #    Run Keyword If  ${type} == 'esco' and ${lots_count} > 0  Wait Visibility And Click Element  xpath=//label[@for='lot_choosed']
 #    ...  ELSE IF  ${type} == 'esco' and ${lots_count} == 0  Wait Visibility And Click Element  xpath=//label[@for='nolot_choosed']
+
 #Заповнити лоти та предмети закупівлі для процедури 'reporting'
-#    Run Keyword IF  ${type} == 'reporting'  Додати предмети закупівлі в план  ${items}  ${type}
+    Run Keyword IF  ${type} == 'reporting'  Додати предмети закупівлі в план  ${items}  ${type}
 
 #step 1
     Run Keyword Unless  ${type} == 'reporting'  Додати lots  ${lots}  ${items}  ${type}
@@ -1283,6 +1288,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 Змінити value.amount лоту
     [Arguments]  ${value}
     Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
+    Execute JavaScript    window.scrollTo(${0},${0})
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
     Wait For Ajax
     Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']
@@ -1862,6 +1868,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Reload Page
     Wait Visibility And Click Element  xpath=(//a[contains(@ng-class, 'lot-parts')])[1]
     Wait Visibility And Click Element  xpath=//span[@ng-click="act.openAward(b)"]
+    debug
     Wait Visibility And Click Element  xpath=//div[@class='form-block__item']/form/select[1]/option[2]
     Sleep  1s
     Wait Visibility And Click Element  xpath=//div[@class='form-block__item']/form/select[2]/option[2]
