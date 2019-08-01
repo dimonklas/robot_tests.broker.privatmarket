@@ -495,7 +495,6 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
     Sleep  5s
-    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${tender_owner}
     Wait Visibility And Click Element  css=#tab_1 a
@@ -908,13 +907,13 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Run Keyword Unless  ${type} == 'esco'  Wait Visibility And Click Element  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//select[@data-id='unit'])[${item_index}]/option[text()='${unitName}']
 
     #CPV
-#    Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA'
-#    ...  Run Keywords
-#    ...  Wait Visibility And Click Element  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//a[@data-id='actChoose']
-#    ...  AND  Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
-#    ...  AND  Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
-#    ...  AND  Search By Query  css=input[data-id='query']  ${items[${index}].classification.id}
-#    ...  AND  Wait Visibility And Click Element  css=button[data-id='actConfirm']
+    Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA'
+    ...  Run Keywords
+    ...  Wait Visibility And Click Element  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//a[@data-id='actChoose']
+    ...  AND  Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
+    ...  AND  Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
+    ...  AND  Search By Query  css=input[data-id='query']  ${items[${index}].classification.id}
+    ...  AND  Wait Visibility And Click Element  css=button[data-id='actConfirm']
 
     ${status}  ${classification_id}=  Run Keyword And Ignore Error  Set Variable  ${items[${index}].classification.id}
     ${classification_id}=  Run Keyword If
@@ -1005,7 +1004,6 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     @{items}=    Create List    ${item}
 
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
-    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
     Wait Visibility And Click Element  css=#tab_1 a
     Wait Visibility And Click Element  css=button[data-id='actAddLot']
 
@@ -1236,7 +1234,6 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Execute JavaScript    window.scrollTo(${0},${0})
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
 
-    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
     Run Keyword If  '${parameter}' == 'tenderPeriod.endDate'  Set Date  tenderPeriod  endDate  ${value}
@@ -1264,7 +1261,6 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
     Execute JavaScript    window.scrollTo(${0},${0})
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
-    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
     Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
@@ -1316,7 +1312,6 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     ${type}=  Set Variable  '${type}'
     Execute JavaScript    window.scrollTo(${0},${0})
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
-    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
     Wait Visibility And Click Element  xpath=//span[@title='Нецінові показники']
@@ -1356,7 +1351,6 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     ${type}=  Set Variable  '${type}'
     Execute JavaScript    window.scrollTo(${0},${0})
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
-    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
     Wait Visibility And Click Element  xpath=//span[@title='Нецінові показники']
@@ -1396,7 +1390,6 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     ${type}=  Set Variable  '${type}'
     Execute JavaScript    window.scrollTo(${0},${0})
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
-    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
     Wait Visibility And Click Element  xpath=//span[@title='Нецінові показники']
@@ -1499,7 +1492,6 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Execute JavaScript    window.scrollTo(${0},${0})
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
 
-    Run Keyword And Ignore Error  Wait Visibility And Click Element  css=button[data-id='modal-close']    # unexpected behavior
     Sleep  2s
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
     Wait Until Keyword Succeeds  1min  10s  Звiрити value of title на сторінці редагуванння  ${user_name}
