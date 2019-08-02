@@ -428,13 +428,13 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     \  ${item_quantity}=  Convert To String  ${items[${index}].quantity}
     \  Input Text  xpath=(//input[@data-id='quantity'])[${index_xpath}]  ${item_quantity}
     \  Select From List By Label  xpath=(//select[@data-id='unit'])[${index_xpath}]  ${items[${index}].unit.name}
-#    \  Run Keyword If  ${type} == 'reporting'
-#    \  ...  Run Keywords
-#    \  ...  Wait Element Visibility And Input Text  xpath=(//input[@data-id='postalCode'])[${index_xpath}]  ${items[${index}].deliveryAddress.postalCode}
-#    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='countryName'])[${index_xpath}]  ${items[${index}].deliveryAddress.countryName}
-#    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='region'])[${index_xpath}]  ${items[${index}].deliveryAddress.region}
-#    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='locality'])[${index_xpath}]  ${items[${index}].deliveryAddress.locality}
-#    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='streetAddress'])[${index_xpath}]  ${items[${index}].deliveryAddress.streetAddress}
+    \  Run Keyword If  'створити звіт' in '${TEST_NAME}'
+    \  ...  Run Keywords
+    \  ...  Wait Element Visibility And Input Text  xpath=(//input[@data-id='postalCode'])[${index_xpath}]  ${items[${index}].deliveryAddress.postalCode}
+    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='countryName'])[${index_xpath}]  ${items[${index}].deliveryAddress.countryName}
+    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='region'])[${index_xpath}]  ${items[${index}].deliveryAddress.region}
+    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='locality'])[${index_xpath}]  ${items[${index}].deliveryAddress.locality}
+    \  ...  AND  Wait Element Visibility And Input Text  xpath=(//input[@data-id='streetAddress'])[${index_xpath}]  ${items[${index}].deliveryAddress.streetAddress}
     \  Set Date In Item  ${index}  deliveryDate  endDate  ${items[${index}].deliveryDate.endDate}
 
 
@@ -706,14 +706,14 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Run Keyword If  'below_funders' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='funder']/option[@label='${tender_data.data.funders[0].name}']
 
     #CPV
-    Run Keyword IF  ${type} != 'closeFrameworkAgreementSelectionUA'
-    ...  Run Keywords
-    ...  Wait Visibility And Click Element  xpath=(//a[@data-id='actChoose'])[1]
-    ...  AND  Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
-    ...  AND  Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
-    ...  AND  Search By Query  css=input[data-id='query']  ${items[0].classification.id}
-    ...  AND  Wait Visibility And Click Element  css=button[data-id='actConfirm']
-    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
+#    Run Keyword IF  ${type} != 'closeFrameworkAgreementSelectionUA'
+#    ...  Run Keywords
+#    ...  Wait Visibility And Click Element  xpath=(//a[@data-id='actChoose'])[1]
+#    ...  AND  Wait Until Element Is Visible  css=section[data-id='classificationTreeModal']  ${COMMONWAIT}
+#    ...  AND  Wait Until Element Is Visible  css=input[data-id='query']  ${COMMONWAIT}
+#    ...  AND  Search By Query  css=input[data-id='query']  ${items[0].classification.id}
+#    ...  AND  Wait Visibility And Click Element  css=button[data-id='actConfirm']
+#    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
 
 #    Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'defineProcurementCategory')]
 
@@ -1860,15 +1860,11 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Wait Visibility And Click Element  xpath=//button[@data-id='btn-close']
     Wait For Ajax
     Reload Page
-    Sleep  5s
+    Sleep  60s
     Wait Visibility And Click Element  xpath=(//a[contains(@ng-class, 'lot-parts')])[1]
     Wait For Element With Reload  xpath=//span[@ng-click="act.openAward(b)"]  1
     Wait Visibility And Click Element  xpath=//span[@ng-click="act.openAward(b)"]
     Wait For Ajax
-    Reload Page
-    Wait Visibility And Click Element  xpath=(//a[contains(@ng-class, 'lot-parts')])[1]
-    Wait Visibility And Click Element  xpath=//span[@ng-click="act.openAward(b)"]
-    debug
     Wait Visibility And Click Element  xpath=//div[@class='form-block__item']/form/select[1]/option[2]
     Sleep  1s
     Wait Visibility And Click Element  xpath=//div[@class='form-block__item']/form/select[2]/option[2]
@@ -1881,7 +1877,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 #    Wait Visibility And Click Element  xpath=//label[@for='chkSelfQualified']
 #    Wait Visibility And Click Element  xpath=//label[@for='chkSelfEligible']
     Wait Visibility And Click Element  css=button[data-id='setActive']
-    Sleep  5s
+    Sleep  60s
     Reload Page
     Wait Visibility And Click Element  xpath=(//a[contains(@ng-class, 'lot-parts')])[1]
     Wait For Element With Reload  xpath=//span[@ng-click="act.openAward(b)"]  1
