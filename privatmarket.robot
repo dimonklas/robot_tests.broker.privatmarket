@@ -363,7 +363,8 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Set Date  tenderPeriod  startDate  ${tender_data.data.tender.tenderPeriod.startDate}
 
     ${amount}=  convert_float_to_string  ${tender_data.data.budget.amount}
-    Input Text  xpath=//input[@data-id='valueAmount']  ${amount}
+
+    Run Keyword Unless  '${MODE}' == 'esco'  Input Text  xpath=//input[@data-id='valueAmount']  ${amount}
 
     Click Element  xpath=//button[@data-id='actSave']
 
@@ -426,8 +427,8 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     \  ...  AND  Wait Visibility And Click Element  xpath=//button[@data-id='actConfirm']
     \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='description'])[${index_xpath}]  ${items[${index}].description}
     \  ${item_quantity}=  Convert To String  ${items[${index}].quantity}
-    \  Input Text  xpath=(//input[@data-id='quantity'])[${index_xpath}]  ${item_quantity}
-    \  Select From List By Label  xpath=(//select[@data-id='unit'])[${index_xpath}]  ${items[${index}].unit.name}
+    \  Run Keyword Unless  '${MODE}' == 'esco'  Input Text  xpath=(//input[@data-id='quantity'])[${index_xpath}]  ${item_quantity}
+    \  Run Keyword Unless  '${MODE}' == 'esco'  Select From List By Label  xpath=(//select[@data-id='unit'])[${index_xpath}]  ${items[${index}].unit.name}
     \  Run Keyword If  'створити звіт' in '${TEST_NAME}'
     \  ...  Run Keywords
     \  ...  Wait Element Visibility And Input Text  xpath=(//input[@data-id='postalCode'])[${index_xpath}]  ${items[${index}].deliveryAddress.postalCode}
@@ -855,8 +856,8 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     \  Run Keyword Unless  '${lot_index}' == '1'  Wait Visibility And Click Element  css=button[data-id='actAddLot']
     \  ${lot_count}=  Get Matching Xpath Count  xpath=//input[@data-id='lotTitle']
     \  ${lot_index}=  Set Variable If  'Можливість створення лоту' in '${TEST_NAME}'  ${lot_count}  ${lot_index}
-    \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='lotTitle'])[${lot_index}]  ${lots[${index}].title}
-    \  Wait Element Visibility And Input Text  xpath=(//textarea[@data-id='lotDescription'])[${lot_index}]  ${lots[${index}].description}
+    \  Run Keyword Unless  ${type} == 'esco'  Wait Element Visibility And Input Text  xpath=(//input[@data-id='lotTitle'])[${lot_index}]  ${lots[${index}].title}
+    \  Run Keyword Unless  ${type} == 'esco'  Wait Element Visibility And Input Text  xpath=(//textarea[@data-id='lotDescription'])[${lot_index}]  ${lots[${index}].description}
     \  ${amount}=  Set Variable If  ${type} != 'esco'  ${lots[${index}].value.amount}  ''
     \  ${value_amount}=  privatmarket_service.convert_float_to_string  ${amount}
     \  Run Keyword Unless  ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Element Visibility And Input Text  xpath=(//input[@data-id='valueAmount'])[${lot_index}]  ${value_amount}
@@ -2333,8 +2334,9 @@ Wait For ActiveStage2Waiting
     [Arguments]  ${index}  ${field_name}
     ${index}=  privatmarket_service.sum_of_numbers  ${index}  1
     Run Keyword And Return If  '].description' in ${field_name}  Отримати текст з item  xpath=(//a[@data-id='plan-classifications-toggle'])[${index}]
-    Run Keyword And Return If  'quantity' in ${field_name}  Отримати кількості необхідних одиниць об'єкта приведенних до цілих  xpath=(//span[@class='item-count ng-binding'])[${index}]
+    Run Keyword And Return If  'quantity' in ${field_name}  Отримати кількості необхідних одиниць об'єкта  xpath=(//span[@class='item-count ng-binding'])[${index}]
     Run Keyword And Return If  'unit.name' in ${field_name}  Отримати текст з item  xpath=(//span[contains(@class,'item-unit')])[${index}]
+    Run Keyword And Return If  'unit.code' in ${field_name}  Отримати інформацію з unit.code  xpath=(//span[contains(@class,'item-unit')])[${index}]
     Run Keyword And Return If  'classification.description' in ${field_name}  Отримати текст з item  xpath=(//*[@data-id='item-classif-description'])[${index}]
     Run Keyword And Return If  'classification.scheme' in ${field_name}  Отримати текст з item  xpath=(//*[@data-id='item-classif-scheme'])[${index}]
     Run Keyword And Return If  'classification.id' in ${field_name}  Отримати текст з item  xpath=(//*[@data-id='item-classif-id'])[${index}]
@@ -2350,11 +2352,12 @@ Wait For ActiveStage2Waiting
     [Return]  ${result}
 
 
-Отримати кількості необхідних одиниць об'єкта приведенних до цілих
+Отримати кількості необхідних одиниць об'єкта
     [Arguments]  ${locator}
     ${text_element}=  Get text  ${locator}
     ${result}=  Strip String  ${text_element}
-    ${result}=  get_conversion_to_int  ${result}
+    ${text_new}=  Replace String  ${result}  ${SPACE}  ${EMPTY}
+    ${result}=  convert to number  ${text_new}
     [Return]  ${result}
 
 
