@@ -2,11 +2,13 @@
 
 import os
 import sys
+from dateutil import parser
 from datetime import datetime
 from pytz import timezone
 import re
 import datetime
 import dateutil.parser
+from datetime import timedelta
 
 
 def modify_test_data(initial_data):
@@ -22,11 +24,17 @@ def modify_test_data(initial_data):
     initial_data['buyers'][0]['identifier']['id'] = u'38580144'
     initial_data['buyers'][0]['identifier']['legalName'] = u'ТОВАРИСТВО З ОБМЕЖЕНОЮ ВІДПОВІДАЛЬНІСТЮ \"СІЛЬСЬКОГОСПОДАРСЬКА ФІРМА \"РУБІЖНЕ\"'
     initial_data['buyers'][0]['name'] = u'ТОВ \"СФ \"РУБІЖНЕ\"'
+    initial_data['tender']['tenderPeriod']['startDate'] = add_day_to_date(initial_data['tender']['tenderPeriod']['startDate'])
 
     # initial_data['procuringEntity']['name'] = u'Макстрой Діск, Товариство З Обмеженою Відповідальністю'
     # initial_data['procuringEntity']['name'] = u'ФОП ОГАНІН ОЛЕКСАНДР ПЕТРОВИЧ'
     return initial_data
 
+def add_day_to_date(date):
+    dat = parser.parse(date)
+    new_date = (dat + timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%S%z')
+    new = parser.parse(new_date).isoformat()
+    return new
 
 def get_currency_type(currency):
     if isinstance(currency, str):
@@ -348,9 +356,9 @@ def get_scenarios_name():
     return name
 
 
-def is_click_button(item_index, items_count):
+def is_click_button(item_index, items_count, lot_index):
     status = 'false'
-    if int(item_index) < int(items_count):
+    if int(item_index) < int(items_count) and lot_index > 1:
         return 'true'
     return status
 
@@ -403,3 +411,7 @@ def get_rationaleType (type):
     }
     type_name = type_dictionary.get(type)
     return type_name
+
+
+def change_fake_date():
+    return (datetime.datetime.now(timezone('Europe/Kiev')) + timedelta(days=3)).strftime('%Y-%m-%dT%H:%M:%S.%f%z')

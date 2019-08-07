@@ -382,10 +382,14 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Wait Visibility And Click Element  xpath=//button[@data-id='actSend']
     Wait Visibility And Click Element  xpath=//button[@data-id='modal-close']
 
-    ${date}=  get_date_formatting  ${tender_data.data.tender.tenderPeriod.startDate}  %y-%m-%d
-
-    Дочекатися зміни статусу  ${date}
-    ${plan_id}  Get Text  xpath=//span[@id='tenderId'][contains(text(),'${date}')]
+#    ${date}=  get_date_formatting  ${tender_data.data.tender.tenderPeriod.startDate}  %y-%m-%d
+#
+#    Дочекатися зміни статусу  ${date}
+    Sleep  60s
+    Reload Page
+    Page Should Contain Element  xpath=//span[@id='tenderId']
+    ${plan_id}  Get Text  xpath=//span[@id='tenderId']
+#    ${plan_id}  Get Text  xpath=//span[@id='tenderId'][contains(text(),'${date}')]
     [Return]  ${plan_id}
 
 
@@ -463,6 +467,15 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     ${amount}=  Run Keyword If  '${parameter}' == 'budget.amount'  convert_float_to_string  ${value}
     Run Keyword If  '${parameter}' == 'budget.amount'  Input Text  xpath=//input[@data-id='valueAmount']  ${amount}
 
+    ${budget.startDate}=  Run Keyword If  '${parameter}' == 'budget.period'  Get From Dictionary  ${value}  startDate
+    ${budget.endDate}=  Run Keyword If  '${parameter}' == 'budget.period'  Get From Dictionary  ${value}  endDate
+
+    Run Keyword If  '${parameter}' == 'budget.period'
+    ...  Run Keywords
+    ...  Execute JavaScript  var s = angular.element('[ng-controller=ptr-editor]').scope(); s.model.ptr.budget.period = {}; s.$root.$apply();
+    ...  AND  Set Date  budget.period  startDate  ${budget.startDate}
+    ...  AND  Set Date  budget.period  endDate  ${budget.endDate}
+
     Wait Visibility And Click Element  xpath=//button[@data-id='actSave']
     Wait Until Element Is Visible  xpath=(//input[@data-id='description'])
     Wait Visibility And Click Element  xpath=//button[@data-id='actSave']
@@ -476,13 +489,17 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Wait For Ajax
     Wait Visibility And Click Element  xpath=//button[@data-id='actSave']
     Sleep  2s
+    ${date}=  Run Keyword If  'deliveryDate.endDate' in '${parameter}'  privatmarket_service.change_fake_date
+    ${quantity}=  Run Keyword If  'quantity' in '${parameter}'  Convert To String  ${value}
+    ${value}=  Set Variable If
+        ...  'deliveryDate.endDate' in '${parameter}'  ${date}
+        ...  'quantity' in '${parameter}'  ${quantity}
+        ...  ${value}
     Run Keyword If  '${parameter}' == 'items[${index}].deliveryDate.endDate'
     ...  Run Keywords
     ...  Wait Until Element Is Visible  xpath=(//input[@data-id='deliveryDateEnd'])[${index_xpath}]
     ...  AND  Set Date In Item  ${index}  deliveryDate  endDate  ${value}
-
     Run Keyword If  '${parameter}' == 'items[${index}].quantity'  Wait Element Visibility And Input Text  xpath=(//input[@data-id='quantity'])[${index_xpath}]  ${value}
-
     Wait Visibility And Click Element  xpath=//button[@data-id='actSave']
     Wait Visibility And Click Element  xpath=//button[@data-id='actSend']
     Wait Visibility And Click Element  xpath=//button[@data-id='modal-close']
@@ -580,7 +597,8 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 
     Wait Visibility And Click Element  xpath=//button[@data-id='actAddItem']
     Wait Element Visibility And Input Text  xpath=(//input[@data-id='description'])[${index_xpath}]  ${item.description}
-    Input Text  xpath=(//input[@data-id='quantity'])[${index_xpath}]  ${item.quantity}
+    ${item_quantity}=  Convert To String  ${item.quantity}
+    Input Text  xpath=(//input[@data-id='quantity'])[${index_xpath}]  ${item_quantity}
     Select From List By Label  xpath=(//select[@data-id='unit'])[${index_xpath}]  ${item.unit.name}
     Set Date In Item  ${count}  deliveryDate  endDate  ${item.deliveryDate.endDate}
 
@@ -615,6 +633,9 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     ${elements}=  Get Webelements  xpath=(//input[@data-id='description'])
     ${count_delete}=  Get_Length  ${elements}
     Should Be True  ${count_before} > ${count_delete}
+    Wait Visibility And Click Element  xpath=//button[@data-id='actSave']
+    Wait Visibility And Click Element  xpath=//button[@data-id='actSend']
+    Wait Visibility And Click Element  xpath=//button[@data-id='modal-close']
 
 
 Видалити предмет закупівлі
@@ -895,8 +916,8 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     [Arguments]  ${items}  ${items_count}  ${lot_index}  ${index}  ${type}
     ${item_index}=  privatmarket_service.sum_of_numbers  ${index}  1
 
-#    ${is_click}=  is_click_button  ${item_index}  ${items_count}
-#    Run Keyword If  '${is_click}' == 'true'  Wait Visibility And Click Element  xpath=(//button[@data-id='actAddItem'])[${lot_index}]
+    ${is_click}=  is_click_button  ${item_index}  ${items_count}  ${lot_index}
+    Run Keyword If  '${is_click}' == 'true' and ${type} == 'negotiation'  Wait Visibility And Click Element  xpath=(//button[@data-id='actAddItem'])[${lot_index}]
     Wait Element Visibility And Input Text  xpath=(((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])//input[@data-id='description'])[${item_index}]  ${items[${index}].description}
 
     Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA' or ${type} == 'esco'  Вказати вид предмету закупівлі  ${TENDER_DATA.data.mainProcurementCategory}  ${item_index}  ${lot_index}
