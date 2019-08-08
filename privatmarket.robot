@@ -1944,7 +1944,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Run Keyword And Return If  '${field_name}' == 'features[1].featureOf'  Отримати інформацію з features[0].title  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'questions[0].title'  Отримати інформацію з ${field_name}  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'questions[0].description'  Отримати інформацію з ${field_name}  ${field_name}
-    Run Keyword And Return If  '${field_name}' == 'questions[0].answer' or '${field_name}' == 'questions[2].answer' or '${field_name}' == 'questions[1].answer'  Отримати інформацію з questions.answer  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'questions[0].answer' or '${field_name}' == 'questions[2].answer' or '${field_name}' == 'questions[1].answer'  Отримати інформацію з questions.answer
     Run Keyword And Return If  '${field_name}' == 'contracts[0].status' or '${field_name}' == 'contracts[1].status'  Отримати статус договору  ${field_name}
     Run Keyword And Return If  'endDate' in '${field_name}' or 'startDate' in '${field_name}'  Отримати дату та час  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'agreementDuration'  Отримати інформацію з ${field_name}  ${field_name}
@@ -2096,9 +2096,18 @@ Wait For ActiveStage2Waiting
 
 
 Отримати інформацію з questions.answer
-    [Arguments]  ${field_name}
-    Wait For Element With Reload  ${tender_data_lot_question.${field_name}}  1
-    ${result}=  Отримати текст елемента  ${tender_data_lot_question.${field_name}}
+    ${text_for_xpath}=  Set Variable If
+    ...  'відповіді на запитання на всі лоти' in '${TEST_NAME}'  по лоту
+    ...  'відповіді на запитання на всі предмети' in '${TEST_NAME}'  по позиції
+    ...  'відповіді на запитання на тендер' in '${TEST_NAME}'  по закупівлі
+
+    ${current_xpath}=  set variable   xpath=(//div[contains(text() , '${text_for_xpath}')]/../..//div[@class='question-div'])[2]
+
+     Run Keyword If
+    ...  'запитання на тендер' in '${TEST_NAME}'  Wait For Element With Reload  ${current_xpath}  2
+    ...  ELSE  Wait For Element With Reload  ${current_xpath}  1
+
+    ${result}=  Отримати текст елемента  ${current_xpath}
     [Return]  ${result}
 
 
