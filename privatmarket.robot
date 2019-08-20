@@ -664,15 +664,16 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 
     ${plan_path}=  Get Variable Value  ${ARTIFACT_FILE}  artifact.yaml
     ${ARTIFACT}=  load_data_from  ${plan_path}
-    privatmarket.Пошук плану по ідентифікатору  ${username}  ${ARTIFACT.tender_uaid}
-
-    #go to form
-    Wait Visibility And Click Element  xpath=//button[contains(@ng-click,'switchToTender')]
 
     ${status}  ${type}=  Run Keyword And Ignore Error  Set Variable  '${tender_data.data.procurementMethodType}'
     ${type}=  Run Keyword If
     ...  '${status}' == 'PASS'  Set Variable  ${type}
     ...  ELSE  Set Variable  ''
+
+    Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA'  privatmarket.Пошук плану по ідентифікатору  ${username}  ${ARTIFACT.tender_uaid}
+
+    #go to form
+    Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Visibility And Click Element  xpath=//button[contains(@ng-click,'switchToTender')]
 
     #submissionMethodDetails
     ${submissionMethod}  ${mode}=  Run Keyword And Ignore Error  Set Variable  '${tender_data.data.submissionMethodDetails}'
@@ -689,6 +690,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     ...  ELSE IF  ${type} == '' and 'after_resolved_award_complaint' in '${scenarios_name}'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '144')]
     ...  ELSE IF  ${type} == ''  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '1440')]
     ...  ELSE IF  ${type} == 'reporting'  no operation
+    ...  ELSE IF  ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '720')]
     ...  ELSE  Wait Visibility And Click Element  xpath=//select[@data-id='accelerator-select']/option[contains(., '1440')]
 
 #step 0
@@ -799,7 +801,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'reporting' or ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
 #step 5
-    Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Until Element Is Visible  css=section[data-id='step5']  ${COMMONWAIT}
+    Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Until Element Is Visible  xpath=//span[@title='Документація']  ${COMMONWAIT}
     Sleep  3s
 
     Wait Visibility And Click Element  ${locator_tenderCreation.buttonSend}
@@ -813,10 +815,16 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     ...  ELSE IF  ${type} == 'closeFrameworkAgreementUA'  Wait For Element With Reload  css=[data-tender-status='active.tendering']  1
     ...  ELSE IF  ${type} == 'negotiation' or ${type} == 'reporting'  Wait For Element With Reload  css=[data-tender-status='active']  1
     ...  ELSE IF  ${type} == 'esco'  Wait For Element With Reload  css=[data-tender-status='active.tendering']  1
-    ...  ELSE  Wait For Element With Reload  css=[data-tender-status='active.enquiries']  1
+    ...  ELSE  Wait For Element With Reload  css=[data-tender-status^='active.enquiries']  1
     ${tender_id}=  Get Text  ${tender_data_tenderID}
     Log To Console  ${tender_id}
     [Return]  ${tender_id}
+
+
+Створити тендер другого етапу
+     [Arguments]  ${username}  ${adapted_data}
+     ${tender_id}=  privatmarket.Створити тендер  ${username}  ${adapted_data}
+     [Return]  ${tender_id}
 
 
 Перейти до створення другого етапу рамок
@@ -921,6 +929,8 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     ...  ELSE  Set Variable  ''
 
     Run Keyword If  ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'changeItemDeliveryOptions')]
+
+    Wait Visibility And Click Element  xpath=((//div[@data-id='lot'])[${lot_index}]//span[contains(text(), 'точна адреса')])[${item_index}]//preceding-sibling::input
 
     Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//input[@data-id='postalCode']  ${items[${index}].deliveryAddress.postalCode}
     Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//input[@data-id='countryName']  ${items[${index}].deliveryAddress.countryName}
