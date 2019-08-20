@@ -154,13 +154,13 @@ ${tender_data_contracts[1].period.endDate}  xpath=//div[contains(@class,'contrac
 ${tender_data_features[0].title}  css=div.no-price span[data-id='feature.title']
 ${tender_data_features[1].title}  xpath=(//div[contains(@class, 'no-price')]//span[@data-id='feature.title'])[2]
 
-${tender_data_funders[0].name}  xpath=//td[@ng-bind='model.ad.funders[0].contactPoint.name']
+${tender_data_funders[0].name}  xpath=//span[@data-id='founder-name']
 ${tender_data_funders[0].address.countryName}  xpath=//div[@data-id='funders-block']//span[@data-id='address.countryName']
 ${tender_data_funders[0].address.locality}  xpath=//div[@data-id='funders-block']//span[@data-id='address.locality']
 ${tender_data_funders[0].address.postalCode}  xpath=//div[@data-id='funders-block']//span[@data-id='address.postalCode']
 ${tender_data_funders[0].address.region}  xpath=//div[@data-id='funders-block']//span[@data-id='address.region']
 ${tender_data_funders[0].address.streetAddress}  xpath=//div[@data-id='funders-block']//span[@data-id='address.streetAddress']
-${tender_data_funders[0].contactPoint.url}  xpath=//td[@ng-bind='model.ad.funders[0].contactPoint.url']
+${tender_data_funders[0].contactPoint.url}  xpath=//span[@data-id='founder-contact-point-email']
 ${tender_data_funders[0].identifier.id}  xpath=//div[@data-id='funders-block']//td[@data-id='funder-identifier-id']
 ${tender_data_funders[0].identifier.legalName}  xpath=//div[@data-id='funders-block']//td[@data-id='funder-identifier-legalName']
 ${tender_data_funders[0].identifier.scheme}  xpath=//div[@data-id='funders-block']//td[@data-id='funder-identifier-scheme']
@@ -774,8 +774,8 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 
     Run Keyword Unless  ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'
     ...  Додати milestones  ${milestones}  ${type}
-
-    Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA' or ${type} == 'esco'  Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
+    sleep  5s
+    Run Keyword Unless  ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Visibility And Click Element  ${locator_tenderAdd.btnSave}
 
     Run Keyword If  ${type} == 'negotiation'  Wait Until Element Is Visible  css=label[for='documentation_tender_yes']  ${COMMONWAIT}
     ...  ELSE IF  ${type} == 'reporting'  Wait Until Element Is Visible  css=section[data-id='step4']  ${COMMONWAIT}
@@ -854,7 +854,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     \  Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'
     \  ...  Wait Visibility And Click Element  xpath=(//label[contains(@for,'guarantee')])[${lot_index}]
     \  Run Keyword Unless  ${type} == 'negotiation' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Element Visibility And Input Text  xpath=(//input[@data-id='guaranteeAmount'])[${lot_index}]  1
-    \  Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'esco' or ${type} == 'closeFrameworkAgreementSelectionUA' or ${type} == 'closeFrameworkAgreementUA'
+    \  Run Keyword IF  ${type} == 'aboveThresholdEU' or ${type} == 'competitiveDialogueEU' or ${type} == 'closeFrameworkAgreementSelectionUA' or ${type} == 'closeFrameworkAgreementUA'
     \  ...  Run Keywords
     \  ...  Wait Element Visibility And Input Text  xpath=(//input[@data-id='procurementNameEn'])[${lot_index}]  ${lots[${index}].title_en}
     \  ...  AND  Wait Element Visibility And Input Text  xpath=(//textarea[@data-id='lotDescriptionEn'])[${lot_index}]  ${lots[${index}].description}
@@ -929,6 +929,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     ...  ELSE  Set Variable  ''
 
     Run Keyword If  ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'changeItemDeliveryOptions')]
+    Wait Visibility And Click Element  xpath=((//div[@data-id='lot'])[${lot_index}]//span[contains(text(), 'точна адреса')])[${item_index}]//preceding-sibling::input
 
     Wait Visibility And Click Element  xpath=((//div[@data-id='lot'])[${lot_index}]//span[contains(text(), 'точна адреса')])[${item_index}]//preceding-sibling::input
 
@@ -1427,6 +1428,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Run Keyword If  '${status}' == 'False'  privatmarket.Пошук тендера по ідентифікатору  ${tender_owner}  ${tender_uaid}
 
     Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
+    Execute JavaScript    window.scrollTo(${0},${0})
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
     Wait For Ajax
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
@@ -1444,6 +1446,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     [Arguments]  ${user_name}  ${tenderId}  ${funders_data}
     privatmarket.Пошук тендера по ідентифікатору  ${tender_owner}  ${tenderId}
     Wait For Element With Reload  ${locator_tenderClaim.buttonCreate}  1
+    Execute JavaScript    window.scrollTo(${0},${0})
     Wait Visibility And Click Element  ${locator_tenderClaim.buttonCreate}
     Wait For Ajax
     Wait Until Element Is Visible  css=input[data-id='procurementName']  ${COMMONWAIT}
@@ -1966,6 +1969,8 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Run Keyword And Return If  'milestones' in '${field_name}'  Отримати інформацію про умови оплати  ${field_name}
     Run Keyword And Return If  'mainProcurementCategory' in '${field_name}'  Отримати інформацію про вид предмету закупівлі  ${field_name}
     Run Keyword And Return If  '${field_name}' == 'agreements[0].status'  Отримати статус рамкової угоди  ${field_name}
+    Run Keyword And Return If  '${field_name}' == 'funders[0].name'  Get Element Attribute  xpath=//span[@data-id='founder-name']/parent::li@data-founder-name
+    Run Keyword And Return If  '${field_name}' == 'funders[0].contactPoint.url'  Get Element Attribute  xpath=//span[@data-id='founder-contact-point-email']/parent::li@data-founder-contact-point-url
 
     Wait Until Element Is Visible  ${tender_data_${field_name}}
     ${result_full}=  Get Text  ${tender_data_${field_name}}
