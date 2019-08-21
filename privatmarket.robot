@@ -354,6 +354,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 
     Search By Query  css=input[data-id='query']  ${tender_data.data.classification.id}
     Wait Visibility And Click Element  css=button[data-id='actConfirm']
+##################################################  при '${items[0].classification.id}' == '99999999-9' не приходит ${items[0].additionalClassifications[0].scheme} openUA_OW
     Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
     Set Date  tenderPeriod  startDate  ${tender_data.data.tender.tenderPeriod.startDate}
 
@@ -929,8 +930,6 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     ...  ELSE  Set Variable  ''
 
     Run Keyword If  ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'changeItemDeliveryOptions')]
-    Wait Visibility And Click Element  xpath=((//div[@data-id='lot'])[${lot_index}]//span[contains(text(), 'точна адреса')])[${item_index}]//preceding-sibling::input
-
     Wait Visibility And Click Element  xpath=((//div[@data-id='lot'])[${lot_index}]//span[contains(text(), 'точна адреса')])[${item_index}]//preceding-sibling::input
 
     Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//input[@data-id='postalCode']  ${items[${index}].deliveryAddress.postalCode}
