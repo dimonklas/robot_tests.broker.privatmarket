@@ -354,8 +354,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 
     Search By Query  css=input[data-id='query']  ${tender_data.data.classification.id}
     Wait Visibility And Click Element  css=button[data-id='actConfirm']
-##################################################  при '${items[0].classification.id}' == '99999999-9' не приходит ${items[0].additionalClassifications[0].scheme} openUA_OW
-    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
+#    Run Keyword If  '${items[0].classification.id}' == '99999999-9'  Обрати додаткові класифікатори   ${items[0].additionalClassifications[0].scheme}   ${items[0].additionalClassifications[0].id}
     Set Date  tenderPeriod  startDate  ${tender_data.data.tender.tenderPeriod.startDate}
 
     ${amount}=  convert_float_to_string  ${tender_data.data.budget.amount}
