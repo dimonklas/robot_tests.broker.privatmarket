@@ -160,7 +160,7 @@ ${tender_data_funders[0].address.locality}  xpath=//div[@data-id='funders-block'
 ${tender_data_funders[0].address.postalCode}  xpath=//div[@data-id='funders-block']//span[@data-id='address.postalCode']
 ${tender_data_funders[0].address.region}  xpath=//div[@data-id='funders-block']//span[@data-id='address.region']
 ${tender_data_funders[0].address.streetAddress}  xpath=//div[@data-id='funders-block']//span[@data-id='address.streetAddress']
-${tender_data_funders[0].contactPoint.url}  xpath=//span[@data-id='founder-contact-point-email']
+${tender_data_funders[0].contactPoint.url}  xpath=//span[@data-id='founder-contact-point-url']
 ${tender_data_funders[0].identifier.id}  xpath=//div[@data-id='funders-block']//td[@data-id='funder-identifier-id']
 ${tender_data_funders[0].identifier.legalName}  xpath=//div[@data-id='funders-block']//td[@data-id='funder-identifier-legalName']
 ${tender_data_funders[0].identifier.scheme}  xpath=//div[@data-id='funders-block']//td[@data-id='funder-identifier-scheme']
