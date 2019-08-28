@@ -31,7 +31,7 @@ ${tender_data_value.amount}  css=#tenderBudget
 ${tender_data_value.currency}  css=#tenderBudgetCcy
 ${tender_data_value.valueAddedTaxIncluded}  css=#tenderBudgetTax
 ${tender_data_tenderID}  css=#tenderId
-${tender_data_procuringEntity.name}  css=a[ng-click='commonActions.openCard()']
+${tender_data_procuringEntity.name}  css=a[ng-click^='commonActions.openCard']
 ${tender_data_enquiryPeriod.startDate}  id=active.enquiries-bd
 ${tender_data_enquiryPeriod.endDate}  id=active.enquiries-ed
 ${tender_data_tenderPeriod.startDate}  id=active.tendering-bd
@@ -1844,7 +1844,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Wait Element Visibility And Input Text  css=#contractNumber  ${tender_uaid}
 
     Click Element  xpath=//input[@name='dateSigned']
-    Wait Visibility And Click Element  xpath=//div[@class='datepicker-days']//td[@class='today day']
+    Wait Visibility And Click Element  css=div.datepicker-days td.today
     Wait Visibility And Click Element  xpath=//input[@name='endDate']
     Wait Visibility And Click Element  xpath=//div[@class="datepicker-days"]//tbody//tr[6]//td[4]
 
@@ -1876,7 +1876,7 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Wait Element Visibility And Input Text  xpath=//input[@data-id='contract.title']  Договір до закупівлі
     Wait Element Visibility And Input Text  xpath=//input[@id='contractNumber']  1234567890
     Click Element  xpath=//input[@name='dateSigned']
-    Wait Visibility And Click Element  xpath=//div[@class='datepicker-days']//td[@class='today day']
+    Wait Visibility And Click Element  css=div.datepicker-days td.today
     Wait Visibility And Click Element  xpath=//input[@name='endDate']
     Wait Visibility And Click Element  xpath=//td[contains(@class, 'today')]//../following-sibling::tr[1]//td[5]
     Wait Visibility And Click Element  xpath=//div[@class='form-block__item']/form/select[1]/option[3]
