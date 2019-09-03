@@ -425,6 +425,11 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     \  ...  AND  Wait Visibility And Click Element  xpath=//div[@data-id='foundItem']//label[contains(text(),'${classif_id}')]
     \  ...  AND  Wait Visibility And Click Element  xpath=//button[@data-id='actConfirm']
     \  Wait Element Visibility And Input Text  xpath=(//input[@data-id='description'])[${index_xpath}]  ${items[${index}].description}
+    \  ${mainProcurementCategory}=  Run Keyword If  'створити звіт' in '${TEST_NAME}'  privatmarket_service.get_mainProcurementCategory  ${TENDER_DATA.data.mainProcurementCategory}
+    \  Run Keyword If  'створити звіт' in '${TEST_NAME}'
+    \  ...  Run Keywords
+    \  ...  Wait Visibility And Click Element  xpath=(//div[@data-id='item']//span[contains(text(), '${mainProcurementCategory}')])[${index_xpath}]/preceding-sibling::input[1]
+    \  ...  AND  Run Keyword And Ignore Error  Wait Visibility And Click Element  xpath=//button[@data-id='modalOkBtn']
     \  ${item_quantity}=  Convert To String  ${items[${index}].quantity}
     \  Run Keyword Unless  '${MODE}' == 'esco'  Input Text  xpath=(//input[@data-id='quantity'])[${index_xpath}]  ${item_quantity}
     \  Run Keyword Unless  '${MODE}' == 'esco'  Select From List By Label  xpath=(//select[@data-id='unit'])[${index_xpath}]  ${items[${index}].unit.name}
@@ -441,11 +446,12 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 
 Вказати вид предмету закупівлі
     [Arguments]  ${value}  ${index_xpath}  ${lot_index}
-    ${type}=  Set Variable If
-    ...  'goods' in '${value}'  Товар
-    ...  'works' in '${value}'  Роботи
-    ...  'services' in '${value}'  Послуга
-    ...  ${value}
+#    ${type}=  Set Variable If
+#    ...  'goods' in '${value}'  Товар
+#    ...  'works' in '${value}'  Роботи
+#    ...  'services' in '${value}'  Послуга
+#    ...  ${value}
+    ${type}=  Run Keyword  privatmarket_service.get_mainProcurementCategory  ${TENDER_DATA.data.mainProcurementCategory}
     Wait Visibility And Click Element  xpath=((//div[@data-id='lot'])[${lot_index}]//span[contains(text(), '${type}')])[${index_xpath}]/preceding-sibling::input[1]
     Run Keyword And Ignore Error  Wait Visibility And Click Element  xpath=//button[@data-id='modalOkBtn']
 
@@ -930,7 +936,8 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     ...  ELSE  Set Variable  ''
 
     Run Keyword If  ${type} == 'closeFrameworkAgreementSelectionUA'  Wait Visibility And Click Element  xpath=//a[contains(@ng-click,'changeItemDeliveryOptions')]
-    Wait Visibility And Click Element  xpath=((//div[@data-id='lot'])[${lot_index}]//span[contains(text(), 'точна адреса')])[${item_index}]//preceding-sibling::input
+    Run Keyword Unless  ${type} == 'esco'
+    ...  Wait Visibility And Click Element  xpath=((//div[@data-id='lot'])[${lot_index}]//span[contains(text(), 'точна адреса')])[${item_index}]//preceding-sibling::input
 
     Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//input[@data-id='postalCode']  ${items[${index}].deliveryAddress.postalCode}
     Wait Element Visibility And Input Text  xpath=((//div[@data-id='lot'])[${lot_index}]//div[@data-id='item'])[${item_index}]//input[@data-id='countryName']  ${items[${index}].deliveryAddress.countryName}
@@ -1891,6 +1898,22 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
     Wait Until Element Is Enabled  css=button[ng-click="act.saveContract('pending')"]  ${COMMONWAIT}
     Click Button  css=button[ng-click="act.saveContract('pending')"]
     Wait Visibility And Click Element  xpath=//button[@data-id='modal-close']
+    sleep  5s
+    ${amount}=  execute javascript  return document.getElementsByClassName('current-amount-input')[0].value;
+    ${amountNet}=  execute javascript  return document.getElementsByClassName('current-amount-net-input')[0].value;
+
+    ${amount}=   Replace String  ${amount}  ${SPACE}  ${EMPTY}
+    ${amount}=  convert to number  ${amount}
+    ${amountNet}=   Replace String  ${amountNet}  ${SPACE}  ${EMPTY}
+    ${amountNet}=  convert to number  ${amountNet}
+
+    Run Keyword And Return If  'Неможливість' in '${TEST_NAME}' and '${field_name}' == 'value.amount'
+    ...  Should Be Equal As Numbers  ${value}  ${amount}
+    ...  Amount should be less or equal to awarded amount
+
+    Run Keyword And Return If  'Неможливість' in '${TEST_NAME}' and '${field_name}' == 'value.amountNet'
+    ...  Should Be Equal As Numbers  ${value}  ${amountNet}
+    ...  Amount should be greater than amountNet and differ by no more than 20.0%
     Sleep  60s
     Reload Page
 
@@ -1913,17 +1936,50 @@ ${contract_data_period.endDate}  xpath=//dt[text()='Дата кiнця:']/follow
 
 Встановити дату підписання угоди
     [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${dateSigned}
-    Fail  Ключевое слово не реализовано
+    Reload Page
+    Відкрити детальну інформацію про контракт
+    ${signed_day}=  Get Regexp Matches  ${dateSigned}  \\d{2}(?=T)
+    ${signed_day}=  Replace String Using Regexp  ${signed_day[0]}  ^0  ${EMPTY}
+    Wait Visibility And Click Element  xpath=//input[@name='dateSigned']
+    Wait Visibility And Click Element  xpath=//div[@class='datepicker-days']//td[text()='${signed_day}']
+    Wait Until Element Is Enabled  css=button[ng-click="act.saveContract('pending')"]  ${COMMONWAIT}
+    Click Button  css=button[ng-click="act.saveContract('pending')"]
+    Wait Visibility And Click Element  xpath=//button[@data-id='modal-close']
+    sleep  5s
 
 
 Вказати період дії угоди
     [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${startDate}  ${endDate}
-    Fail  Ключевое слово не реализовано
+    Reload Page
+    Відкрити детальну інформацію про контракт
+    ${startDay}=  Get Regexp Matches  ${startDate}  \\d{2}(?=T)
+    ${endDay}=  Get Regexp Matches  ${endDate}  \\d{2}(?=T)
+    ${startDay}=  Replace String Using Regexp  ${startDay[0]}  ^0  ${EMPTY}
+    ${endDay}=  Replace String Using Regexp  ${endDay[0]}  ^0  ${EMPTY}
+    Wait Visibility And Click Element  xpath=//input[@name='startDate']
+    Wait Visibility And Click Element  xpath=//div[@class='datepicker-days']//td[text()='${startDay}']
+    Wait Visibility And Click Element  xpath=//input[@name='endDate']
+    Wait Visibility And Click Element  xpath=//div[@class='datepicker-days']//td[text()='${endDay}']
+    Wait Until Element Is Enabled  css=button[ng-click="act.saveContract('pending')"]  ${COMMONWAIT}
+    Click Button  css=button[ng-click="act.saveContract('pending')"]
+    Wait Visibility And Click Element  xpath=//button[@data-id='modal-close']
+    sleep  5s
 
 
 Завантажити документ в угоду
-    [Arguments]  ${username}  ${file_path}  ${tender_uaid}  ${contract_num}
-    Fail  Ключевое слово не реализовано
+    [Arguments]  ${username}  ${file_path}  ${tender_uaid}  ${contract_index}
+    Reload Page
+    Відкрити детальну інформацію про контракт
+    Wait Visibility And Click Element  xpath=//div[@class='form-block__item']/form/select[1]/option[6]
+    Sleep  1s
+    Wait Visibility And Click Element  xpath=//div[@class='form-block__item']/form/select[2]/option[2]
+    Sleep  1s
+    Choose File  xpath=//div[@class='form-block__item']/form/div/input  ${file_path}
+    Sleep  5s
+    Wait Until Element Is Enabled  css=button[ng-click="act.saveContract('pending')"]  ${COMMONWAIT}
+    Click Button  css=button[ng-click="act.saveContract('pending')"]
+    Wait Visibility And Click Element  xpath=//button[@data-id='modal-close']
+    sleep  5s
 
 
 Отримати інформацію зі сторінки
@@ -3381,7 +3437,7 @@ Get Item Number
     ${class}=  Get Element Attribute  xpath=//a[contains(@ng-class, 'lot-parts')]@class
     Run Keyword Unless  'checked' in '${class}'  Click Element  xpath=//a[contains(@ng-class, 'lot-parts')]
 
-    Run Keyword If  'openua_award_complaint' in '${scenarios_name}' or '${mode}' == 'openua' or '${mode}' == 'openeu' or '${mode}' == 'open_framework'
+    Run Keyword If  'openua_award_complaint' in '${scenarios_name}' or '${mode}' == 'openua' or '${mode}' == 'openeu' or '${mode}' == 'open_framework' or '${mode}' == 'openua_defense'
     ...  Run Keywords
     ...  Wait Until Keyword Succeeds  10min  10s  Дочекатися можливості завантажити ЕЦП
     ...  AND  Завантажити ЕЦП

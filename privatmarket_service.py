@@ -413,5 +413,15 @@ def get_rationaleType (type):
     return type_name
 
 
+def get_mainProcurementCategory (type):
+    type_dictionary = {
+        'goods': u'Товар',
+        'works': u'Роботи',
+        'services': u'Послуга'
+    }
+    type_name = type_dictionary.get(type)
+    return type_name
+
+
 def change_fake_date():
     return (datetime.datetime.now(timezone('Europe/Kiev')) + timedelta(days=3)).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
